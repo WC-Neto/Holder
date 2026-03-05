@@ -1,0 +1,15 @@
+{
+  "name": "holder-monorepo",
+  "private": true,
+  "workspaces": [
+    "frontend/holder"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run dev -w frontend/holder",
+    "dev:backend": "cd backend && uvicorn app.main:app --reload",
+    "dev": "concurrently -n \"NEXT,FASTAPI\" -c \"cyan,green\" \"npm run dev:frontend\" \"npm run dev:backend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
