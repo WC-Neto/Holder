@@ -1,0 +1,9 @@
+# comandos:
+
+# para rodar a api 
+
+python -m uvicorn app.main:app --reload
+
+# para ver api rodando com docs acesse a porta docs
+
+exemplo: http://127.0.0.1:8000/docs
