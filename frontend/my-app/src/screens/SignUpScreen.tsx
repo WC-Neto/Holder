@@ -17,6 +17,38 @@ type SignUpScreenProps = {
   variant: SignUpVariant;
 };
 
+function formatDate(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+
+  if (digits.length <= 2) {
+    return digits;
+  }
+
+  if (digits.length <= 4) {
+    return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  }
+
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+}
+
+function formatCpf(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+
+  if (digits.length <= 3) {
+    return digits;
+  }
+
+  if (digits.length <= 6) {
+    return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+  }
+
+  if (digits.length <= 9) {
+    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+  }
+
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+}
+
 const contentByVariant = {
   idoso: {
     title: "Cadastro de Idoso",
@@ -108,8 +140,10 @@ export default function SignUpScreen({ variant }: SignUpScreenProps) {
         <View style={styles.formGroup}>
           <Text style={styles.label}>Data de Nascimento</Text>
           <TextInput
-            keyboardType="numbers-and-punctuation"
-            onChangeText={setBirthDate}
+            inputMode="numeric"
+            keyboardType="number-pad"
+            maxLength={10}
+            onChangeText={(value) => setBirthDate(formatDate(value))}
             placeholder="DD/MM/AAAA"
             placeholderTextColor="#B8B1AB"
             style={styles.input}
@@ -120,8 +154,10 @@ export default function SignUpScreen({ variant }: SignUpScreenProps) {
         <View style={styles.formGroup}>
           <Text style={styles.label}>CPF</Text>
           <TextInput
+            inputMode="numeric"
             keyboardType="number-pad"
-            onChangeText={setCpf}
+            maxLength={14}
+            onChangeText={(value) => setCpf(formatCpf(value))}
             placeholder="000.000.000-00"
             placeholderTextColor="#B8B1AB"
             style={styles.input}
