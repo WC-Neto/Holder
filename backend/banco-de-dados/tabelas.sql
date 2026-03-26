@@ -1,91 +1,111 @@
-CREATE TABLE PESSOA (
-    id_pessoa SERIAL PRIMARY KEY,
-    nome_completo VARCHAR(255) NOT NULL,
+CREATE TABLE usuario (
+    id_usuario INT PRIMARY KEY AUTO_INCREMENT,
+    nome_completo VARCHAR(150) NOT NULL,
     data_nascimento DATE NOT NULL,
     cpf VARCHAR(14) UNIQUE NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
     telefone VARCHAR(20),
-    senha VARCHAR(255) NOT NULL,
-    foto_perfil TEXT,
-    cep VARCHAR(9),
-    endereco VARCHAR(255),
+    senha_hash VARCHAR(255) NOT NULL,
+    foto_perfil VARCHAR(255),
+    cep VARCHAR(10),
+    endereco VARCHAR(150),
     numero VARCHAR(10),
     complemento VARCHAR(100)
 );
 
-CREATE TABLE DISPONIBILIDADE (
-    id_disponibilidade SERIAL PRIMARY KEY,
-    descricao VARCHAR(100) NOT NULL
+CREATE TABLE idoso (
+    id_idoso INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT UNIQUE,
+    tamanho_fonte INT,
+    alto_contraste BOOLEAN,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 );
 
-CREATE TABLE NECESSIDADE_ESPECIAL (
-    id_necessidade SERIAL PRIMARY KEY,
-    descricao VARCHAR(100) NOT NULL
+CREATE TABLE voluntario (
+    id_voluntario INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT UNIQUE,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 );
 
-CREATE TABLE RELATORIO (
-    id_relatorio SERIAL PRIMARY KEY,
-    periodo_inicio DATE,
-    periodo_fim DATE,
-    total_pedidos INT DEFAULT 0,
-    total_concluidos INT DEFAULT 0,
-    total_usuarios_ativos INT DEFAULT 0
+CREATE TABLE pedido (
+    id_pedido INT PRIMARY KEY AUTO_INCREMENT,
+    id_idoso INT NOT NULL,
+    titulo VARCHAR(150) NOT NULL,
+    categoria VARCHAR(50),
+    descricao TEXT,
+    cep VARCHAR(10),
+    endereco VARCHAR(150),
+    numero VARCHAR(10),
+    prioridade BOOLEAN,
+    status VARCHAR(30),
+    data_criacao DATETIME,
+    data_inicio DATETIME,
+    data_conclusao DATETIME,
+    FOREIGN KEY (id_idoso) REFERENCES idoso(id_idoso)
 );
 
-CREATE TABLE VOLUNTARIO (
-    id_voluntario SERIAL PRIMARY KEY,
-    id_pessoa_FK INT NOT NULL REFERENCES PESSOA(id_pessoa) ON DELETE CASCADE
+CREATE TABLE atendimento (
+    id_atendimento INT PRIMARY KEY AUTO_INCREMENT,
+    id_pedido INT UNIQUE,
+    id_voluntario INT NOT NULL,
+    data_inicio DATETIME,
+    data_fim DATETIME,
+    justificativa_desistencia TEXT,
+    FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido),
+    FOREIGN KEY (id_voluntario) REFERENCES voluntario(id_voluntario)
 );
 
-CREATE TABLE IDOSO (
-    id_idoso SERIAL PRIMARY KEY,
-    id_pessoa_FK INT NOT NULL REFERENCES PESSOA(id_pessoa) ON DELETE CASCADE,
-    tamanho_fonte INT DEFAULT 12,
-    alto_contraste BOOLEAN DEFAULT FALSE
-);
-
-CREATE TABLE NOTIFICACAO (
-    id_notificacao SERIAL PRIMARY KEY,
-    id_pessoa_FK INT NOT NULL REFERENCES PESSOA(id_pessoa) ON DELETE CASCADE,
+CREATE TABLE notificacao (
+    id_notificacao INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    id_pedido INT,
     tipo VARCHAR(50),
     mensagem TEXT,
     lida BOOLEAN DEFAULT FALSE,
-    data_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    data_envio DATETIME,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
+    FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido)
 );
 
-CREATE TABLE RECUPERACAO_SENHA (
-    id_recuperacao SERIAL PRIMARY KEY,
-    id_pessoa_FK INT NOT NULL REFERENCES PESSOA(id_pessoa) ON DELETE CASCADE,
-    token_redefinicao VARCHAR(255) NOT NULL,
-    data_expiracao TIMESTAMP NOT NULL,
-    usado BOOLEAN DEFAULT FALSE
+CREATE TABLE token_recuperacao (
+    id_token INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    data_expiracao DATETIME,
+    usado BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 );
 
-CREATE TABLE VOLUNTARIO_DISPONIBILIDADE (
-    id_voluntario_FK INT REFERENCES VOLUNTARIO(id_voluntario),
-    id_disponibilidade_FK INT REFERENCES DISPONIBILIDADE(id_disponibilidade),
-    PRIMARY KEY (id_voluntario_FK, id_disponibilidade_FK)
+CREATE TABLE sessao (
+    id_sessao INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    data_expiracao DATETIME,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 );
 
-CREATE TABLE IDOSO_NECESSIDADE (
-    id_idoso_FK INT REFERENCES IDOSO(id_idoso),
-    id_necessidade_FK INT REFERENCES NECESSIDADE_ESPECIAL(id_necessidade),
-    PRIMARY KEY (id_idoso_FK, id_necessidade_FK)
+CREATE TABLE necessidade_especial (
+    id_necessidade INT PRIMARY KEY AUTO_INCREMENT,
+    descricao VARCHAR(100)
 );
 
-CREATE TABLE PEDIDO (
-    id_pedido SERIAL PRIMARY KEY,
-    id_idoso_FK INT REFERENCES IDOSO(id_idoso),
-    id_voluntario_FK INT REFERENCES VOLUNTARIO(id_voluntario),
-    titulo VARCHAR(150) NOT NULL,
-    categoria VARCHAR(100),
-    detalhes TEXT,
-    endereco_pedido VARCHAR(255),
-    usar_endereco_cadastrado BOOLEAN DEFAULT TRUE,
-    prioridade BOOLEAN DEFAULT FALSE,
-    status VARCHAR(50),
-    data_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_inicio_atendimento TIMESTAMP,
-    data_conclusao TIMESTAMP,
-    justificativa_desistencia TEXT
+CREATE TABLE idoso_necessidade (
+    id_idoso INT,
+    id_necessidade INT,
+    PRIMARY KEY (id_idoso, id_necessidade),
+    FOREIGN KEY (id_idoso) REFERENCES idoso(id_idoso),
+    FOREIGN KEY (id_necessidade) REFERENCES necessidade_especial(id_necessidade)
+);
+
+CREATE TABLE disponibilidade (
+    id_disponibilidade INT PRIMARY KEY AUTO_INCREMENT,
+    descricao VARCHAR(50)
+);
+
+CREATE TABLE voluntario_disponibilidade (
+    id_voluntario INT,
+    id_disponibilidade INT,
+    PRIMARY KEY (id_voluntario, id_disponibilidade),
+    FOREIGN KEY (id_voluntario) REFERENCES voluntario(id_voluntario),
+    FOREIGN KEY (id_disponibilidade) REFERENCES disponibilidade(id_disponibilidade)
 );
