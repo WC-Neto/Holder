@@ -1,126 +1,183 @@
-import { Text, View, StyleSheet, Image, Button, TextInput, TouchableOpacity} from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
+import { Href, useRouter } from "expo-router";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+
+const options = [
+  {
+    title: "Sou Idoso",
+    description: "Preciso de ajuda com tarefas do dia a dia",
+    route: "/cadastro-idoso" as Href,
+    icon: "favorite",
+    cardColor: "#E8A9B2",
+    iconColor: "#FFFFFF",
+  },
+  {
+    title: "Sou Voluntario",
+    description: "Quero ajudar pessoas da minha comunidade",
+    route: "/cadastro-voluntario" as Href,
+    icon: "back-hand",
+    cardColor: "#A9CCBC",
+    iconColor: "#FFFFFF",
+  },
+] as const;
 
 export default function Index() {
+  const router = useRouter();
+
   return (
-    <View style={styles.container}>
-      <View>
-        <Image source={require('../../assets/images/holder_logo.png')} style={{ width: 150, height: 100, marginBottom: 80 }} />
-      </View>
-      <View style={{alignItems: 'center'}}>
-        <Text style={styles.titulo}>Bem vindo ao Holder</Text>
-        <Text style={styles.subtitle}>Entre para continuar</Text>
-      </View>
-      <View style={styles.buttonsContainer}>
-        <Button
-          title="Sou Idoso" 
-          onPress={() => console.log('Botão Pressionado')}
-          disabled={false}
-        />
-        <Button
-          title="Sou Voluntário" 
-          onPress={() => console.log('Botão Pressionado')}
-          disabled={false}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput style={styles.inputElement} placeholder="Email" 
-        placeholderTextColor="#919498"
-        />
-        <TextInput style={styles.inputElement} placeholder="Senha" 
-        placeholderTextColor="#919498"
-        secureTextEntry />
-      </View>
-      <View>
-        <Text style={styles.forgetPassword}>
-          Esqueceu sua senha?
-        </Text>
-      </View>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-        style={styles.primaryButton}
-        onPress={() => console.log('Botão Pressionado')}
-        disabled={false}
+    <View style={styles.screen}>
+      <StatusBar style="dark" />
+
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.back()}
+        style={({ pressed }) => [
+          styles.backButton,
+          pressed && styles.pressed,
+        ]}
       >
-      <Text style={styles.buttonText}>
-        Entrar
-      </Text>
-      </TouchableOpacity>
-      </View> 
-      <View>
-        <Text style={styles.acessContainer}>
-          <Text style={styles.fisrtAcess}>
-          Primeiro acesso?
-        </Text>
-        <Text style={styles.secondAcess}>Faça seu cadastro por aqui
-        </Text>
-        </Text>
+        <MaterialIcons name="arrow-back" size={24} color="#56514D" />
+      </Pressable>
+
+      <View style={styles.content}>
+        <Image
+          resizeMode="contain"
+          source={require("../../assets/images/holder_logo.png")}
+          style={styles.logo}
+        />
+
+        <Text style={styles.title}>Como voce quer usar o Holder?</Text>
+        <Text style={styles.subtitle}>Selecione uma opcao para continuar</Text>
+
+        <View style={styles.cardList}>
+          {options.map((option) => (
+            <Pressable
+              accessibilityRole="button"
+              key={option.title}
+              onPress={() => router.push(option.route)}
+              style={({ pressed }) => [
+                styles.card,
+                { backgroundColor: option.cardColor },
+                pressed && styles.pressed,
+              ]}
+            >
+              <View style={styles.cardIconCircle}>
+                <MaterialIcons
+                  color={option.iconColor}
+                  name={option.icon}
+                  size={32}
+                />
+              </View>
+
+              <Text style={styles.cardTitle}>{option.title}</Text>
+              <Text style={styles.cardDescription}>{option.description}</Text>
+            </Pressable>
+          ))}
+        </View>
       </View>
+
+      <Text style={styles.footerText}>
+        Ao continuar, voce concorda com nossos{" "}
+        <Text style={styles.footerLink}>Termos de Uso</Text> e{" "}
+        <Text style={styles.footerLink}>Politica de Privacidade</Text>
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
+    flex: 1,
+    backgroundColor: "#FBF5EE",
+    paddingHorizontal: 28,
+    paddingTop: 30,
+    paddingBottom: 24,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F2ECE5",
+  },
+  content: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  titulo: {
-    fontSize: 32, 
-    fontWeight: 'bold',
-    color: '#4B4B4B'
+  logo: {
+    width: 180,
+    height: 120,
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 19,
+    lineHeight: 26,
+    fontWeight: "700",
+    color: "#4B4846",
+    textAlign: "center",
+    marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#919498'
+    fontSize: 13,
+    lineHeight: 18,
+    color: "#948F89",
+    textAlign: "center",
+    marginBottom: 28,
   },
-  buttonsContainer: {
-    flexDirection: 'row',
-    marginTop: 20,
-    gap: 20 
-  },  
-  inputContainer: {
-    marginTop: 40,
-    width: '80%',
-    gap: 10,
-    padding: 10,
-    borderRadius: 10
+  cardList: {
+    width: "100%",
+    gap: 16,
   },
-  inputElement: {
-    backgroundColor: '#D9D9D966',
-    padding: 16,
-    borderRadius: 10
+  card: {
+    borderRadius: 18,
+    paddingHorizontal: 20,
+    paddingVertical: 22,
+    alignItems: "center",
+    minHeight: 126,
+    justifyContent: "center",
   },
-  forgetPassword: {
-    color: '#96C0BE',
-    fontSize: 14,
-    fontWeight: '500',
-    cursor: 'pointer'
-  }, 
-  primaryButton: {
-    backgroundColor: '#96C0BE',
-    paddingHorizontal: 128,
-    paddingVertical: 12,
-    borderRadius: 10,
+  cardIconCircle: {
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.35)",
+    marginBottom: 14,
   },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '500',
+  cardTitle: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: "700",
+    color: "#FFFFFF",
+    marginBottom: 6,
   },
-  acessContainer: {
-    flexDirection: 'row', 
-    alignItems: 'center',
-    marginTop: 10,
-    fontSize: 14,
+  cardDescription: {
+    fontSize: 13,
+    lineHeight: 18,
+    color: "#FFFFFF",
+    textAlign: "center",
   },
-  fisrtAcess: {
-    color: '#919498',
+  footerText: {
+    fontSize: 11,
+    lineHeight: 16,
+    color: "#A9A39D",
+    textAlign: "center",
   },
-  secondAcess: {
-    color: '#96C0BE',
-    fontWeight: '500',
-    paddingLeft: 5,
-    cursor: 'pointer'
-  }
+  footerLink: {
+    color: "#94BAC4",
+  },
+  pressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.99 }],
+  },
 });
