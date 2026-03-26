@@ -172,6 +172,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     color: "#A9A39D",
     textAlign: "center",
+    marginTop: 44,
   },
   footerLink: {
     color: "#94BAC4",

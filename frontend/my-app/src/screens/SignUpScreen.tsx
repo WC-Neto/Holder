@@ -84,7 +84,7 @@ export default function SignUpScreen({ variant }: SignUpScreenProps) {
         <View style={styles.headerRow}>
           <Pressable
             accessibilityRole="button"
-            onPress={() => router.back()}
+            onPress={() => router.push("/")}
             style={({ pressed }) => [
               styles.backButton,
               pressed && styles.pressed,
@@ -167,7 +167,16 @@ export default function SignUpScreen({ variant }: SignUpScreenProps) {
 
         <Pressable
           accessibilityRole="button"
-          onPress={() => {}}
+          onPress={() => {
+          if (!fullName || !birthDate || !cpf) {
+          alert("Preencha os campos");
+
+          //futuramente ativa popup de erro mais estilizada e será necessário uma validação mais robusta dos campos
+
+          return;
+          }
+          router.push("/"); // futuramente direciona para a próxima etapa do cadastro
+          }}
           style={({ pressed }) => [
             styles.continueButton,
             { backgroundColor: content.buttonColor },
