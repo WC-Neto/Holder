@@ -66,7 +66,7 @@ class UsuarioCreate(BaseModel):
     senha: str
 
 class IdosoCreate(UsuarioCreate):
-    #necessidades_especiais: list[NecessidadesEspeciais]
+    necessidades_especiais: list[NecessidadesEspeciais]
     tamanho_fonte: int
     alto_contraste: bool
 
@@ -87,7 +87,7 @@ class UsuarioResponse(BaseModel):
 
 class IdosoResponse(UsuarioResponse):
     enderecos: list[EnderecoResponse]
-    #necessidades_especiais: list[NecessidadesEspeciais]
+    necessidades_especiais: list[NecessidadesEspeciais]
     tamanho_fonte: int
     alto_contraste: bool
 

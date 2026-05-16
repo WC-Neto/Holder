@@ -57,13 +57,7 @@ class NecessidadeEspecialIdoso(Base):
     __tablename__ = "necessidades_especiais_idoso"
 
     id = Column(Integer, primary_key=True, index=True)
-    necessidade = Column(
-        SAEnum(
-        "baixa_visao", "surdez", "mobilidade_reduzida", "cadeirante",
-            "demencia", "alzheimer", "dificuldade_comunicacao", "deficit_cognitivo"
-        ),
-        nullable=False
-    )
+    necessidade = Column(String(100), nullable=False)
     idoso_id = Column(Integer, ForeignKey("idosos.id"), nullable=False)
 
     idoso = relationship("Idoso", back_populates="necessidades_especiais")

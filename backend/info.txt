@@ -1,9 +1,13 @@
-# comandos:
+# entre na pasta back end: cd backend 
 
-# para rodar a api 
+# depois entre na pasta app: cd app
 
-python -m uvicorn app.main:app --reload
+# antes de tudo, baixe todas as dependencias necessárias: pip install -r requirements.txt
 
-# para ver api rodando com docs acesse a porta docs
+# para rodar a api primeiro ative o venv: venv/Scripts/activate
 
-exemplo: http://127.0.0.1:8000/docs
+# comando para rodar: uvicorn app.main:app --reload
+
+# para fazer testes da api rodando, acesse a porta docs
+
+http://127.0.0.1:8000/docs

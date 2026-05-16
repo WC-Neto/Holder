@@ -45,7 +45,7 @@ async def criar_idoso(
     tamanho_fonte: int = Form(16),
     alto_contraste: bool = Form(False),
     enderecos_json: str = Form(...),
-    #necessidades_json: str = Form("[]"),
+    necessidades_json: str = Form("[]"),
     foto: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
@@ -88,11 +88,12 @@ async def criar_idoso(
             raise HTTPException(status_code=400, detail=str(e))
         db.add(models.Endereco(**end, idoso_id=novo_idoso.id))
 
-    '''for necessidade in [n.strip() for n in necessidades_json.split(",") if n.strip()]:
+    necessidades = json.loads(necessidades_json) if necessidades_json and necessidades_json.strip() not in ("", "null") else []
+    for necessidade in necessidades:
         db.add(models.NecessidadeEspecialIdoso(
-            necessidade=necessidade,
+            necessidade=necessidade.strip(),
             idoso_id=novo_idoso.id
-        ))'''
+    ))
 
     db.commit()
     db.refresh(novo_idoso)
