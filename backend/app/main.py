@@ -1,23 +1,21 @@
 from fastapi import FastAPI
-from controllers.router import router
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
+import models
+from database import engine, Base
+from controllers.router import router_idoso, router_voluntario
 
-app = FastAPI()
+Path("static/uploads").mkdir(parents=True, exist_ok=True)
 
-app.include_router(router)
+Base.metadata.create_all(bind=engine)
 
+app = FastAPI(title="Holder API", version="1.0.0")
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-'''from fastapi import FastAPI
-from backend.app.controllers.router import router
+app.include_router(router_idoso)
+app.include_router(router_voluntario)
 
-app = FastAPI()
-
-# Rota raiz para teste inicial (Isso evita o 404 no link principal)
 @app.get("/")
-async def root():
-    return {"status": "Servidor Online"}
-
-# Conecta o router
-app.include_router(router, prefix="/api")
-
-# P/ rodar servidor, usar no terminal: uvicorn backend.app.main:app --reload'''
+def health_check():
+    return {"status": "Holder API online"}
