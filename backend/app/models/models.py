@@ -78,3 +78,23 @@ class Disponibilidade(Base):
 
     voluntario = relationship("Voluntario", back_populates="disponibilidades")
 
+class PedidoAjuda(Base):
+    __tablename__ = "pedidos_ajuda"
+
+    id = Column(Integer, primary_key=True, index=True)
+    titulo = Column(String(100), nullable=False)
+    descricao = Column(String(500), nullable=False)
+    categoria = Column(String(50), nullable=False) # Ex: "Mercado", "Conversa", "Remédios"
+    prioridade = Column(SAEnum("baixa", "media", "alta"), default="baixa")
+    status = Column(
+        SAEnum("aberto", "em_andamento", "finalizado", "cancelado"), 
+        default="aberto"
+    )
+    data_criacao = Column(Date, nullable=False)
+
+    # Relacionamentos
+    idoso_id = Column(Integer, ForeignKey("idosos.id"), nullable=False)
+    voluntario_id = Column(Integer, ForeignKey("voluntarios.id"), nullable=True)
+
+    idoso = relationship("Idoso")
+    voluntario = relationship("Voluntario")

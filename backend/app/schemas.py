@@ -4,6 +4,7 @@ from typing import Optional
 from enum import Enum
 import re
 
+
 class PeriodoDisponibilidade(str, Enum):
     matutino = "matutino"
     vespertino = "vespertino"
@@ -151,3 +152,23 @@ def validar_data_nascimento(data: date) -> date:
     if idade > 130:
         raise ValueError("Data de nascimento inválida")
     return data
+
+class PedidoCreate(BaseModel):
+    titulo: str
+    descricao: str
+    categoria: str
+    prioridade: str
+    idoso_id: int
+
+class PedidoResponse(PedidoCreate):
+    id: int
+    status: str
+    voluntario_id: Optional[int] = None
+    
+    class Config:
+        from_attributes = True
+
+class Prioridade(str, Enum):
+    baixa = "baixa"
+    media = "media"
+    alta = "alta"
