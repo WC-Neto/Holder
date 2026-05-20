@@ -12,6 +12,8 @@ from database import get_db
 from schemas import (
     validar_senha, validar_cpf, validar_cep, validar_telefone, validar_data_nascimento
 )
+from controllers.auth.deps import get_current_user
+
 from datetime import date
 from fastapi import Form
 import schemas
@@ -28,17 +30,13 @@ async def criar_pedido(
     descricao: str = Form(...),
     categoria: str = Form(...),
     prioridade: schemas.Prioridade = Form(...), 
-    idoso_id: int = Form(...),
+    current_user: models.Idoso = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # Verifica se o idoso existe antes de criar o pedido
-    idoso_existe = db.query(models.Idoso).filter(models.Idoso.id == idoso_id).first()
-    if not idoso_existe:
-        raise HTTPException(status_code=404, detail="Idoso não encontrado")
 
     # Validação RF18: Bloqueio se houver pedido ativo
     pedido_ativo = db.query(models.PedidoAjuda).filter(
-        models.PedidoAjuda.idoso_id == idoso_id,
+        models.PedidoAjuda.idoso_id == current_user.id,
         models.PedidoAjuda.status.in_(["aberto", "em_andamento"])
     ).first()
     
@@ -50,7 +48,7 @@ async def criar_pedido(
         descricao=descricao,
         categoria=categoria,
         prioridade=prioridade,
-        idoso_id=idoso_id,
+        idoso_id=current_user.id,
         data_criacao=date.today(),
         status="aberto"
     )

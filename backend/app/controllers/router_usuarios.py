@@ -12,7 +12,7 @@ from database import get_db
 from schemas import (
     validar_senha, validar_cpf, validar_cep, validar_telefone, validar_data_nascimento
 )
-
+from .auth.deps import get_current_user
 
 UPLOAD_DIR = Path("static/uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -81,23 +81,34 @@ async def criar_idoso(
     db.add(novo_idoso)
     db.flush()
 
-    for end in json.loads(enderecos_json):
-        try:
+    try:
+        enderecos_data = json.loads(enderecos_json)
+        if isinstance(enderecos_data, str):
+            enderecos_data = json.loads(enderecos_data)
+            
+        for end in enderecos_data:
             end["cep"] = validar_cep(end["cep"])
-        except ValueError as e:
-            raise HTTPException(status_code=400, detail=str(e))
-        db.add(models.Endereco(**end, idoso_id=novo_idoso.id))
+            db.add(models.Endereco(**end, idoso_id=novo_idoso.id))
+    except (json.JSONDecodeError, TypeError, KeyError):
+        raise HTTPException(status_code=400, detail="Erro no formato do enderecos_json")
 
-    necessidades = json.loads(necessidades_json) if necessidades_json and necessidades_json.strip() not in ("", "null") else []
-    for necessidade in necessidades:
-        db.add(models.NecessidadeEspecialIdoso(
-            necessidade=necessidade.strip(),
-            idoso_id=novo_idoso.id
-    ))
-
+ 
+    # No router_usuarios.py
+    try:
+        if necessidades_json and necessidades_json.strip() not in ("", "null", "[]"):
+            # Limpeza básica para aceitar o que vem do Swagger
+            limpo = necessidades_json.strip().replace("'", '"') 
+            necessidades = json.loads(limpo)
+        else:
+            necessidades = []
+    except json.JSONDecodeError:
+        # Em vez de ignorar totalmente, avisamos o que está errado sem quebrar o servidor
+        raise HTTPException(status_code=400, detail="Formato de necessidades inválido. Use ['item']")
+            
     db.commit()
     db.refresh(novo_idoso)
     return novo_idoso
+    
 
 @router_idoso.get("/{idoso_id}", response_model=schemas.IdosoResponse)
 def exibir_perfil_idoso(idoso_id: int, db: Session = Depends(get_db)):
@@ -176,3 +187,8 @@ def exibir_perfil_voluntario(voluntario_id: int, db: Session = Depends(get_db)):
     if not voluntario:
         raise HTTPException(status_code=404, detail="Voluntário não encontrado")
     return voluntario
+
+
+
+
+
