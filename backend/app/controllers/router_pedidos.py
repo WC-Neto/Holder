@@ -121,3 +121,19 @@ def listar_historico_pedidos(
         query = query.filter(models.PedidoAjuda.categoria == categoria)
     
     return query.all()
+
+
+@router_pedidos.get("/disponiveis/{voluntario_id}", response_model=list[schemas.PedidoResponse])
+def listar_pedidos_disponiveis(voluntario_id: int, db: Session = Depends(get_db)):
+   
+    end_vol = db.query(models.Endereco).filter(models.Endereco.voluntario_id == voluntario_id).first()
+    if not end_vol:
+        raise HTTPException(status_code=404, detail="Endereço do voluntário não encontrado.")
+
+    pedidos = db.query(models.PedidoAjuda).join(models.Idoso).join(models.Endereco).filter(
+        models.PedidoAjuda.status == "aberto",
+        models.Endereco.cidade == end_vol.cidade,
+        models.Endereco.bairro == end_vol.bairro
+    ).all()
+    
+    return pedidos
