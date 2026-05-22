@@ -72,3 +72,20 @@ def listar_pedidos_ativos(idoso_id: int, db: Session = Depends(get_db)):
     ).all()
     
     return pedidos
+
+
+@router_pedidos.get("/voluntarios/proximos/{idoso_id}", response_model=list[schemas.VoluntarioResponse])
+def listar_voluntarios_proximos(idoso_id: int, db: Session = Depends(get_db)):
+    # 1. Pega o endereço do idoso (estamos pegando o primeiro cadastrado)
+    endereco_idoso = db.query(models.Endereco).filter(models.Endereco.idoso_id == idoso_id).first()
+    
+    if not endereco_idoso:
+        raise HTTPException(status_code=404, detail="Endereço do idoso não encontrado.")
+
+    # 2. Busca voluntários que moram na mesma cidade e bairro
+    voluntarios = db.query(models.Voluntario).join(models.Endereco).filter(
+        models.Endereco.cidade == endereco_idoso.cidade,
+        models.Endereco.bairro == endereco_idoso.bairro
+    ).all()
+    
+    return voluntarios
