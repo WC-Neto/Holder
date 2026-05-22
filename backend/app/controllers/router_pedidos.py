@@ -65,7 +65,7 @@ async def criar_pedido(
 
 @router_pedidos.get("/ativos/{idoso_id}", response_model=list[schemas.PedidoResponse])
 def listar_pedidos_ativos(idoso_id: int, db: Session = Depends(get_db)):
-    # Busca pedidos com status 'aberto' ou 'em_andamento'
+
     pedidos = db.query(models.PedidoAjuda).filter(
         models.PedidoAjuda.idoso_id == idoso_id,
         models.PedidoAjuda.status.in_(["aberto", "em_andamento"])
@@ -74,15 +74,30 @@ def listar_pedidos_ativos(idoso_id: int, db: Session = Depends(get_db)):
     return pedidos
 
 
+@router_pedidos.patch("/{pedido_id}/finalizar", response_model=schemas.PedidoResponse)
+def finalizar_pedido(pedido_id: int, db: Session = Depends(get_db)):
+  
+    pedido = db.query(models.PedidoAjuda).filter(models.PedidoAjuda.id == pedido_id).first()
+    
+ 
+    if not pedido:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado.")
+    
+    pedido.status = "finalizado"
+    
+    db.commit()
+    db.refresh(pedido)
+    return pedido
+
+
 @router_pedidos.get("/voluntarios/proximos/{idoso_id}", response_model=list[schemas.VoluntarioResponse])
 def listar_voluntarios_proximos(idoso_id: int, db: Session = Depends(get_db)):
-    # 1. Pega o endereço do idoso (estamos pegando o primeiro cadastrado)
+
     endereco_idoso = db.query(models.Endereco).filter(models.Endereco.idoso_id == idoso_id).first()
     
     if not endereco_idoso:
         raise HTTPException(status_code=404, detail="Endereço do idoso não encontrado.")
 
-    # 2. Busca voluntários que moram na mesma cidade e bairro
     voluntarios = db.query(models.Voluntario).join(models.Endereco).filter(
         models.Endereco.cidade == endereco_idoso.cidade,
         models.Endereco.bairro == endereco_idoso.bairro
