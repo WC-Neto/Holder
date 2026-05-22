@@ -73,21 +73,18 @@ def listar_pedidos_ativos(idoso_id: int, db: Session = Depends(get_db)):
     
     return pedidos
 
-
 @router_pedidos.patch("/{pedido_id}/finalizar", response_model=schemas.PedidoResponse)
 def finalizar_pedido(pedido_id: int, db: Session = Depends(get_db)):
-  
     pedido = db.query(models.PedidoAjuda).filter(models.PedidoAjuda.id == pedido_id).first()
     
- 
-    if not pedido:
-        raise HTTPException(status_code=404, detail="Pedido não encontrado.")
-    
+    if not pedido or pedido.status != "em_andamento":
+        raise HTTPException(status_code=400, detail="Apenas pedidos em andamento podem ser finalizados.")
+
     pedido.status = "finalizado"
-    
     db.commit()
     db.refresh(pedido)
     return pedido
+    
 
 @router_pedidos.get("/historico/{idoso_id}", response_model=list[schemas.PedidoResponse])
 def listar_historico_pedidos(
