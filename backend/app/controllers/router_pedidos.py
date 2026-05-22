@@ -104,3 +104,20 @@ def listar_voluntarios_proximos(idoso_id: int, db: Session = Depends(get_db)):
     ).all()
     
     return voluntarios
+
+
+@router_pedidos.get("/historico/{idoso_id}", response_model=list[schemas.PedidoResponse])
+def listar_historico_pedidos(
+    idoso_id: int, 
+    categoria: str = None, 
+    db: Session = Depends(get_db)
+):
+    query = db.query(models.PedidoAjuda).filter(
+        models.PedidoAjuda.idoso_id == idoso_id,
+        models.PedidoAjuda.status == "finalizado"
+    )
+    
+    if categoria:
+        query = query.filter(models.PedidoAjuda.categoria == categoria)
+    
+    return query.all()
