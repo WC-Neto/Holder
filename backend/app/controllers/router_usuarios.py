@@ -200,6 +200,12 @@ async def criar_voluntario(
     db.refresh(novo_voluntario)
     return novo_voluntario
 
+@router_voluntario.get("/{voluntario_id}", response_model=schemas.VoluntarioResponse)
+def exibir_perfil_voluntario(voluntario_id: int, db: Session = Depends(get_db)):
+    voluntario = db.query(models.Voluntario).filter(models.Voluntario.id == voluntario_id).first()
+    if not voluntario:
+        raise HTTPException(status_code=404, detail="Voluntário não encontrado")
+    return voluntario
 
 
 @router_idoso.patch("/{id}", response_model=schemas.IdosoResponse)
@@ -237,4 +243,35 @@ async def atualizar_idoso(
     db.refresh(idoso)
     return idoso
 
+
+
+@router_voluntario.patch("/{id}", response_model=schemas.VoluntarioResponse)
+async def atualizar_voluntario(
+    id: int,
+    foto: UploadFile = File(None),
+    disponibilidade: str = Form(None), 
+    enderecos_json: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    voluntario = db.query(models.Voluntario).filter(models.Voluntario.id == id).first()
+    if not voluntario:
+        raise HTTPException(status_code=404, detail="Voluntário não encontrado")
+
+ 
+    if disponibilidade:
+        voluntario.disponibilidade = disponibilidade
+    if foto:
+        voluntario.foto_perfil = foto.filename
+
+   
+    if enderecos_json:
+        dados_end = json.loads(enderecos_json)
+        endereco = db.query(models.Endereco).filter(models.Endereco.voluntario_id == id).first()
+        if endereco:
+            for key, value in dados_end.items():
+                setattr(endereco, key, value)
+
+    db.commit()
+    db.refresh(voluntario)
+    return voluntario
 
