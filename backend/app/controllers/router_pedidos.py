@@ -12,7 +12,7 @@ from database import get_db
 from schemas import (
     validar_senha, validar_cpf, validar_cep, validar_telefone, validar_data_nascimento
 )
-from controllers.auth.deps import get_current_user
+# from controllers.auth.deps import get_current_user
 
 from datetime import date
 from fastapi import Form
@@ -30,25 +30,29 @@ async def criar_pedido(
     descricao: str = Form(...),
     categoria: str = Form(...),
     prioridade: schemas.Prioridade = Form(...), 
-    current_user: models.Idoso = Depends(get_current_user),
+    idoso_id_manual: int = Form(...), 
     db: Session = Depends(get_db)
 ):
+   
+    idoso = db.query(models.Idoso).filter(models.Idoso.id == idoso_id_manual).first()
+    if not idoso:
+        raise HTTPException(status_code=404, detail="Idoso não encontrado.")
 
-    # Validação RF18: Bloqueio se houver pedido ativo
+    
     pedido_ativo = db.query(models.PedidoAjuda).filter(
-        models.PedidoAjuda.idoso_id == current_user.id,
+        models.PedidoAjuda.idoso_id == idoso_id_manual,
         models.PedidoAjuda.status.in_(["aberto", "em_andamento"])
     ).first()
     
     if pedido_ativo:
-        raise HTTPException(status_code=400, detail="Você já possui um pedido em aberto.")
+        raise HTTPException(status_code=400, detail="Este idoso já possui um pedido em aberto.")
 
     novo_pedido = models.PedidoAjuda(
         titulo=titulo,
         descricao=descricao,
         categoria=categoria,
         prioridade=prioridade,
-        idoso_id=current_user.id,
+        idoso_id=idoso_id_manual, 
         data_criacao=date.today(),
         status="aberto"
     )
@@ -57,3 +61,14 @@ async def criar_pedido(
     db.commit()
     db.refresh(novo_pedido)
     return novo_pedido
+
+
+@router_pedidos.get("/ativos/{idoso_id}", response_model=list[schemas.PedidoResponse])
+def listar_pedidos_ativos(idoso_id: int, db: Session = Depends(get_db)):
+    # Busca pedidos com status 'aberto' ou 'em_andamento'
+    pedidos = db.query(models.PedidoAjuda).filter(
+        models.PedidoAjuda.idoso_id == idoso_id,
+        models.PedidoAjuda.status.in_(["aberto", "em_andamento"])
+    ).all()
+    
+    return pedidos

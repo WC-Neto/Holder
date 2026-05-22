@@ -12,7 +12,7 @@ from database import get_db
 from schemas import (
     validar_senha, validar_cpf, validar_cep, validar_telefone, validar_data_nascimento
 )
-from .auth.deps import get_current_user
+# from .auth.deps import get_current_user
 
 UPLOAD_DIR = Path("static/uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -93,17 +93,36 @@ async def criar_idoso(
         raise HTTPException(status_code=400, detail="Erro no formato do enderecos_json")
 
  
-    # No router_usuarios.py
+   
     try:
-        if necessidades_json and necessidades_json.strip() not in ("", "null", "[]"):
-            # Limpeza básica para aceitar o que vem do Swagger
-            limpo = necessidades_json.strip().replace("'", '"') 
-            necessidades = json.loads(limpo)
-        else:
-            necessidades = []
-    except json.JSONDecodeError:
-        # Em vez de ignorar totalmente, avisamos o que está errado sem quebrar o servidor
-        raise HTTPException(status_code=400, detail="Formato de necessidades inválido. Use ['item']")
+        conteudo = necessidades_json.strip().strip('"').strip("'")
+        
+      
+        if not conteudo.startswith("["):
+            conteudo = f'["{conteudo}"]'
+            
+      
+        conteudo = necessidades_json.strip() if necessidades_json else "[]"
+        
+    
+        necessidades = json.loads(conteudo)
+
+        if isinstance(necessidades, str):
+            necessidades = json.loads(necessidades)
+            
+       
+        if isinstance(necessidades, list):
+            for necessidade in necessidades:
+                db.add(models.NecessidadeEspecialIdoso(
+                    necessidade=str(necessidade).strip(),
+                    idoso_id=novo_idoso.id
+                ))
+    except (json.JSONDecodeError, TypeError) as e:
+    
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Erro no JSON: {str(e)}. Recebido: {necessidades_json}"
+        )
             
     db.commit()
     db.refresh(novo_idoso)
