@@ -84,7 +84,7 @@ def finalizar_pedido(pedido_id: int, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(pedido)
     return pedido
-    
+
 
 @router_pedidos.get("/historico/{idoso_id}", response_model=list[schemas.PedidoResponse])
 def listar_historico_pedidos(
@@ -149,6 +149,23 @@ def aceitar_pedido(pedido_id: int, voluntario_id: int = Form(...), db: Session =
 
     pedido.voluntario_id = voluntario_id
     pedido.status = "em_andamento"
+    
+    db.commit()
+    db.refresh(pedido)
+    return pedido
+
+
+@router_pedidos.patch("/{pedido_id}/desistir", response_model=schemas.PedidoResponse)
+def desistir_pedido(pedido_id: int, justificativa: str = Form(...), db: Session = Depends(get_db)):
+    pedido = db.query(models.PedidoAjuda).filter(models.PedidoAjuda.id == pedido_id).first()
+    
+    if not pedido or pedido.status != "em_andamento":
+        raise HTTPException(status_code=400, detail="Pedido não está vinculado a você.")
+
+    print(f"Desistência do pedido {pedido_id}. Motivo: {justificativa}")
+    
+    pedido.status = "aberto"
+    pedido.voluntario_id = None
     
     db.commit()
     db.refresh(pedido)
