@@ -89,23 +89,6 @@ def finalizar_pedido(pedido_id: int, db: Session = Depends(get_db)):
     db.refresh(pedido)
     return pedido
 
-
-@router_pedidos.get("/voluntarios/proximos/{idoso_id}", response_model=list[schemas.VoluntarioResponse])
-def listar_voluntarios_proximos(idoso_id: int, db: Session = Depends(get_db)):
-
-    endereco_idoso = db.query(models.Endereco).filter(models.Endereco.idoso_id == idoso_id).first()
-    
-    if not endereco_idoso:
-        raise HTTPException(status_code=404, detail="Endereço do idoso não encontrado.")
-
-    voluntarios = db.query(models.Voluntario).join(models.Endereco).filter(
-        models.Endereco.cidade == endereco_idoso.cidade,
-        models.Endereco.bairro == endereco_idoso.bairro
-    ).all()
-    
-    return voluntarios
-
-
 @router_pedidos.get("/historico/{idoso_id}", response_model=list[schemas.PedidoResponse])
 def listar_historico_pedidos(
     idoso_id: int, 
@@ -123,6 +106,22 @@ def listar_historico_pedidos(
     return query.all()
 
 
+@router_pedidos.get("/voluntarios/proximos/{idoso_id}", response_model=list[schemas.VoluntarioResponse])
+def listar_voluntarios_proximos(idoso_id: int, db: Session = Depends(get_db)):
+
+    endereco_idoso = db.query(models.Endereco).filter(models.Endereco.idoso_id == idoso_id).first()
+    
+    if not endereco_idoso:
+        raise HTTPException(status_code=404, detail="Endereço do idoso não encontrado.")
+
+    voluntarios = db.query(models.Voluntario).join(models.Endereco).filter(
+        models.Endereco.cidade == endereco_idoso.cidade,
+        models.Endereco.bairro == endereco_idoso.bairro
+    ).all()
+    
+    return voluntarios
+
+
 @router_pedidos.get("/disponiveis/{voluntario_id}", response_model=list[schemas.PedidoResponse])
 def listar_pedidos_disponiveis(voluntario_id: int, db: Session = Depends(get_db)):
    
@@ -137,3 +136,23 @@ def listar_pedidos_disponiveis(voluntario_id: int, db: Session = Depends(get_db)
     ).all()
     
     return pedidos
+
+
+
+
+
+
+
+@router_pedidos.patch("/{pedido_id}/aceitar", response_model=schemas.PedidoResponse)
+def aceitar_pedido(pedido_id: int, voluntario_id: int = Form(...), db: Session = Depends(get_db)):
+    pedido = db.query(models.PedidoAjuda).filter(models.PedidoAjuda.id == pedido_id).first()
+    
+    if not pedido or pedido.status != "aberto":
+        raise HTTPException(status_code=400, detail="Pedido não disponível para reserva.")
+
+    pedido.voluntario_id = voluntario_id
+    pedido.status = "em_andamento"
+    
+    db.commit()
+    db.refresh(pedido)
+    return pedido
