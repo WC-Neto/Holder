@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -14,6 +14,22 @@ import {
 import ProfileTabs from "./ProfileTabs";
 
 function ColumnRight() {
+  const [selectedProfile, setSelectedProfile] = useState("idoso");
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const loginData = {
+      userType: selectedProfile,
+      emailOrCpf: formData.get("emailOrCpf"),
+      password: formData.get("password"),
+      remember: formData.get("remember") === "remember",
+    };
+
+    console.log("Dados preparados para login:", loginData);
+  };
+
   const handleGoogleLogin = () => {
     window.alert("Sign in with Google");
   };
@@ -61,14 +77,19 @@ function ColumnRight() {
             </Typography>
           </Box>
 
-          <ProfileTabs />
+          <ProfileTabs
+            selectedProfile={selectedProfile}
+            onProfileChange={setSelectedProfile}
+          />
 
-          <Box component="form">
+          <Box component="form" onSubmit={handleSubmit}>
+            <input type="hidden" name="userType" value={selectedProfile} />
+
             <Stack spacing={2}>
               <TextField
                 fullWidth
                 label="E-mail ou CPF"
-                name="email"
+                name="emailOrCpf"
                 placeholder="Digite seu e-mail ou CPF"
                 autoComplete="email"
                 variant="outlined"
@@ -190,7 +211,7 @@ function ColumnRight() {
               underline="hover"
               sx={{ color: "#8ab9b6", fontWeight: 800 }}
             >
-              Faca seu cadastro aqui
+              Faça seu cadastro aqui
             </Link>
           </Typography>
         </Stack>

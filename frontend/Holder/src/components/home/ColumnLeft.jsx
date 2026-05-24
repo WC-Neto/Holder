@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import logo from "../../assets/logo.png";
 
 const stats = [
-  { value: "500+", label: "Voluntarios" },
+  { value: "500+", label: "Voluntários" },
   { value: "1.200+", label: "Idosos Ajudados" },
   { value: "3.000+", label: "Pedidos" },
 ];
@@ -43,7 +43,7 @@ function ColumnLeft() {
           color: "#fff",
         }}
       >
-        Conectando Geracoes
+        Conectando Gerações
       </Typography>
 
       <Typography
@@ -54,8 +54,8 @@ function ColumnLeft() {
           lineHeight: 1.6,
         }}
       >
-        Uma plataforma que une idosos a voluntarios dispostos a ajudar, criando
-        lacos de solidariedade e cuidado na comunidade.
+        Uma plataforma que une idosos a voluntários dispostos a ajudar, criando
+        laços de solidariedade e cuidado na comunidade.
       </Typography>
 
       <Box

@@ -1,14 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Button } from "@mui/material";
 
 const profiles = [
   { value: "idoso", label: "Sou Idoso" },
-  { value: "voluntario", label: "Sou Voluntario" },
+  { value: "voluntario", label: "Sou Voluntário" },
 ];
 
-function ProfileTabs() {
-  const [selectedProfile, setSelectedProfile] = useState("idoso");
-
+function ProfileTabs({ selectedProfile, onProfileChange }) {
   return (
     <Box
       sx={{
@@ -42,7 +40,8 @@ function ProfileTabs() {
         return (
           <Button
             key={profile.value}
-            onClick={() => setSelectedProfile(profile.value)}
+            type="button"
+            onClick={() => onProfileChange(profile.value)}
             sx={{
               position: "relative",
               zIndex: 1,
