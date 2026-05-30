@@ -2,10 +2,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import AvailableOrderCard from "../AvailableOrderCard";
 import LoadMoreButton from "../LoadMoreButton";
-import OrderFilterTabs from "../OrderFilterTabs";
 import SearchInput from "../SearchInput";
 import VolunteerCommunityCard from "../VolunteerCommunityCard";
 import VolunteerHomeHeader from "../VolunteerHomeHeader";
+import VolunteerOrderFilters from "../VolunteerOrderFilters";
 import VolunteerStatsCard from "../VolunteerStatsCard";
 import { mockOrders } from "../../../data/mockOrders";
 import {
@@ -110,7 +110,10 @@ function VolunteerHomePage() {
         onSearch={handleSearch}
         placeholder={pageCopy.searchPlaceholder}
       />
-      <OrderFilterTabs activeFilter={activeFilter} onFilterChange={handleFilterChange} />
+      <VolunteerOrderFilters
+        activeFilter={activeFilter}
+        onFilterChange={handleFilterChange}
+      />
 
       <Grid container spacing={3}>
         <Grid item xs={12} lg={8.7}>
