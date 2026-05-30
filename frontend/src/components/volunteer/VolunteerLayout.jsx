@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box } from "@mui/material";
 import VolunteerSidebar from "./VolunteerSidebar";
-import InicioPage from "./pages/InicioPage";
+import VolunteerHomePage from "./pages/VolunteerHomePage";
 import HistoricoPage from "./pages/HistoricoPage";
 import IdososPage from "./pages/IdososPage";
 import PerfilPage from "./pages/PerfilPage";
@@ -12,7 +12,7 @@ function VolunteerLayout({ onLogout }) {
   const renderContent = () => {
     switch (currentPage) {
       case "inicio":
-        return <InicioPage />;
+        return <VolunteerHomePage />;
       case "historico":
         return <HistoricoPage />;
       case "idosos":
@@ -20,14 +20,14 @@ function VolunteerLayout({ onLogout }) {
       case "perfil":
         return <PerfilPage />;
       default:
-        return <InicioPage />;
+        return <VolunteerHomePage />;
     }
   };
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#fafafa" }}>
-      <VolunteerSidebar 
-        currentPage={currentPage} 
+      <VolunteerSidebar
+        currentPage={currentPage}
         onPageChange={setCurrentPage}
         onLogout={onLogout}
       />

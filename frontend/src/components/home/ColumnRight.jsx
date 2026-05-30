@@ -28,8 +28,7 @@ function ColumnRight({ onLogin }) {
     };
 
     console.log("Dados preparados para login:", loginData);
-    
-    // Se for voluntário, faz login
+
     if (selectedProfile === "voluntario" && onLogin) {
       onLogin();
     }

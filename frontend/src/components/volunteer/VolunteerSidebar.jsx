@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, Drawer, useMediaQuery, useTheme } from "@mui/material";
-import SidebarUserInfo from "./SidebarUserInfo";
-import SidebarMenuItem from "./SidebarMenuItem";
 import LogoutButton from "./LogoutButton";
+import SidebarMenuItem from "./SidebarMenuItem";
+import SidebarUserInfo from "./SidebarUserInfo";
 import logo from "../../assets/logo.png";
 
 const menuItems = [
@@ -27,44 +27,26 @@ function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        backgroundColor: "#f8f9fa",
-        borderRight: "1px solid #e7e7ea",
+        bgcolor: "#fff",
+        borderRight: "1px solid #eef0f4",
       }}
     >
-      {/* Logo */}
       <Box
         sx={{
           p: 2,
-          borderBottom: "1px solid #e7e7ea",
+          borderBottom: "1px solid #eef0f4",
           display: "flex",
           alignItems: "center",
           gap: 1,
         }}
       >
-        <Box
-          component="img"
-          src={logo}
-          alt="Holder"
-          sx={{
-            width: 40,
-            height: 40,
-          }}
-        />
-        <Box sx={{ color: "#9ba3b3", fontSize: 12 }}>Holder</Box>
+        <Box component="img" src={logo} alt="Holder" sx={{ width: 40, height: 40 }} />
+        <Box sx={{ color: "#8ab9b6", fontSize: 18, fontWeight: 800 }}>Holder</Box>
       </Box>
 
-      {/* User Info */}
       <SidebarUserInfo />
 
-      {/* Menu Items */}
-      <Box
-        sx={{
-          flex: 1,
-          py: 2,
-          px: 1,
-          overflowY: "auto",
-        }}
-      >
+      <Box sx={{ flex: 1, py: 2, px: 1.5, overflowY: "auto" }}>
         {menuItems.map((item) => (
           <SidebarMenuItem
             key={item.id}
@@ -80,8 +62,7 @@ function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
         ))}
       </Box>
 
-      {/* Logout Button */}
-      <Box sx={{ p: 2, borderTop: "1px solid #e7e7ea" }}>
+      <Box sx={{ p: 2, borderTop: "1px solid #eef0f4" }}>
         <LogoutButton onLogout={onLogout} />
       </Box>
     </Box>
@@ -110,7 +91,7 @@ function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
     <Box
       sx={{
         width: 250,
-        position: { xs: "fixed", sm: "fixed" },
+        position: "fixed",
         height: "100vh",
         overflowY: "auto",
         display: { xs: "none", sm: "block" },
