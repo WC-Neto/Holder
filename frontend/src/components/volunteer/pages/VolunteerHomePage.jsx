@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import AvailableOrderCard from "../AvailableOrderCard";
 import LoadMoreButton from "../LoadMoreButton";
@@ -8,9 +8,15 @@ import VolunteerCommunityCard from "../VolunteerCommunityCard";
 import VolunteerHomeHeader from "../VolunteerHomeHeader";
 import VolunteerStatsCard from "../VolunteerStatsCard";
 import { mockOrders } from "../../../data/mockOrders";
+import {
+  buildAvailableOrdersSearchParams,
+  searchAvailableOrders,
+} from "../../../services/availableOrders";
 
 const INITIAL_VISIBLE_ORDERS = 3;
 const LOAD_MORE_STEP = 3;
+const SEARCH_DEBOUNCE_MS = 300;
+const MOCK_VOLUNTEER_ID = 1;
 
 const pageCopy = {
   title: "Pedidos Disponíveis",
@@ -22,43 +28,39 @@ const pageCopy = {
   statsTitle: "Suas Estatísticas",
 };
 
-function matchesSearch(order, searchTerm) {
-  const normalizedTerm = searchTerm.trim().toLowerCase();
-
-  if (!normalizedTerm) {
-    return true;
-  }
-
-  return [order.title, order.description, order.neighborhood, order.category].some(
-    (value) => value.toLowerCase().includes(normalizedTerm),
-  );
-}
-
-function matchesFilter(order, activeFilter) {
-  if (activeFilter === "all") {
-    return true;
-  }
-
-  if (activeFilter === "urgent") {
-    return order.urgencyTone === "high";
-  }
-
-  return order.category === activeFilter;
-}
-
 function VolunteerHomePage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const [displayedCount, setDisplayedCount] = useState(INITIAL_VISIBLE_ORDERS);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const filteredOrders = useMemo(
+  useEffect(() => {
+    const debounceId = window.setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => window.clearTimeout(debounceId);
+  }, [searchTerm]);
+
+  const availableOrderSearchParams = useMemo(
     () =>
-      mockOrders.filter(
-        (order) => matchesSearch(order, searchTerm) && matchesFilter(order, activeFilter),
-      ),
-    [activeFilter, searchTerm],
+      buildAvailableOrdersSearchParams({
+        searchTerm: debouncedSearchTerm,
+        activeFilter,
+        volunteerId: MOCK_VOLUNTEER_ID,
+      }),
+    [activeFilter, debouncedSearchTerm],
   );
+
+  const filteredOrders = useMemo(
+    () => searchAvailableOrders(mockOrders, availableOrderSearchParams),
+    [availableOrderSearchParams],
+  );
+
+  useEffect(() => {
+    setDisplayedCount(INITIAL_VISIBLE_ORDERS);
+  }, [activeFilter, debouncedSearchTerm]);
 
   const visibleOrders = filteredOrders.slice(0, displayedCount);
   const hasMoreOrders = filteredOrders.length > displayedCount;
@@ -70,7 +72,6 @@ function VolunteerHomePage() {
 
   const handleSearch = (value) => {
     setSearchTerm(value);
-    setDisplayedCount(INITIAL_VISIBLE_ORDERS);
   };
 
   const handleLoadMore = () => {
@@ -149,8 +150,14 @@ function VolunteerHomePage() {
                 textAlign: "center",
               }}
             >
-              <Typography sx={{ color: "#667085", fontWeight: 700 }}>
-                Nenhum pedido encontrado com esses critérios.
+              <Typography
+                component="h2"
+                sx={{ color: "#20283a", fontSize: 18, fontWeight: 800, mb: 0.75 }}
+              >
+                Nenhum pedido encontrado
+              </Typography>
+              <Typography sx={{ color: "#667085", fontSize: 14 }}>
+                Tente buscar por outro título, descrição, categoria ou local.
               </Typography>
             </Box>
           )}

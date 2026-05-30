@@ -5,6 +5,7 @@ export const mockOrders = [
     description:
       "A torneira da cozinha está vazando e preciso de alguém para consertar.",
     category: "repairs",
+    categoryLabel: "Reparos",
     distance: "1.2 km",
     neighborhood: "Centro",
     timeAgo: "Há 5h",
@@ -17,6 +18,7 @@ export const mockOrders = [
     description:
       "Preciso buscar medicamentos na farmácia. São 3 remédios de uso contínuo.",
     category: "shopping",
+    categoryLabel: "Compras",
     distance: "800 m",
     neighborhood: "Jardins",
     timeAgo: "Há 1h",
@@ -28,6 +30,7 @@ export const mockOrders = [
     title: "Troca de lâmpada",
     description: "A lâmpada da sala queimou e não consigo trocar sozinho.",
     category: "repairs",
+    categoryLabel: "Reparos",
     distance: "2.5 km",
     neighborhood: "Vila Madalena",
     timeAgo: "Há 3h",
@@ -39,6 +42,7 @@ export const mockOrders = [
     title: "Compras de supermercado",
     description: "Preciso de frutas, vegetais e produtos de higiene. Lista pronta.",
     category: "shopping",
+    categoryLabel: "Compras",
     distance: "1.5 km",
     neighborhood: "Centro",
     timeAgo: "Há 2h",
@@ -50,6 +54,7 @@ export const mockOrders = [
     title: "Companhia para passeio",
     description: "Gostaria de conversar enquanto tomo um café na praça do bairro.",
     category: "company",
+    categoryLabel: "Companhia",
     distance: "3 km",
     neighborhood: "Santos Dumont",
     timeAgo: "Há 4h",
@@ -62,6 +67,7 @@ export const mockOrders = [
     description:
       "Preciso passar em dois mercados e tenho dificuldade de locomoção.",
     category: "shopping",
+    categoryLabel: "Compras",
     distance: "1.8 km",
     neighborhood: "Lapa",
     timeAgo: "Há 30m",
