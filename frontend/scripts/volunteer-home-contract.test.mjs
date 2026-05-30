@@ -10,6 +10,7 @@ const readSrc = (file) => readFileSync(join(src, file), "utf8");
 const orderIds = (orders) => orders.map((order) => order.id);
 
 const requiredFiles = [
+  "components/volunteer/VolunteerLayout.jsx",
   "components/volunteer/pages/VolunteerHomePage.jsx",
   "components/volunteer/VolunteerHomeHeader.jsx",
   "components/volunteer/SearchInput.jsx",
@@ -55,6 +56,10 @@ for (const [pattern, message] of [
     /fetchAvailableOrderDetails/,
     "VolunteerHomePage should prepare detailed lookup by ID",
   ],
+  [/acceptOrder/, "VolunteerHomePage should accept an order through the service"],
+  [/availableOrders/, "VolunteerHomePage should keep a local available orders list"],
+  [/acceptedOrderStatus/, "VolunteerHomePage should keep accepted order status"],
+  [/setFeedbackSeverity/, "VolunteerHomePage should show success and error feedback"],
   [/Pedido aceito/, "VolunteerHomePage should show visible acceptance feedback"],
   [/acceptedOrderId/, "VolunteerHomePage should allow only one accepted order"],
   [
@@ -153,6 +158,36 @@ const orderMetaInfo = readSrc("components/volunteer/OrderMetaInfo.jsx");
 
 for (const text of ["distance", "neighborhood", "timeAgo"]) {
   assert.match(orderMetaInfo, new RegExp(text), `OrderMetaInfo should render ${text}`);
+}
+
+const communityCard = readSrc("components/volunteer/VolunteerCommunityCard.jsx");
+
+for (const text of ["Comunidade Ativa", "Ver Idosos Próximos", "precisam de ajuda"]) {
+  assert.match(communityCard, new RegExp(text), `VolunteerCommunityCard should include ${text}`);
+}
+
+for (const [pattern, message] of [
+  [
+    /nearbyEldersCount|activeElders/,
+    "VolunteerCommunityCard should receive nearby elders quantity by prop",
+  ],
+  [/onViewElders/, "VolunteerCommunityCard should expose elders navigation callback"],
+  [
+    /FavoriteBorderIcon|PeopleAltOutlinedIcon/,
+    "VolunteerCommunityCard should render an icon or illustration",
+  ],
+]) {
+  assert.match(communityCard, pattern, message);
+}
+
+const layout = readSrc("components/volunteer/VolunteerLayout.jsx");
+
+for (const [pattern, message] of [
+  [/volunteerPagePaths/, "VolunteerLayout should map volunteer pages to URLs"],
+  [/\/voluntario\/idosos/, "VolunteerLayout should prepare the elders route"],
+  [/onNavigateToElders/, "VolunteerLayout should pass elders navigation to the home"],
+]) {
+  assert.match(layout, pattern, message);
 }
 
 const orders = readSrc("data/mockOrders.js");
@@ -283,4 +318,19 @@ assert.deepEqual(
   await availableOrdersModule.fetchAvailableOrderDetails(sampleOrders, 2),
   sampleOrders[1],
   "fetchAvailableOrderDetails should prepare future detailed lookup by ID",
+);
+
+assert.deepEqual(
+  await availableOrdersModule.acceptOrder({
+    orderId: 2,
+    volunteerId: 7,
+  }),
+  { id: 2, volunteerId: 7, status: "em_andamento" },
+  "acceptOrder should prepare future API acceptance",
+);
+
+await assert.rejects(
+  () => availableOrdersModule.acceptOrder({ volunteerId: 7 }),
+  /Pedido inválido/,
+  "acceptOrder should fail for invalid order requests",
 );

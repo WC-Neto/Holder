@@ -22,6 +22,7 @@ import VolunteerOrderFilters from "../VolunteerOrderFilters";
 import VolunteerStatsCard from "../VolunteerStatsCard";
 import { mockOrders } from "../../../data/mockOrders";
 import {
+  acceptOrder,
   buildAvailableOrdersSearchParams,
   fetchAvailableOrderDetails,
   searchAvailableOrders,
@@ -42,7 +43,8 @@ const pageCopy = {
   statsTitle: "Suas Estatísticas",
 };
 
-function VolunteerHomePage() {
+function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
+  const [availableOrders, setAvailableOrders] = useState(mockOrders);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
@@ -54,7 +56,9 @@ function VolunteerHomePage() {
   const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false);
   const [acceptingOrderId, setAcceptingOrderId] = useState(null);
   const [acceptedOrderId, setAcceptedOrderId] = useState(null);
+  const [acceptedOrderStatus, setAcceptedOrderStatus] = useState(null);
   const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [feedbackSeverity, setFeedbackSeverity] = useState("success");
 
   useEffect(() => {
     const debounceId = window.setTimeout(() => {
@@ -75,8 +79,8 @@ function VolunteerHomePage() {
   );
 
   const filteredOrders = useMemo(
-    () => searchAvailableOrders(mockOrders, availableOrderSearchParams),
-    [availableOrderSearchParams],
+    () => searchAvailableOrders(availableOrders, availableOrderSearchParams),
+    [availableOrderSearchParams, availableOrders],
   );
 
   useEffect(() => {
@@ -88,6 +92,9 @@ function VolunteerHomePage() {
   const hasAcceptedOrder = Boolean(acceptedOrderId);
   const selectedOrderIsAccepted =
     Boolean(selectedOrder) && selectedOrder.id === acceptedOrderId;
+  const dashboardSummary = {
+    nearbyEldersNeedingHelp: nearbyEldersCount,
+  };
 
   const handleFilterChange = (filter) => {
     setActiveFilter(filter);
@@ -107,7 +114,7 @@ function VolunteerHomePage() {
   };
 
   const handleViewDetails = async (order) => {
-    const detailedOrder = await fetchAvailableOrderDetails(mockOrders, order.id);
+    const detailedOrder = await fetchAvailableOrderDetails(availableOrders, order.id);
     setSelectedOrder(detailedOrder ?? order);
     setIsDetailsOpen(true);
   };
@@ -118,6 +125,7 @@ function VolunteerHomePage() {
 
   const handleAcceptOrder = (order) => {
     if (hasAcceptedOrder && order.id !== acceptedOrderId) {
+      setFeedbackSeverity("warning");
       setFeedbackMessage(
         "Você já aceitou um pedido. Finalize-o antes de aceitar outro.",
       );
@@ -125,6 +133,7 @@ function VolunteerHomePage() {
     }
 
     if (order.id === acceptedOrderId) {
+      setFeedbackSeverity("warning");
       setFeedbackMessage("Este pedido já está aceito por você.");
       return;
     }
@@ -134,6 +143,7 @@ function VolunteerHomePage() {
   };
 
   const handleUnavailableOrder = () => {
+    setFeedbackSeverity("warning");
     setFeedbackMessage(
       "Existe uma atividade em andamento. Finalize-a antes de aceitar outro pedido.",
     );
@@ -145,26 +155,41 @@ function VolunteerHomePage() {
     }
   };
 
-  const handleConfirmAcceptOrder = () => {
+  const handleConfirmAcceptOrder = async () => {
     if (!orderToAccept) {
       return;
     }
 
     const orderId = orderToAccept.id;
     setAcceptingOrderId(orderId);
-    setIsAcceptDialogOpen(false);
 
-    // Preparado para trocar por PATCH /pedidos/{pedido_id}/aceitar.
-    window.setTimeout(() => {
+    try {
+      const acceptedOrder = await acceptOrder({
+        orderId,
+        volunteerId: MOCK_VOLUNTEER_ID,
+      });
+
+      setAvailableOrders((currentOrders) =>
+        currentOrders.filter((order) => order.id !== orderId),
+      );
       setAcceptedOrderId(orderId);
-      setAcceptingOrderId(null);
+      setAcceptedOrderStatus(acceptedOrder.status);
+      setFeedbackSeverity("success");
       setFeedbackMessage(`Pedido aceito: ${orderToAccept.title}`);
+      setIsAcceptDialogOpen(false);
       setOrderToAccept(null);
-    }, 350);
+    } catch (error) {
+      setFeedbackSeverity("error");
+      setFeedbackMessage(
+        error?.message ?? "Não foi possível aceitar o pedido.",
+      );
+    } finally {
+      setAcceptingOrderId(null);
+    }
   };
 
   const handleViewElders = () => {
-    console.log("Abrir tela de idosos próximos");
+    onNavigateToElders?.();
   };
 
   return (
@@ -251,7 +276,10 @@ function VolunteerHomePage() {
 
         <Grid item xs={12} lg={3.3}>
           <Stack spacing={3} sx={{ position: { lg: "sticky" }, top: 24 }}>
-            <VolunteerCommunityCard activeElders={3} onViewElders={handleViewElders} />
+            <VolunteerCommunityCard
+              nearbyEldersCount={dashboardSummary.nearbyEldersNeedingHelp}
+              onViewElders={handleViewElders}
+            />
             <VolunteerStatsCard peopleHelped={24} tasksCompleted={38} avgRating={4.9} />
           </Stack>
         </Grid>
@@ -303,7 +331,7 @@ function VolunteerHomePage() {
               boxShadow: "none",
             }}
           >
-            Confirmar ajuda
+            {acceptingOrderId ? "Aceitando..." : "Confirmar ajuda"}
           </Button>
         </DialogActions>
       </Dialog>
@@ -315,7 +343,7 @@ function VolunteerHomePage() {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
-          severity="success"
+          severity={feedbackSeverity}
           variant="filled"
           onClose={() => setFeedbackMessage("")}
         >

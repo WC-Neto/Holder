@@ -102,3 +102,24 @@ export async function fetchAvailableOrderDetails(orders, orderId) {
   // Futuramente: GET /pedidos/{orderId} ou endpoint equivalente de detalhes.
   return orders.find((order) => String(order.id) === String(orderId)) ?? null;
 }
+
+export async function acceptOrder({ orderId, volunteerId, shouldFail = false } = {}) {
+  if (!orderId) {
+    throw new Error("Pedido inválido");
+  }
+
+  if (!volunteerId) {
+    throw new Error("Voluntário inválido");
+  }
+
+  if (shouldFail) {
+    throw new Error("Não foi possível aceitar o pedido");
+  }
+
+  // Futuramente: PATCH /pedidos/{orderId}/aceitar com volunteerId no payload.
+  return {
+    id: orderId,
+    volunteerId,
+    status: "em_andamento",
+  };
+}
