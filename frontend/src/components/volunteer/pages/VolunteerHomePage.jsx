@@ -7,7 +7,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
   Grid,
   Snackbar,
   Stack,
@@ -15,9 +14,8 @@ import {
 } from "@mui/material";
 import AvailableOrderCard from "../AvailableOrderCard";
 import LoadMoreButton from "../LoadMoreButton";
-import OrderMetaInfo from "../OrderMetaInfo";
+import OrderDetailsModal from "../OrderDetailsModal";
 import SearchInput from "../SearchInput";
-import UrgencyBadge from "../UrgencyBadge";
 import VolunteerCommunityCard from "../VolunteerCommunityCard";
 import VolunteerHomeHeader from "../VolunteerHomeHeader";
 import VolunteerOrderFilters from "../VolunteerOrderFilters";
@@ -25,6 +23,7 @@ import VolunteerStatsCard from "../VolunteerStatsCard";
 import { mockOrders } from "../../../data/mockOrders";
 import {
   buildAvailableOrdersSearchParams,
+  fetchAvailableOrderDetails,
   searchAvailableOrders,
 } from "../../../services/availableOrders";
 
@@ -107,8 +106,9 @@ function VolunteerHomePage() {
     }, 250);
   };
 
-  const handleViewDetails = (order) => {
-    setSelectedOrder(order);
+  const handleViewDetails = async (order) => {
+    const detailedOrder = await fetchAvailableOrderDetails(mockOrders, order.id);
+    setSelectedOrder(detailedOrder ?? order);
     setIsDetailsOpen(true);
   };
 
@@ -118,7 +118,9 @@ function VolunteerHomePage() {
 
   const handleAcceptOrder = (order) => {
     if (hasAcceptedOrder && order.id !== acceptedOrderId) {
-      setFeedbackMessage("Você já aceitou um pedido. Finalize-o antes de aceitar outro.");
+      setFeedbackMessage(
+        "Você já aceitou um pedido. Finalize-o antes de aceitar outro.",
+      );
       return;
     }
 
@@ -132,7 +134,9 @@ function VolunteerHomePage() {
   };
 
   const handleUnavailableOrder = () => {
-    setFeedbackMessage("Existe uma atividade em andamento. Finalize-a antes de aceitar outro pedido.");
+    setFeedbackMessage(
+      "Existe uma atividade em andamento. Finalize-a antes de aceitar outro pedido.",
+    );
   };
 
   const handleCloseAcceptDialog = () => {
@@ -179,6 +183,7 @@ function VolunteerHomePage() {
         onSearch={handleSearch}
         placeholder={pageCopy.searchPlaceholder}
       />
+
       <VolunteerOrderFilters
         activeFilter={activeFilter}
         onFilterChange={handleFilterChange}
@@ -204,9 +209,7 @@ function VolunteerHomePage() {
                     order={order}
                     isAccepted={acceptedOrderId === order.id}
                     isAccepting={acceptingOrderId === order.id}
-                    isDisabled={
-                      hasAcceptedOrder && acceptedOrderId !== order.id
-                    }
+                    isDisabled={hasAcceptedOrder && acceptedOrderId !== order.id}
                     onViewDetails={handleViewDetails}
                     onAcceptOrder={handleAcceptOrder}
                     onUnavailableOrder={handleUnavailableOrder}
@@ -230,7 +233,12 @@ function VolunteerHomePage() {
             >
               <Typography
                 component="h2"
-                sx={{ color: "#20283a", fontSize: 18, fontWeight: 800, mb: 0.75 }}
+                sx={{
+                  color: "#20283a",
+                  fontSize: 18,
+                  fontWeight: 800,
+                  mb: 0.75,
+                }}
               >
                 Nenhum pedido encontrado
               </Typography>
@@ -249,64 +257,17 @@ function VolunteerHomePage() {
         </Grid>
       </Grid>
 
-      <Dialog
+      <OrderDetailsModal
         open={isDetailsOpen}
+        order={selectedOrder}
+        isAccepted={selectedOrderIsAccepted}
+        isAcceptBlocked={hasAcceptedOrder && !selectedOrderIsAccepted}
         onClose={handleCloseDetails}
-        fullWidth
-        maxWidth="sm"
-      >
-        {selectedOrder && (
-          <>
-            <DialogTitle sx={{ color: "#20283a", fontWeight: 900 }}>
-              {selectedOrder.title}
-            </DialogTitle>
-            <DialogContent>
-              <Stack spacing={2}>
-                <UrgencyBadge
-                  urgencyTone={selectedOrder.urgencyTone}
-                  label={selectedOrder.urgencyLevel}
-                />
-                <Typography sx={{ color: "#667085", lineHeight: 1.6 }}>
-                  {selectedOrder.description}
-                </Typography>
-                <Divider />
-                <OrderMetaInfo
-                  distance={selectedOrder.distance}
-                  neighborhood={selectedOrder.neighborhood}
-                  timeAgo={selectedOrder.timeAgo}
-                />
-              </Stack>
-            </DialogContent>
-            <DialogActions sx={{ px: 3, pb: 2.5 }}>
-              <Button onClick={handleCloseDetails} sx={{ textTransform: "none" }}>
-                Fechar
-              </Button>
-              {selectedOrderIsAccepted ? (
-                <Button variant="contained" disabled sx={{ textTransform: "none" }}>
-                  Pedido aceito
-                </Button>
-              ) : (
-                <Button
-                  variant="contained"
-                  disabled={hasAcceptedOrder}
-                  onClick={() => {
-                    handleCloseDetails();
-                    handleAcceptOrder(selectedOrder);
-                  }}
-                  sx={{
-                    bgcolor: "#e4a0aa",
-                    textTransform: "none",
-                    fontWeight: 800,
-                    boxShadow: "none",
-                  }}
-                >
-                  {hasAcceptedOrder ? "Já existe pedido aceito" : "Ajudar agora"}
-                </Button>
-              )}
-            </DialogActions>
-          </>
-        )}
-      </Dialog>
+        onAcceptOrder={(order) => {
+          handleCloseDetails();
+          handleAcceptOrder(order);
+        }}
+      />
 
       <Dialog
         open={isAcceptDialogOpen}
