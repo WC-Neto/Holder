@@ -97,3 +97,8 @@ export function buildAvailableOrdersSearchParams({
 
   return params;
 }
+
+export async function fetchAvailableOrderDetails(orders, orderId) {
+  // Futuramente: GET /pedidos/{orderId} ou endpoint equivalente de detalhes.
+  return orders.find((order) => String(order.id) === String(orderId)) ?? null;
+}

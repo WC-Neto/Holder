@@ -11,6 +11,12 @@ export const mockOrders = [
     timeAgo: "Há 5h",
     urgencyLevel: "ALTA URGÊNCIA",
     urgencyTone: "high",
+    elderSummary: {
+      name: "José Silva",
+      age: 72,
+      mobility: "Mobilidade reduzida",
+      notes: "Prefere atendimento no período da tarde.",
+    },
   },
   {
     id: 2,
@@ -24,6 +30,12 @@ export const mockOrders = [
     timeAgo: "Há 1h",
     urgencyLevel: "ALTA URGÊNCIA",
     urgencyTone: "high",
+    elderSummary: {
+      name: "Maria Oliveira",
+      age: 68,
+      mobility: "Baixa visão",
+      notes: "Receita e lista de medicamentos já estão separadas.",
+    },
   },
   {
     id: 3,
@@ -36,6 +48,12 @@ export const mockOrders = [
     timeAgo: "Há 3h",
     urgencyLevel: "BAIXA URGÊNCIA",
     urgencyTone: "low",
+    elderSummary: {
+      name: "Pedro Costa",
+      age: 75,
+      mobility: "Sem restrições informadas",
+      notes: "Tem a lâmpada reserva em casa.",
+    },
   },
   {
     id: 4,
@@ -48,6 +66,12 @@ export const mockOrders = [
     timeAgo: "Há 2h",
     urgencyLevel: "MÉDIA URGÊNCIA",
     urgencyTone: "medium",
+    elderSummary: {
+      name: "Neusa Maria",
+      age: 70,
+      mobility: "Dificuldade de locomoção",
+      notes: "Pagamento será feito por transferência.",
+    },
   },
   {
     id: 5,
@@ -60,6 +84,12 @@ export const mockOrders = [
     timeAgo: "Há 4h",
     urgencyLevel: "BAIXA URGÊNCIA",
     urgencyTone: "low",
+    elderSummary: {
+      name: "Benedito Sella",
+      age: 76,
+      mobility: "Caminha com autonomia",
+      notes: "Gosta de conversar sobre jardinagem.",
+    },
   },
   {
     id: 6,
@@ -73,13 +103,11 @@ export const mockOrders = [
     timeAgo: "Há 30m",
     urgencyLevel: "ALTA URGÊNCIA",
     urgencyTone: "high",
+    elderSummary: {
+      name: "Ana Freitas",
+      age: 69,
+      mobility: "Mobilidade reduzida",
+      notes: "Lista de compras será enviada pelo aplicativo.",
+    },
   },
-];
-
-export const orderFilters = [
-  { id: "all", label: "Filtros" },
-  { id: "urgent", label: "Urgentes" },
-  { id: "shopping", label: "Compras" },
-  { id: "repairs", label: "Reparos" },
-  { id: "company", label: "Companhia" },
 ];
