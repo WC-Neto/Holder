@@ -1,11 +1,23 @@
 import React from "react";
-import { Box, Button, Card, Chip, Stack, Typography } from "@mui/material";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { Box, Button, Card, Stack, Typography } from "@mui/material";
 import BoltOutlinedIcon from "@mui/icons-material/BoltOutlined";
 import LocalGroceryStoreOutlinedIcon from "@mui/icons-material/LocalGroceryStoreOutlined";
-import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import PlumbingOutlinedIcon from "@mui/icons-material/PlumbingOutlined";
+import OrderMetaInfo from "./OrderMetaInfo";
+import UrgencyBadge from "./UrgencyBadge";
+
+export const orderShape = {
+  id: "number|string",
+  category: "shopping|repairs|company|string",
+  title: "string",
+  description: "string",
+  distance: "string",
+  neighborhood: "string",
+  timeAgo: "string",
+  urgencyLevel: "string",
+  urgencyTone: "high|medium|low",
+};
 
 const categoryIcons = {
   shopping: LocalGroceryStoreOutlinedIcon,
@@ -13,29 +25,45 @@ const categoryIcons = {
   company: PeopleAltOutlinedIcon,
 };
 
-const urgencyStyles = {
-  high: { bgcolor: "#fde4e6", color: "#ef3f4d" },
-  medium: { bgcolor: "#fff4de", color: "#c98218" },
-  low: { bgcolor: "#dcfbef", color: "#00a76f" },
-};
-
-function AvailableOrderCard({ order, onViewMore, onHelpNow }) {
+function AvailableOrderCard({
+  order,
+  isAccepted = false,
+  isAccepting = false,
+  isDisabled = false,
+  onViewDetails,
+  onAcceptOrder,
+  onUnavailableOrder,
+}) {
   const CategoryIcon = categoryIcons[order.category] ?? BoltOutlinedIcon;
-  const urgencySx = urgencyStyles[order.urgencyTone] ?? urgencyStyles.low;
+  const handleAcceptClick = () => {
+    if (isDisabled) {
+      onUnavailableOrder?.(order);
+      return;
+    }
+
+    onAcceptOrder?.(order);
+  };
 
   return (
     <Card
       variant="outlined"
       sx={{
         height: "100%",
-        p: 2.4,
+        p: { xs: 2, sm: 2.4 },
         bgcolor: "#fff",
         borderColor: "#eceef2",
         borderRadius: 3,
         boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2, mb: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 2,
+          height: "100%",
+        }}
+      >
         <Box
           sx={{
             width: 42,
@@ -51,7 +79,15 @@ function AvailableOrderCard({ order, onViewMore, onHelpNow }) {
           <CategoryIcon sx={{ fontSize: 23 }} />
         </Box>
 
-        <Box sx={{ minWidth: 0, flex: 1 }}>
+        <Box
+          sx={{
+            minWidth: 0,
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+          }}
+        >
           <Box
             sx={{
               display: "flex",
@@ -72,16 +108,9 @@ function AvailableOrderCard({ order, onViewMore, onHelpNow }) {
             >
               {order.title}
             </Typography>
-            <Chip
+            <UrgencyBadge
+              urgencyTone={order.urgencyTone}
               label={order.urgencyLevel}
-              size="small"
-              sx={{
-                ...urgencySx,
-                height: 32,
-                borderRadius: 999,
-                fontSize: 11,
-                fontWeight: 800,
-              }}
             />
           </Box>
 
@@ -96,30 +125,22 @@ function AvailableOrderCard({ order, onViewMore, onHelpNow }) {
             {order.description}
           </Typography>
 
-          <Stack
-            direction="row"
-            spacing={2}
-            useFlexGap
-            sx={{ flexWrap: "wrap", mb: 2.4 }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              <LocationOnOutlinedIcon sx={{ fontSize: 16, color: "#9aa5b5" }} />
-              <Typography sx={{ color: "#8f99aa", fontSize: 13 }}>
-                {order.distance} • {order.neighborhood}
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              <AccessTimeIcon sx={{ fontSize: 16, color: "#9aa5b5" }} />
-              <Typography sx={{ color: "#8f99aa", fontSize: 13 }}>
-                {order.timeAgo}
-              </Typography>
-            </Box>
-          </Stack>
+          <Box sx={{ mb: 2.4 }}>
+            <OrderMetaInfo
+              distance={order.distance}
+              neighborhood={order.neighborhood}
+              timeAgo={order.timeAgo}
+            />
+          </Box>
 
-          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.4}>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={1.4}
+            sx={{ mt: "auto" }}
+          >
             <Button
               variant="outlined"
-              onClick={() => onViewMore?.(order.id)}
+              onClick={() => onViewDetails?.(order)}
               sx={{
                 minHeight: 46,
                 px: 3,
@@ -139,7 +160,8 @@ function AvailableOrderCard({ order, onViewMore, onHelpNow }) {
             </Button>
             <Button
               variant="contained"
-              onClick={() => onHelpNow?.(order.id)}
+              disabled={isAccepted || isAccepting}
+              onClick={handleAcceptClick}
               sx={{
                 flex: 1,
                 minHeight: 46,
@@ -154,9 +176,20 @@ function AvailableOrderCard({ order, onViewMore, onHelpNow }) {
                   boxShadow: "none",
                   bgcolor: "#dfa0aa",
                 },
+                "&.Mui-disabled": {
+                  color: "#fff",
+                  bgcolor: "#96C0BE",
+                  background: "#96C0BE",
+                },
               }}
             >
-              Ajudar agora
+              {isAccepted
+                ? "Pedido aceito"
+                : isAccepting
+                  ? "Aceitando..."
+                  : isDisabled
+                    ? "Indisponível"
+                    : "Ajudar agora"}
             </Button>
           </Stack>
         </Box>

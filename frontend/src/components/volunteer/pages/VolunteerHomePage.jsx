@@ -1,8 +1,23 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Box, Grid, Stack, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Grid,
+  Snackbar,
+  Stack,
+  Typography,
+} from "@mui/material";
 import AvailableOrderCard from "../AvailableOrderCard";
 import LoadMoreButton from "../LoadMoreButton";
+import OrderMetaInfo from "../OrderMetaInfo";
 import SearchInput from "../SearchInput";
+import UrgencyBadge from "../UrgencyBadge";
 import VolunteerCommunityCard from "../VolunteerCommunityCard";
 import VolunteerHomeHeader from "../VolunteerHomeHeader";
 import VolunteerOrderFilters from "../VolunteerOrderFilters";
@@ -34,6 +49,13 @@ function VolunteerHomePage() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [displayedCount, setDisplayedCount] = useState(INITIAL_VISIBLE_ORDERS);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [orderToAccept, setOrderToAccept] = useState(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false);
+  const [acceptingOrderId, setAcceptingOrderId] = useState(null);
+  const [acceptedOrderId, setAcceptedOrderId] = useState(null);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
 
   useEffect(() => {
     const debounceId = window.setTimeout(() => {
@@ -64,6 +86,9 @@ function VolunteerHomePage() {
 
   const visibleOrders = filteredOrders.slice(0, displayedCount);
   const hasMoreOrders = filteredOrders.length > displayedCount;
+  const hasAcceptedOrder = Boolean(acceptedOrderId);
+  const selectedOrderIsAccepted =
+    Boolean(selectedOrder) && selectedOrder.id === acceptedOrderId;
 
   const handleFilterChange = (filter) => {
     setActiveFilter(filter);
@@ -82,12 +107,56 @@ function VolunteerHomePage() {
     }, 250);
   };
 
-  const handleViewMore = (orderId) => {
-    console.log("Ver mais detalhes do pedido:", orderId);
+  const handleViewDetails = (order) => {
+    setSelectedOrder(order);
+    setIsDetailsOpen(true);
   };
 
-  const handleHelpNow = (orderId) => {
-    console.log("Preparar aceite futuro via PATCH /pedidos/{pedido_id}/aceitar:", orderId);
+  const handleCloseDetails = () => {
+    setIsDetailsOpen(false);
+  };
+
+  const handleAcceptOrder = (order) => {
+    if (hasAcceptedOrder && order.id !== acceptedOrderId) {
+      setFeedbackMessage("Você já aceitou um pedido. Finalize-o antes de aceitar outro.");
+      return;
+    }
+
+    if (order.id === acceptedOrderId) {
+      setFeedbackMessage("Este pedido já está aceito por você.");
+      return;
+    }
+
+    setOrderToAccept(order);
+    setIsAcceptDialogOpen(true);
+  };
+
+  const handleUnavailableOrder = () => {
+    setFeedbackMessage("Existe uma atividade em andamento. Finalize-a antes de aceitar outro pedido.");
+  };
+
+  const handleCloseAcceptDialog = () => {
+    if (!acceptingOrderId) {
+      setIsAcceptDialogOpen(false);
+    }
+  };
+
+  const handleConfirmAcceptOrder = () => {
+    if (!orderToAccept) {
+      return;
+    }
+
+    const orderId = orderToAccept.id;
+    setAcceptingOrderId(orderId);
+    setIsAcceptDialogOpen(false);
+
+    // Preparado para trocar por PATCH /pedidos/{pedido_id}/aceitar.
+    window.setTimeout(() => {
+      setAcceptedOrderId(orderId);
+      setAcceptingOrderId(null);
+      setFeedbackMessage(`Pedido aceito: ${orderToAccept.title}`);
+      setOrderToAccept(null);
+    }, 350);
   };
 
   const handleViewElders = () => {
@@ -133,8 +202,14 @@ function VolunteerHomePage() {
                   <AvailableOrderCard
                     key={order.id}
                     order={order}
-                    onViewMore={handleViewMore}
-                    onHelpNow={handleHelpNow}
+                    isAccepted={acceptedOrderId === order.id}
+                    isAccepting={acceptingOrderId === order.id}
+                    isDisabled={
+                      hasAcceptedOrder && acceptedOrderId !== order.id
+                    }
+                    onViewDetails={handleViewDetails}
+                    onAcceptOrder={handleAcceptOrder}
+                    onUnavailableOrder={handleUnavailableOrder}
                   />
                 ))}
               </Box>
@@ -173,6 +248,119 @@ function VolunteerHomePage() {
           </Stack>
         </Grid>
       </Grid>
+
+      <Dialog
+        open={isDetailsOpen}
+        onClose={handleCloseDetails}
+        fullWidth
+        maxWidth="sm"
+      >
+        {selectedOrder && (
+          <>
+            <DialogTitle sx={{ color: "#20283a", fontWeight: 900 }}>
+              {selectedOrder.title}
+            </DialogTitle>
+            <DialogContent>
+              <Stack spacing={2}>
+                <UrgencyBadge
+                  urgencyTone={selectedOrder.urgencyTone}
+                  label={selectedOrder.urgencyLevel}
+                />
+                <Typography sx={{ color: "#667085", lineHeight: 1.6 }}>
+                  {selectedOrder.description}
+                </Typography>
+                <Divider />
+                <OrderMetaInfo
+                  distance={selectedOrder.distance}
+                  neighborhood={selectedOrder.neighborhood}
+                  timeAgo={selectedOrder.timeAgo}
+                />
+              </Stack>
+            </DialogContent>
+            <DialogActions sx={{ px: 3, pb: 2.5 }}>
+              <Button onClick={handleCloseDetails} sx={{ textTransform: "none" }}>
+                Fechar
+              </Button>
+              {selectedOrderIsAccepted ? (
+                <Button variant="contained" disabled sx={{ textTransform: "none" }}>
+                  Pedido aceito
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  disabled={hasAcceptedOrder}
+                  onClick={() => {
+                    handleCloseDetails();
+                    handleAcceptOrder(selectedOrder);
+                  }}
+                  sx={{
+                    bgcolor: "#e4a0aa",
+                    textTransform: "none",
+                    fontWeight: 800,
+                    boxShadow: "none",
+                  }}
+                >
+                  {hasAcceptedOrder ? "Já existe pedido aceito" : "Ajudar agora"}
+                </Button>
+              )}
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
+
+      <Dialog
+        open={isAcceptDialogOpen}
+        onClose={handleCloseAcceptDialog}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle sx={{ color: "#20283a", fontWeight: 900 }}>
+          Confirmar ajuda
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: "#667085", lineHeight: 1.6 }}>
+            Você quer aceitar o pedido
+            {orderToAccept ? ` "${orderToAccept.title}"` : ""}?
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+          <Button
+            onClick={handleCloseAcceptDialog}
+            disabled={Boolean(acceptingOrderId)}
+            sx={{ textTransform: "none" }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleConfirmAcceptOrder}
+            disabled={Boolean(acceptingOrderId)}
+            sx={{
+              bgcolor: "#96C0BE",
+              textTransform: "none",
+              fontWeight: 800,
+              boxShadow: "none",
+            }}
+          >
+            Confirmar ajuda
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={Boolean(feedbackMessage)}
+        autoHideDuration={3000}
+        onClose={() => setFeedbackMessage("")}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          severity="success"
+          variant="filled"
+          onClose={() => setFeedbackMessage("")}
+        >
+          {feedbackMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
