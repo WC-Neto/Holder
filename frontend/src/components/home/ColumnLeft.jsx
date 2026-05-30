@@ -35,14 +35,7 @@ function ColumnLeft() {
         }}
       />
 
-      <Typography
-        variant="h4"
-        fontWeight="bold"
-        sx={{
-          mb: 2,
-          color: "#fff",
-        }}
-      >
+      <Typography variant="h4" fontWeight="bold" sx={{ mb: 2, color: "#fff" }}>
         Conectando Gerações
       </Typography>
 
@@ -58,14 +51,7 @@ function ColumnLeft() {
         laços de solidariedade e cuidado na comunidade.
       </Typography>
 
-      <Box
-        sx={{
-          mt: 5,
-          display: "flex",
-          justifyContent: "center",
-          gap: 4,
-        }}
-      >
+      <Box sx={{ mt: 5, display: "flex", justifyContent: "center", gap: 4 }}>
         {stats.map((item) => (
           <Box key={item.label}>
             <Typography
