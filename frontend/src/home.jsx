@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import ColumnLeft from "./components/home/ColumnLeft";
 import ColumnRight from "./components/home/ColumnRight";
 
-function Home() {
+function Home({ onLogin }) {
   return (
     <Box
       sx={{
@@ -13,7 +13,7 @@ function Home() {
       }}
     >
       <ColumnLeft />
-      <ColumnRight />
+      <ColumnRight onLogin={onLogin} />
     </Box>
   );
 }

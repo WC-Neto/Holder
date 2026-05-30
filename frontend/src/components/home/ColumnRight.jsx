@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import ProfileTabs from "./ProfileTabs";
 
-function ColumnRight() {
+function ColumnRight({ onLogin }) {
   const [selectedProfile, setSelectedProfile] = useState("idoso");
 
   const handleSubmit = (event) => {
@@ -28,14 +28,27 @@ function ColumnRight() {
     };
 
     console.log("Dados preparados para login:", loginData);
+    
+    // Se for voluntário, faz login
+    if (selectedProfile === "voluntario" && onLogin) {
+      onLogin();
+    }
   };
 
   const handleGoogleLogin = () => {
-    window.alert("Sign in with Google");
+    if (selectedProfile === "voluntario" && onLogin) {
+      onLogin();
+    } else {
+      window.alert("Sign in with Google");
+    }
   };
 
   const handleFacebookLogin = () => {
-    window.alert("Sign in with Facebook");
+    if (selectedProfile === "voluntario" && onLogin) {
+      onLogin();
+    } else {
+      window.alert("Sign in with Facebook");
+    }
   };
 
   return (
