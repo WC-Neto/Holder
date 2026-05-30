@@ -3,7 +3,11 @@ import { Box, Button, Card, Typography } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 
-function VolunteerCommunityCard({ activeElders = 3, onViewElders }) {
+function VolunteerCommunityCard({
+  activeElders,
+  nearbyEldersCount = activeElders ?? 0,
+  onViewElders,
+}) {
   return (
     <Card
       variant="outlined"
@@ -36,7 +40,7 @@ function VolunteerCommunityCard({ activeElders = 3, onViewElders }) {
 
       <Typography sx={{ color: "#98a1b0", fontSize: 14, mb: 2.4 }}>
         <Box component="span" sx={{ color: "#88b8b5", fontWeight: 800 }}>
-          {activeElders} idosos
+          {nearbyEldersCount} idosos
         </Box>{" "}
         precisam de ajuda na sua região!
       </Typography>
