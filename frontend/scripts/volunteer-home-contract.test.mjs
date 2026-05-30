@@ -12,6 +12,8 @@ const requiredFiles = [
   "components/volunteer/SearchInput.jsx",
   "components/volunteer/VolunteerOrderFilters.jsx",
   "components/volunteer/AvailableOrderCard.jsx",
+  "components/volunteer/UrgencyBadge.jsx",
+  "components/volunteer/OrderMetaInfo.jsx",
   "components/volunteer/VolunteerCommunityCard.jsx",
   "components/volunteer/VolunteerStatsCard.jsx",
   "components/volunteer/LoadMoreButton.jsx",
@@ -42,6 +44,26 @@ assert.match(page, /debouncedSearchTerm/, "VolunteerHomePage should debounce sea
 assert.match(page, /activeFilter/, "VolunteerHomePage should keep active filter state");
 assert.match(page, /searchAvailableOrders/, "VolunteerHomePage should use searchAvailableOrders");
 assert.match(page, /VolunteerOrderFilters/, "VolunteerHomePage should use VolunteerOrderFilters");
+assert.match(page, /isDetailsOpen/, "VolunteerHomePage should open an order details dialog");
+assert.match(page, /isAcceptDialogOpen/, "VolunteerHomePage should open an accept confirmation dialog");
+assert.doesNotMatch(page, /acceptedOrderIds/, "VolunteerHomePage should not allow multiple accepted orders");
+assert.match(page, /Pedido aceito/, "VolunteerHomePage should show visible acceptance feedback");
+assert.match(page, /acceptedOrderId/, "VolunteerHomePage should allow only one accepted order at a time");
+assert.match(
+  page,
+  /selectedOrderIsAccepted/,
+  "VolunteerHomePage details dialog should know when the selected order is already accepted",
+);
+assert.match(
+  page,
+  /hasAcceptedOrder/,
+  "VolunteerHomePage should block accepting another order while one is accepted",
+);
+assert.match(
+  page,
+  /handleUnavailableOrder/,
+  "VolunteerHomePage should alert when an unavailable order is clicked",
+);
 
 const filters = readSrc("components/volunteer/VolunteerOrderFilters.jsx");
 for (const text of ["Filtros", "Urgentes", "Compras", "Reparos", "Companhia"]) {
@@ -60,6 +82,25 @@ assert.match(
   /filterPillIn/,
   "VolunteerOrderFilters should animate category filters when they appear",
 );
+
+const orderCard = readSrc("components/volunteer/AvailableOrderCard.jsx");
+for (const text of ["Ver mais", "Ajudar agora", "onViewDetails", "onAcceptOrder", "isAccepted", "isAccepting", "isDisabled", "onUnavailableOrder"]) {
+  assert.match(orderCard, new RegExp(text), `AvailableOrderCard should include ${text}`);
+}
+
+assert.match(orderCard, /UrgencyBadge/, "AvailableOrderCard should use UrgencyBadge");
+assert.match(orderCard, /OrderMetaInfo/, "AvailableOrderCard should use OrderMetaInfo");
+assert.match(orderCard, /orderShape/, "AvailableOrderCard should expose the expected order interface");
+
+const urgencyBadge = readSrc("components/volunteer/UrgencyBadge.jsx");
+for (const text of ["high", "medium", "low", "ALTA URGÊNCIA", "MÉDIA URGÊNCIA", "BAIXA URGÊNCIA"]) {
+  assert.match(urgencyBadge, new RegExp(text), `UrgencyBadge should handle ${text}`);
+}
+
+const orderMetaInfo = readSrc("components/volunteer/OrderMetaInfo.jsx");
+for (const text of ["distance", "neighborhood", "timeAgo"]) {
+  assert.match(orderMetaInfo, new RegExp(text), `OrderMetaInfo should render ${text}`);
+}
 
 const orders = readSrc("data/mockOrders.js");
 for (const field of [
