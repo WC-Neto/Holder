@@ -12,6 +12,9 @@ const orderIds = (orders) => orders.map((order) => order.id);
 const requiredFiles = [
   "components/volunteer/VolunteerLayout.jsx",
   "components/volunteer/pages/VolunteerHomePage.jsx",
+  "components/volunteer/pages/VolunteerElderlyNearbyPage.jsx",
+  "components/volunteer/NearbyElderlyBanner.jsx",
+  "components/volunteer/ElderlyCard.jsx",
   "components/volunteer/VolunteerHomeHeader.jsx",
   "components/volunteer/SearchInput.jsx",
   "components/volunteer/VolunteerOrderFilters.jsx",
@@ -23,8 +26,10 @@ const requiredFiles = [
   "components/volunteer/VolunteerStatsCard.jsx",
   "components/volunteer/LoadMoreButton.jsx",
   "data/mockOrders.js",
+  "data/mockNearbyElderly.js",
   "data/mockVolunteerStats.js",
   "services/availableOrders.js",
+  "services/nearbyElderly.js",
   "services/volunteerStats.js",
 ];
 
@@ -192,6 +197,60 @@ for (const [pattern, message] of [
   assert.match(layout, pattern, message);
 }
 
+const elderlyNearbyPage = readSrc(
+  "components/volunteer/pages/VolunteerElderlyNearbyPage.jsx",
+);
+
+for (const text of [
+  "Idosos Próximos",
+  "Encontre idosos que precisam de ajuda",
+  "Nenhum idoso próximo encontrado",
+]) {
+  assert.match(
+    elderlyNearbyPage,
+    new RegExp(text),
+    `VolunteerElderlyNearbyPage should include ${text}`,
+  );
+}
+
+for (const [pattern, message] of [
+  [/getNearbyElderly/, "VolunteerElderlyNearbyPage should load nearby elderly"],
+  [/isLoadingNearbyElderly/, "VolunteerElderlyNearbyPage should handle loading state"],
+  [/nearbyElderly/, "VolunteerElderlyNearbyPage should keep nearby elderly state"],
+  [/favoriteElderlyIds/, "VolunteerElderlyNearbyPage should keep interest state"],
+  [/handleContactElderly/, "VolunteerElderlyNearbyPage should implement contact action"],
+  [/handleToggleInterest/, "VolunteerElderlyNearbyPage should implement interest action"],
+  [/NearbyElderlyBanner/, "VolunteerElderlyNearbyPage should use the info banner"],
+  [/ElderlyCard/, "VolunteerElderlyNearbyPage should use elderly cards"],
+]) {
+  assert.match(elderlyNearbyPage, pattern, message);
+}
+
+const nearbyBanner = readSrc("components/volunteer/NearbyElderlyBanner.jsx");
+
+for (const text of ["idosos precisam de ajuda perto de você", "nearbyCount"]) {
+  assert.match(nearbyBanner, new RegExp(text), `NearbyElderlyBanner should include ${text}`);
+}
+
+const elderlyCard = readSrc("components/volunteer/ElderlyCard.jsx");
+
+for (const text of [
+  "photoUrl",
+  "name",
+  "distance",
+  "onContact",
+  "onToggleInterest",
+  "isInterested",
+]) {
+  assert.match(elderlyCard, new RegExp(text), `ElderlyCard should include ${text}`);
+}
+
+const nearbyElderlyMock = readSrc("data/mockNearbyElderly.js");
+
+for (const field of ["photoUrl", "name", "distance", "needsHelp"]) {
+  assert.match(nearbyElderlyMock, new RegExp(field), `mock nearby elderly should include ${field}`);
+}
+
 const orders = readSrc("data/mockOrders.js");
 
 for (const field of [
@@ -214,6 +273,10 @@ const availableOrdersModule = await import(
 
 const volunteerStatsModule = await import(
   pathToFileURL(join(src, "services/volunteerStats.js")).href,
+);
+
+const nearbyElderlyModule = await import(
+  pathToFileURL(join(src, "services/nearbyElderly.js")).href,
 );
 
 const sampleOrders = [
@@ -339,4 +402,20 @@ await assert.rejects(
   () => availableOrdersModule.acceptOrder({ volunteerId: 7 }),
   /Pedido inválido/,
   "acceptOrder should fail for invalid order requests",
+);
+
+const nearbyElderly = await nearbyElderlyModule.getNearbyElderly({
+  volunteerId: 7,
+});
+
+assert.equal(
+  nearbyElderly.length,
+  3,
+  "getNearbyElderly should load mocked nearby elderly",
+);
+
+assert.deepEqual(
+  await nearbyElderlyModule.getNearbyElderly({ volunteerId: 7, empty: true }),
+  [],
+  "getNearbyElderly should support empty state",
 );
