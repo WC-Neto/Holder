@@ -35,6 +35,7 @@ function VolunteerLayout({ onLogout }) {
     getVolunteerPageFromPath(window.location.pathname),
   );
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -60,6 +61,10 @@ function VolunteerLayout({ onLogout }) {
     setIsLogoutConfirmOpen(true);
   };
 
+  const handleToggleTheme = () => {
+    setIsDarkMode((currentMode) => !currentMode);
+  };
+
   const handleCancelLogout = () => {
     setIsLogoutConfirmOpen(false);
   };
@@ -76,26 +81,45 @@ function VolunteerLayout({ onLogout }) {
           <VolunteerHomePage
             nearbyEldersCount={3}
             onNavigateToElders={() => handlePageChange("idosos")}
+            isDarkMode={isDarkMode}
+            onToggleTheme={handleToggleTheme}
           />
         );
       case "historico":
-        return <VolunteerHistoryPage />;
+        return <VolunteerHistoryPage isDarkMode={isDarkMode} />;
       case "idosos":
-        return <IdososPage />;
+        return <IdososPage isDarkMode={isDarkMode} />;
       case "perfil":
-        return <VolunteerProfilePage onLogout={handleLogoutRequest} />;
+        return (
+          <VolunteerProfilePage
+            onLogout={handleLogoutRequest}
+            isDarkMode={isDarkMode}
+          />
+        );
       default:
         return (
           <VolunteerHomePage
             nearbyEldersCount={3}
             onNavigateToElders={() => handlePageChange("idosos")}
+            isDarkMode={isDarkMode}
+            onToggleTheme={handleToggleTheme}
           />
         );
     }
   };
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#fafafa" }}>
+    <Box
+      sx={{
+        display: "flex",
+        width: "100%",
+        maxWidth: "100%",
+        minHeight: "100vh",
+        bgcolor: isDarkMode ? "#0f172a" : "#fafafa",
+        colorScheme: isDarkMode ? "dark" : "light",
+        overflowX: "hidden",
+      }}
+    >
       <VolunteerSidebar
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -105,9 +129,13 @@ function VolunteerLayout({ onLogout }) {
         component="main"
         sx={{
           flex: 1,
+          minWidth: 0,
           ml: { xs: 0, sm: "250px" },
+          pb: { xs: 9, sm: 0 },
           transition: "margin-left 0.3s",
+          maxWidth: "100%",
           overflowY: "auto",
+          overflowX: "hidden",
         }}
       >
         {renderContent()}

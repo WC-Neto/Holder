@@ -13,15 +13,17 @@ import {
   Typography,
 } from "@mui/material";
 import AvailableOrderCard from "../AvailableOrderCard";
+import EmptyState from "../EmptyState";
+import ErrorState from "../ErrorState";
 import FinishHelpReportModal from "../FinishHelpReportModal";
 import LoadMoreButton from "../LoadMoreButton";
+import LoadingState from "../LoadingState";
 import OrderDetailsModal from "../OrderDetailsModal";
 import SearchInput from "../SearchInput";
 import VolunteerCommunityCard from "../VolunteerCommunityCard";
 import VolunteerHomeHeader from "../VolunteerHomeHeader";
 import VolunteerOrderFilters from "../VolunteerOrderFilters";
 import VolunteerStatsCard from "../VolunteerStatsCard";
-import { mockOrders } from "../../../data/mockOrders";
 import {
   acceptOrder,
   buildAvailableOrdersSearchParams,
@@ -30,11 +32,17 @@ import {
   searchAvailableOrders,
 } from "../../../services/availableOrders";
 import { fetchVolunteerStats } from "../../../services/volunteerStats";
+import { getAvailableOrders as requestAvailableOrders } from "../../../services/volunteerService";
 
 const INITIAL_VISIBLE_ORDERS = 3;
 const LOAD_MORE_STEP = 3;
 const SEARCH_DEBOUNCE_MS = 300;
 const MOCK_VOLUNTEER_ID = 1;
+const INITIAL_VOLUNTEER_STATS = {
+  peopleHelped: 0,
+  completedOrders: 0,
+  averageRating: 0,
+};
 
 const pageCopy = {
   title: "Pedidos Disponíveis",
@@ -46,12 +54,19 @@ const pageCopy = {
   statsTitle: "Suas Estatísticas",
 };
 
-function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
-  const [availableOrders, setAvailableOrders] = useState(mockOrders);
+function VolunteerHomePage({
+  nearbyEldersCount = 3,
+  onNavigateToElders,
+  isDarkMode = false,
+  onToggleTheme,
+}) {
+  const [availableOrders, setAvailableOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const [displayedCount, setDisplayedCount] = useState(INITIAL_VISIBLE_ORDERS);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
+  const [ordersError, setOrdersError] = useState("");
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orderToAccept, setOrderToAccept] = useState(null);
@@ -63,8 +78,54 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
   const [acceptedOrderId, setAcceptedOrderId] = useState(null);
   const [acceptedOrderStatus, setAcceptedOrderStatus] = useState(null);
   const [orderToFinish, setOrderToFinish] = useState(null);
+  const [volunteerStats, setVolunteerStats] = useState(INITIAL_VOLUNTEER_STATS);
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [feedbackSeverity, setFeedbackSeverity] = useState("success");
+
+  const loadAvailableOrders = async () => {
+    setIsLoadingOrders(true);
+    setOrdersError("");
+
+    const response = await requestAvailableOrders({
+      volunteerId: MOCK_VOLUNTEER_ID,
+    });
+
+    if (response.success) {
+      setAvailableOrders(response.data);
+    } else {
+      setAvailableOrders([]);
+      setOrdersError(response.error ?? "Não foi possível carregar os pedidos.");
+    }
+
+    setIsLoadingOrders(false);
+  };
+
+  const handleRetryLoadOrders = () => {
+    loadAvailableOrders();
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    requestAvailableOrders({ volunteerId: MOCK_VOLUNTEER_ID }).then((response) => {
+      if (!isMounted) {
+        return;
+      }
+
+      if (response.success) {
+        setAvailableOrders(response.data);
+      } else {
+        setAvailableOrders([]);
+        setOrdersError(response.error ?? "Não foi possível carregar os pedidos.");
+      }
+
+      setIsLoadingOrders(false);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const debounceId = window.setTimeout(() => {
@@ -270,10 +331,15 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
         px: { xs: 2, md: 4 },
         py: { xs: 3, md: 3.5 },
         minHeight: "100vh",
-        bgcolor: "#fbfbfc",
+        bgcolor: isDarkMode ? "#0f172a" : "#fbfbfc",
       }}
     >
-      <VolunteerHomeHeader totalNeeded={filteredOrders.length} title={pageCopy.title} />
+      <VolunteerHomeHeader
+        totalNeeded={filteredOrders.length}
+        title={pageCopy.title}
+        isDarkMode={isDarkMode}
+        onToggleTheme={onToggleTheme}
+      />
 
       <SearchInput
         value={searchTerm}
@@ -288,7 +354,18 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
 
       <Grid container spacing={3}>
         <Grid item xs={12} lg={8.7}>
-          {visibleOrders.length > 0 ? (
+          {isLoadingOrders ? (
+            <LoadingState
+              title="Carregando pedidos disponíveis"
+              description="Estamos buscando pedidos próximos a você."
+            />
+          ) : ordersError ? (
+            <ErrorState
+              title="Não foi possível carregar os pedidos"
+              description={ordersError}
+              onRetry={handleRetryLoadOrders}
+            />
+          ) : visibleOrders.length > 0 ? (
             <Stack spacing={2}>
               <Box
                 sx={{
@@ -321,30 +398,10 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
               )}
             </Stack>
           ) : (
-            <Box
-              sx={{
-                p: 4,
-                bgcolor: "#fff",
-                border: "1px solid #eceef2",
-                borderRadius: 3,
-                textAlign: "center",
-              }}
-            >
-              <Typography
-                component="h2"
-                sx={{
-                  color: "#20283a",
-                  fontSize: 18,
-                  fontWeight: 800,
-                  mb: 0.75,
-                }}
-              >
-                Nenhum pedido encontrado
-              </Typography>
-              <Typography sx={{ color: "#667085", fontSize: 14 }}>
-                Tente buscar por outro título, descrição, categoria ou local.
-              </Typography>
-            </Box>
+            <EmptyState
+              title="Nenhum pedido encontrado"
+              description="Tente buscar por outro título, descrição, categoria ou local."
+            />
           )}
         </Grid>
 
@@ -354,7 +411,7 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
               nearbyEldersCount={dashboardSummary.nearbyEldersNeedingHelp}
               onViewElders={handleViewElders}
             />
-            <VolunteerStatsCard peopleHelped={24} tasksCompleted={38} avgRating={4.9} />
+            <VolunteerStatsCard stats={volunteerStats} />
           </Stack>
         </Grid>
       </Grid>

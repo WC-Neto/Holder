@@ -10,6 +10,9 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import EmptyState from "../EmptyState";
+import ErrorState from "../ErrorState";
+import LoadingState from "../LoadingState";
 import VolunteerHistoryCard from "../VolunteerHistoryCard";
 import VolunteerHistoryStatusTabs from "../VolunteerHistoryStatusTabs";
 import VolunteerHistorySummary from "../VolunteerHistorySummary";
@@ -22,20 +25,70 @@ import {
 
 const MOCK_VOLUNTEER_ID = 1;
 
-function VolunteerHistoryPage() {
+function VolunteerHistoryPage({ isDarkMode = false }) {
   const [historyItems, setHistoryItems] = useState([]);
   const [activeHistoryFilter, setActiveHistoryFilter] = useState("all");
   const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+  const [historyError, setHistoryError] = useState("");
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
-  useEffect(() => {
-    const historyQueryParams = buildVolunteerHistoryQueryParams({
-      volunteerId: MOCK_VOLUNTEER_ID,
-      activeHistoryFilter,
-    });
+  const historyQueryParams = useMemo(
+    () =>
+      buildVolunteerHistoryQueryParams({
+        volunteerId: MOCK_VOLUNTEER_ID,
+        activeHistoryFilter,
+      }),
+    [activeHistoryFilter],
+  );
 
-    getVolunteerHistory(historyQueryParams).then(setHistoryItems);
-  }, []);
+  const loadVolunteerHistory = async () => {
+    setIsLoadingHistory(true);
+    setHistoryError("");
+
+    try {
+      const nextHistoryItems = await getVolunteerHistory(historyQueryParams);
+      setHistoryItems(nextHistoryItems);
+    } catch (error) {
+      setHistoryItems([]);
+      setHistoryError(error?.message ?? "Não foi possível carregar o histórico.");
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
+
+  const handleRetryLoadHistory = () => {
+    loadVolunteerHistory();
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    setIsLoadingHistory(true);
+    setHistoryError("");
+
+    getVolunteerHistory(historyQueryParams)
+      .then((nextHistoryItems) => {
+        if (isMounted) {
+          setHistoryItems(nextHistoryItems);
+        }
+      })
+      .catch((error) => {
+        if (isMounted) {
+          setHistoryItems([]);
+          setHistoryError(error?.message ?? "Não foi possível carregar o histórico.");
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoadingHistory(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [historyQueryParams]);
 
   const filteredHistory = useMemo(
     () => filterVolunteerHistory(historyItems, activeHistoryFilter),
@@ -61,7 +114,7 @@ function VolunteerHistoryPage() {
         px: { xs: 2, md: 4 },
         py: { xs: 3, md: 3.5 },
         minHeight: "100vh",
-        bgcolor: "#fbfbfc",
+        bgcolor: isDarkMode ? "#0f172a" : "#fbfbfc",
       }}
     >
       <Box sx={{ mb: 3 }}>
@@ -87,7 +140,18 @@ function VolunteerHistoryPage() {
           onStatusChange={setActiveHistoryFilter}
         />
 
-        {filteredHistory.length > 0 ? (
+        {isLoadingHistory ? (
+          <LoadingState
+            title="Carregando histórico"
+            description="Estamos buscando suas ajudas recentes."
+          />
+        ) : historyError ? (
+          <ErrorState
+            title="Não foi possível carregar o histórico"
+            description={historyError}
+            onRetry={handleRetryLoadHistory}
+          />
+        ) : filteredHistory.length > 0 ? (
           <Box
             sx={{
               display: "grid",
@@ -108,22 +172,10 @@ function VolunteerHistoryPage() {
             ))}
           </Box>
         ) : (
-          <Box
-            sx={{
-              p: 4,
-              bgcolor: "#fff",
-              border: "1px solid #eceef2",
-              borderRadius: 3,
-              textAlign: "center",
-            }}
-          >
-            <Typography sx={{ color: "#20283a", fontSize: 18, fontWeight: 900 }}>
-              Nenhuma ajuda encontrada
-            </Typography>
-            <Typography sx={{ color: "#98a1b0", fontSize: 14, mt: 0.75 }}>
-              Quando você aceitar ou concluir pedidos, eles aparecerão aqui.
-            </Typography>
-          </Box>
+          <EmptyState
+            title="Nenhuma ajuda encontrada"
+            description="Quando você aceitar ou concluir pedidos, eles aparecerão aqui."
+          />
         )}
       </Stack>
 
