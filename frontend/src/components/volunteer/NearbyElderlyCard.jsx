@@ -63,7 +63,11 @@ function NearbyElderlyCard({
         },
       }}
     >
-      <Stack direction="row" alignItems="center" spacing={2}>
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        spacing={2}
+      >
         <Avatar
           src={photoUrl}
           alt={name}
@@ -86,7 +90,14 @@ function NearbyElderlyCard({
           </Stack>
         </Box>
 
-        <Stack direction="row" spacing={1}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            alignSelf: { xs: "stretch", sm: "center" },
+            justifyContent: { xs: "flex-end", sm: "flex-start" },
+          }}
+        >
           <IconButton
             aria-label={`Entrar em contato com ${name}`}
             onClick={(event) => {

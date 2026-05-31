@@ -93,7 +93,6 @@ function VolunteerSettingsMenu({ onNavigate, onLogout }) {
           title="Sair da Conta"
           onClick={onLogout}
           isDestructive
-          destructive
         />
       </Card>
     </Stack>

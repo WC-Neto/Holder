@@ -115,6 +115,8 @@ function VolunteerHistoryPage({ isDarkMode = false }) {
         py: { xs: 3, md: 3.5 },
         minHeight: "100vh",
         bgcolor: isDarkMode ? "#0f172a" : "#fbfbfc",
+        maxWidth: "100%",
+        overflowX: "hidden",
       }}
     >
       <Box sx={{ mb: 3 }}>
@@ -157,6 +159,7 @@ function VolunteerHistoryPage({ isDarkMode = false }) {
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
+                md: "repeat(2, minmax(0, 1fr))",
                 lg: "repeat(2, minmax(0, 1fr))",
               },
               gap: 2,

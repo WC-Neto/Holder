@@ -78,6 +78,10 @@ for (const text of [
 
 for (const [pattern, message] of [
   [/searchTerm/, "VolunteerHomePage should keep searchTerm state"],
+  [/maxWidth: "100%"/, "VolunteerHomePage should avoid horizontal overflow"],
+  [/lg: "minmax\(0, 1fr\) 300px"/, "VolunteerHomePage should use the full content width with a right rail"],
+  [/xl: "repeat\(3, minmax\(0, 1fr\)\)"/, "VolunteerHomePage order grid should use three columns on wide screens"],
+  [/position: \{ lg: "sticky" \}/, "VolunteerHomePage sidebar cards should reposition below content before lg"],
   [/debouncedSearchTerm/, "VolunteerHomePage should debounce search input"],
   [/activeFilter/, "VolunteerHomePage should keep active filter state"],
   [/searchAvailableOrders/, "VolunteerHomePage should use searchAvailableOrders"],
@@ -99,6 +103,7 @@ for (const [pattern, message] of [
   ],
   [/acceptOrder/, "VolunteerHomePage should accept an order through the service"],
   [/availableOrders/, "VolunteerHomePage should keep a local available orders list"],
+  [/volunteerStats/, "VolunteerHomePage should keep volunteer statistics state"],
   [/acceptedOrderStatus/, "VolunteerHomePage should keep accepted order status"],
   [/setFeedbackSeverity/, "VolunteerHomePage should show success and error feedback"],
   [/Pedido aceito/, "VolunteerHomePage should show visible acceptance feedback"],
@@ -145,6 +150,8 @@ for (const [pattern, message] of [
     "VolunteerOrderFilters should reveal categories after pressing Filtros",
   ],
   [/filterPillIn/, "VolunteerOrderFilters should animate category filters"],
+  [/scrollbarWidth: "none"/, "VolunteerOrderFilters should avoid visible mobile overflow chrome"],
+  [/WebkitOverflowScrolling: "touch"/, "VolunteerOrderFilters should scroll smoothly on mobile"],
 ]) {
   assert.match(filters, pattern, message);
 }
@@ -312,7 +319,9 @@ for (const [pattern, message] of [
   [/MenuIcon/, "VolunteerSidebar should render the mobile menu icon"],
   [/IconButton/, "VolunteerSidebar should use an accessible mobile menu button"],
   [/BottomNavigation/, "VolunteerSidebar should keep mobile navigation usable"],
-  [/display: \{ xs: "inline-flex", sm: "none" \}/, "VolunteerSidebar menu button should only show on mobile"],
+  [/display: \{ xs: "inline-flex", sm: "none" \}/, "VolunteerSidebar menu button should only show on mobile"]
+  [/position: "fixed"/, "VolunteerSidebar mobile nav should stay fixed"],
+  [/onPageChange/, "VolunteerSidebar mobile nav should navigate between pages"],
 ]) {
   assert.match(sidebar, pattern, message);
 }
@@ -488,7 +497,7 @@ for (const [pattern, message] of [
   [/onNavigate/, "VolunteerSettingsMenu should prepare navigation callbacks"],
   [/route/, "VolunteerSettingsMenu should prepare future routes"],
   [/onLogout/, "VolunteerSettingsMenu should implement logout action"],
-  [/destructive/, "VolunteerSettingsMenu should style logout as destructive"],
+  [/isDestructive/, "VolunteerSettingsMenu should style logout as destructive"],
 ]) {
   assert.match(settingsMenu, pattern, message);
 }
@@ -527,6 +536,8 @@ for (const [pattern, message] of [
   [/isLoadingHistory/, "VolunteerHistoryPage should track history loading"],
   [/historyError/, "VolunteerHistoryPage should track history errors"],
   [/handleRetryLoadHistory/, "VolunteerHistoryPage should retry loading history"],
+  [/maxWidth: "100%"/, "VolunteerHistoryPage should avoid horizontal overflow"],
+  [/md: "repeat\(2, minmax\(0, 1fr\)\)"/, "VolunteerHistoryPage should use a responsive history grid"],
   [/activeHistoryFilter/, "VolunteerHistoryPage should keep active filter state"],
   [/filteredHistory/, "VolunteerHistoryPage should filter history locally"],
   [/selectedHistoryItem/, "VolunteerHistoryPage should keep selected item for details"],
@@ -609,6 +620,9 @@ for (const text of [
 }
 
 for (const [pattern, message] of [
+  [/maxWidth: "100%"/, "VolunteerElderlyNearbyPage should avoid horizontal overflow"],
+  [/md: "repeat\(2, minmax\(0, 1fr\)\)"/, "VolunteerElderlyNearbyPage should use a tablet grid"],
+  [/xl: "repeat\(3, minmax\(0, 1fr\)\)"/, "VolunteerElderlyNearbyPage should use a wide desktop grid"],
   [/getNearbyElderly/, "VolunteerElderlyNearbyPage should load nearby elderly"],
   [/LoadingState/, "VolunteerElderlyNearbyPage should use shared loading state"],
   [/EmptyState/, "VolunteerElderlyNearbyPage should use shared empty state"],
@@ -683,6 +697,8 @@ for (const text of [
 }
 
 for (const [pattern, message] of [
+  [/direction=\{\{ xs: "column", sm: "row" \}\}/, "NearbyElderlyCard should stack on mobile"],
+  [/alignItems=\{\{ xs: "flex-start", sm: "center" \}\}/, "NearbyElderlyCard should align mobile content safely"],
   [/ChatBubbleOutlineIcon/, "NearbyElderlyCard should include a message icon"],
   [/PlaceOutlinedIcon/, "NearbyElderlyCard should include a location icon"],
   [/FavoriteBorderIcon|FavoriteIcon/, "NearbyElderlyCard should include a heart icon"],

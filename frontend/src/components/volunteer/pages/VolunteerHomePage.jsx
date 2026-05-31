@@ -7,7 +7,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Grid,
   Snackbar,
   Stack,
   Typography,
@@ -332,6 +331,8 @@ function VolunteerHomePage({
         py: { xs: 3, md: 3.5 },
         minHeight: "100vh",
         bgcolor: isDarkMode ? "#0f172a" : "#fbfbfc",
+        maxWidth: "100%",
+        overflowX: "hidden",
       }}
     >
       <VolunteerHomeHeader
@@ -373,6 +374,7 @@ function VolunteerHomePage({
                   gridTemplateColumns: {
                     xs: "1fr",
                     md: "repeat(2, minmax(0, 1fr))",
+                    xl: "repeat(3, minmax(0, 1fr))",
                   },
                   gap: 2,
                 }}
@@ -403,9 +405,9 @@ function VolunteerHomePage({
               description="Tente buscar por outro título, descrição, categoria ou local."
             />
           )}
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} lg={3.3}>
+        <Box sx={{ minWidth: 0 }}>
           <Stack spacing={3} sx={{ position: { lg: "sticky" }, top: 24 }}>
             <VolunteerCommunityCard
               nearbyEldersCount={dashboardSummary.nearbyEldersNeedingHelp}
@@ -413,8 +415,8 @@ function VolunteerHomePage({
             />
             <VolunteerStatsCard stats={volunteerStats} />
           </Stack>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       <OrderDetailsModal
         open={isDetailsOpen}

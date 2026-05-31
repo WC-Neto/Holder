@@ -11,7 +11,7 @@ import {
 import VolunteerSidebar from "./VolunteerSidebar";
 import VolunteerHomePage from "./pages/VolunteerHomePage";
 import VolunteerHistoryPage from "./pages/VolunteerHistoryPage";
-import IdososPage from "./pages/IdososPage";
+import VolunteerElderlyNearbyPage from "./pages/VolunteerElderlyNearbyPage";
 import VolunteerProfilePage from "./pages/VolunteerProfilePage";
 
 const volunteerPagePaths = {
