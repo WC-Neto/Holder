@@ -14,6 +14,14 @@ const requiredFiles = [
   "components/volunteer/pages/VolunteerHomePage.jsx",
   "components/volunteer/pages/VolunteerHistoryPage.jsx",
   "components/volunteer/pages/VolunteerElderlyNearbyPage.jsx",
+  "components/volunteer/pages/VolunteerProfilePage.jsx",
+  "components/volunteer/VolunteerProfileCard.jsx",
+  "components/volunteer/VolunteerProfileStats.jsx",
+  "components/volunteer/AvailabilityTags.jsx",
+  "components/volunteer/PersonalInfoList.jsx",
+  "components/volunteer/VolunteerSettingsList.jsx",
+  "components/volunteer/SettingsItem.jsx",
+  "components/volunteer/LogoutSettingsItem.jsx",
   "components/volunteer/VolunteerHistorySummary.jsx",
   "components/volunteer/VolunteerHistoryFilters.jsx",
   "components/volunteer/VolunteerHistoryStatusTabs.jsx",
@@ -33,10 +41,12 @@ const requiredFiles = [
   "components/volunteer/LoadMoreButton.jsx",
   "data/mockOrders.js",
   "data/mockVolunteerHistory.js",
+  "data/mockVolunteerProfile.js",
   "data/mockNearbyElderly.js",
   "data/mockVolunteerStats.js",
   "services/availableOrders.js",
   "services/volunteerHistory.js",
+  "services/volunteerProfile.js",
   "services/nearbyElderly.js",
   "services/volunteerStats.js",
 ];
@@ -202,8 +212,86 @@ for (const [pattern, message] of [
   [/\/voluntario\/idosos/, "VolunteerLayout should prepare the elders route"],
   [/onNavigateToElders/, "VolunteerLayout should pass elders navigation to the home"],
   [/VolunteerHistoryPage/, "VolunteerLayout should render volunteer history page"],
+  [/VolunteerProfilePage/, "VolunteerLayout should render volunteer profile page"],
 ]) {
   assert.match(layout, pattern, message);
+}
+
+const profilePage = readSrc("components/volunteer/pages/VolunteerProfilePage.jsx");
+
+for (const text of [
+  "Configurações",
+  "Sair da Conta",
+  "Versão 1.0.0",
+]) {
+  assert.match(profilePage, new RegExp(text), `VolunteerProfilePage should include ${text}`);
+}
+
+for (const [pattern, message] of [
+  [/getVolunteerProfile/, "VolunteerProfilePage should load volunteer profile"],
+  [/VolunteerProfileCard/, "VolunteerProfilePage should render profile card"],
+  [/VolunteerSettingsList/, "VolunteerProfilePage should render settings list"],
+  [/profileData/, "VolunteerProfilePage should keep profile data state"],
+]) {
+  assert.match(profilePage, pattern, message);
+}
+
+const profileCard = readSrc("components/volunteer/VolunteerProfileCard.jsx");
+
+for (const text of ["Voluntário Ativo", "Editar Perfil", "Disponibilidade", "Informações Pessoais"]) {
+  assert.match(profileCard, new RegExp(text), `VolunteerProfileCard should include ${text}`);
+}
+
+for (const [pattern, message] of [
+  [/VolunteerProfileStats/, "VolunteerProfileCard should render volunteer stats"],
+  [/AvailabilityTags/, "VolunteerProfileCard should render availability tags"],
+  [/PersonalInfoList/, "VolunteerProfileCard should render personal info"],
+  [/avatarUrl/, "VolunteerProfileCard should show volunteer photo"],
+]) {
+  assert.match(profileCard, pattern, message);
+}
+
+const profileStats = readSrc("components/volunteer/VolunteerProfileStats.jsx");
+
+for (const text of ["Ajudas", "Idosos", "Avaliação"]) {
+  assert.match(profileStats, new RegExp(text), `VolunteerProfileStats should include ${text}`);
+}
+
+const availabilityTags = readSrc("components/volunteer/AvailabilityTags.jsx");
+
+for (const text of ["Manhã", "Tarde", "Noite"]) {
+  assert.match(availabilityTags, new RegExp(text), `AvailabilityTags should include ${text}`);
+}
+
+const personalInfoList = readSrc("components/volunteer/PersonalInfoList.jsx");
+
+for (const text of ["phone", "address", "birthDate"]) {
+  assert.match(personalInfoList, new RegExp(text), `PersonalInfoList should include ${text}`);
+}
+
+const settingsList = readSrc("components/volunteer/VolunteerSettingsList.jsx");
+
+for (const text of ["Notificações", "Disponibilidade", "Privacidade", "Ajuda e Suporte"]) {
+  assert.match(settingsList, new RegExp(text), `VolunteerSettingsList should include ${text}`);
+}
+
+for (const [pattern, message] of [
+  [/SettingsItem/, "VolunteerSettingsList should render SettingsItem"],
+  [/LogoutSettingsItem/, "VolunteerSettingsList should render LogoutSettingsItem"],
+]) {
+  assert.match(settingsList, pattern, message);
+}
+
+const settingsItem = readSrc("components/volunteer/SettingsItem.jsx");
+
+for (const text of ["title", "description", "icon", "onClick"]) {
+  assert.match(settingsItem, new RegExp(text), `SettingsItem should include ${text}`);
+}
+
+const logoutSettingsItem = readSrc("components/volunteer/LogoutSettingsItem.jsx");
+
+for (const text of ["Sair da Conta", "onLogout"]) {
+  assert.match(logoutSettingsItem, new RegExp(text), `LogoutSettingsItem should include ${text}`);
 }
 
 const historyPage = readSrc("components/volunteer/pages/VolunteerHistoryPage.jsx");
@@ -400,6 +488,10 @@ const volunteerHistoryModule = await import(
   pathToFileURL(join(src, "services/volunteerHistory.js")).href,
 );
 
+const volunteerProfileModule = await import(
+  pathToFileURL(join(src, "services/volunteerProfile.js")).href,
+);
+
 const volunteerStatsModule = await import(
   pathToFileURL(join(src, "services/volunteerStats.js")).href,
 );
@@ -564,6 +656,22 @@ assert.deepEqual(
   }),
   { volunteerId: 7, status: "completed" },
   "buildVolunteerHistoryQueryParams should prepare future API status params",
+);
+
+const volunteerProfile = await volunteerProfileModule.getVolunteerProfile({
+  volunteerId: 7,
+});
+
+assert.equal(
+  volunteerProfile.name,
+  "Ana Santos",
+  "getVolunteerProfile should load mocked volunteer profile",
+);
+
+assert.deepEqual(
+  volunteerProfileModule.buildVolunteerProfileQueryParams({ volunteerId: 7 }),
+  { volunteerId: 7 },
+  "buildVolunteerProfileQueryParams should prepare future profile API params",
 );
 
 const nearbyElderly = await nearbyElderlyModule.getNearbyElderly({
