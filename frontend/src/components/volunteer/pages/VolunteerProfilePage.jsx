@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import EditVolunteerProfileForm from "../EditVolunteerProfileForm";
 import VolunteerProfileCard from "../VolunteerProfileCard";
-import VolunteerSettingsList from "../VolunteerSettingsList";
+import VolunteerSettingsMenu from "../VolunteerSettingsMenu";
 import {
   buildVolunteerProfileQueryParams,
   getVolunteerProfile,
@@ -74,6 +74,14 @@ function VolunteerProfilePage({ onLogout }) {
     }
   };
 
+  const handleSettingsNavigate = (route, item) => {
+    setProfileFeedback({
+      severity: "info",
+      message: `Navegação preparada para ${item.title}.`,
+      route,
+    });
+  };
+
   return (
     <Box
       sx={{
@@ -92,7 +100,10 @@ function VolunteerProfilePage({ onLogout }) {
         </Grid>
 
         <Grid item xs={12} md={8}>
-          <VolunteerSettingsList onLogout={onLogout} />
+          <VolunteerSettingsMenu
+            onNavigate={handleSettingsNavigate}
+            onLogout={onLogout}
+          />
           <Typography
             sx={{
               color: "#98a1b0",

@@ -20,6 +20,8 @@ const requiredFiles = [
   "components/volunteer/VolunteerProfileStats.jsx",
   "components/volunteer/AvailabilityTags.jsx",
   "components/volunteer/PersonalInfoList.jsx",
+  "components/volunteer/VolunteerSettingsMenu.jsx",
+  "components/volunteer/SettingsMenuItem.jsx",
   "components/volunteer/VolunteerSettingsList.jsx",
   "components/volunteer/SettingsItem.jsx",
   "components/volunteer/LogoutSettingsItem.jsx",
@@ -238,7 +240,7 @@ for (const [pattern, message] of [
   [/handleSaveProfile/, "VolunteerProfilePage should handle profile save"],
   [/VolunteerProfileCard/, "VolunteerProfilePage should render profile card"],
   [/EditVolunteerProfileForm/, "VolunteerProfilePage should render edit form"],
-  [/VolunteerSettingsList/, "VolunteerProfilePage should render settings list"],
+  [/VolunteerSettingsMenu/, "VolunteerProfilePage should render settings menu"],
   [/profileData/, "VolunteerProfilePage should keep profile data state"],
 ]) {
   assert.match(profilePage, pattern, message);
@@ -317,29 +319,36 @@ for (const text of ["phone", "address", "birthDate"]) {
   assert.match(personalInfoList, new RegExp(text), `PersonalInfoList should include ${text}`);
 }
 
-const settingsList = readSrc("components/volunteer/VolunteerSettingsList.jsx");
+const settingsMenu = readSrc("components/volunteer/VolunteerSettingsMenu.jsx");
 
 for (const text of ["Notificações", "Disponibilidade", "Privacidade", "Ajuda e Suporte"]) {
-  assert.match(settingsList, new RegExp(text), `VolunteerSettingsList should include ${text}`);
+  assert.match(settingsMenu, new RegExp(text), `VolunteerSettingsMenu should include ${text}`);
 }
 
 for (const [pattern, message] of [
-  [/SettingsItem/, "VolunteerSettingsList should render SettingsItem"],
-  [/LogoutSettingsItem/, "VolunteerSettingsList should render LogoutSettingsItem"],
+  [/settingsMenuOptions/, "VolunteerSettingsMenu should expose configurable options"],
+  [/SettingsMenuItem/, "VolunteerSettingsMenu should render SettingsMenuItem"],
+  [/onNavigate/, "VolunteerSettingsMenu should prepare navigation callbacks"],
+  [/route/, "VolunteerSettingsMenu should prepare future routes"],
+  [/onLogout/, "VolunteerSettingsMenu should implement logout action"],
+  [/destructive/, "VolunteerSettingsMenu should style logout as destructive"],
 ]) {
-  assert.match(settingsList, pattern, message);
+  assert.match(settingsMenu, pattern, message);
 }
 
-const settingsItem = readSrc("components/volunteer/SettingsItem.jsx");
+const settingsMenuItem = readSrc("components/volunteer/SettingsMenuItem.jsx");
 
-for (const text of ["title", "description", "icon", "onClick"]) {
-  assert.match(settingsItem, new RegExp(text), `SettingsItem should include ${text}`);
+for (const text of ["title", "description", "icon", "onClick", "ChevronRightIcon"]) {
+  assert.match(settingsMenuItem, new RegExp(text), `SettingsMenuItem should include ${text}`);
 }
 
-const logoutSettingsItem = readSrc("components/volunteer/LogoutSettingsItem.jsx");
-
-for (const text of ["Sair da Conta", "onLogout"]) {
-  assert.match(logoutSettingsItem, new RegExp(text), `LogoutSettingsItem should include ${text}`);
+for (const [pattern, message] of [
+  [/isDestructive/, "SettingsMenuItem should support destructive styling"],
+  [/aria-label/, "SettingsMenuItem should expose accessible action labels"],
+  [/&:hover/, "SettingsMenuItem should provide hover state"],
+  [/&:focus-within/, "SettingsMenuItem should provide focus state"],
+]) {
+  assert.match(settingsMenuItem, pattern, message);
 }
 
 const historyPage = readSrc("components/volunteer/pages/VolunteerHistoryPage.jsx");
