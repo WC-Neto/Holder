@@ -6,7 +6,7 @@ import AvailabilityTags from "./AvailabilityTags";
 import PersonalInfoList from "./PersonalInfoList";
 import VolunteerProfileStats from "./VolunteerProfileStats";
 
-function VolunteerProfileCard({ profile }) {
+function VolunteerProfileCard({ profile, onEditProfile }) {
   if (!profile) {
     return null;
   }
@@ -62,6 +62,7 @@ function VolunteerProfileCard({ profile }) {
           />
           <Button
             startIcon={<EditOutlinedIcon />}
+            onClick={onEditProfile}
             sx={{
               minHeight: 32,
               borderRadius: 999,
