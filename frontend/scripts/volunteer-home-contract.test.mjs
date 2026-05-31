@@ -34,6 +34,9 @@ const requiredFiles = [
   "components/volunteer/VolunteerHomeHeader.jsx",
   "components/volunteer/SearchInput.jsx",
   "components/volunteer/VolunteerOrderFilters.jsx",
+  "components/volunteer/LoadingState.jsx",
+  "components/volunteer/EmptyState.jsx",
+  "components/volunteer/ErrorState.jsx",
   "components/volunteer/AvailableOrderCard.jsx",
   "components/volunteer/OrderDetailsModal.jsx",
   "components/volunteer/FinishHelpReportModal.jsx",
@@ -82,6 +85,14 @@ for (const [pattern, message] of [
   [/debouncedSearchTerm/, "VolunteerHomePage should debounce search input"],
   [/activeFilter/, "VolunteerHomePage should keep active filter state"],
   [/searchAvailableOrders/, "VolunteerHomePage should use searchAvailableOrders"],
+  [/LoadingState/, "VolunteerHomePage should show loading while loading available orders"],
+  [/EmptyState/, "VolunteerHomePage should use shared empty state"],
+  [/ErrorState/, "VolunteerHomePage should use shared error state"],
+  [/isLoadingOrders/, "VolunteerHomePage should track available orders loading"],
+  [/ordersError/, "VolunteerHomePage should track available orders errors"],
+  [/handleRetryLoadOrders/, "VolunteerHomePage should retry loading available orders"],
+  [/Carregando pedidos dispon/, "VolunteerHomePage should provide a specific orders loading message"],
+  [/N.o foi poss.vel carregar os pedidos/, "VolunteerHomePage should provide a specific orders error message"],
   [/VolunteerOrderFilters/, "VolunteerHomePage should use VolunteerOrderFilters"],
   [/isDetailsOpen/, "VolunteerHomePage should open an order details dialog"],
   [/isAcceptDialogOpen/, "VolunteerHomePage should open an accept confirmation dialog"],
@@ -170,6 +181,25 @@ for (const [pattern, message] of [
 ]) {
   assert.match(orderCard, pattern, message);
 }
+
+const loadingState = readSrc("components/volunteer/LoadingState.jsx");
+const emptyState = readSrc("components/volunteer/EmptyState.jsx");
+const errorState = readSrc("components/volunteer/ErrorState.jsx");
+
+for (const [source, componentName] of [
+  [loadingState, "LoadingState"],
+  [emptyState, "EmptyState"],
+  [errorState, "ErrorState"],
+]) {
+  assert.match(source, /title/, `${componentName} should receive a title`);
+  assert.match(source, /description/, `${componentName} should receive a description`);
+  assert.match(source, /Card/, `${componentName} should match the volunteer card style`);
+}
+
+assert.match(loadingState, /CircularProgress/, "LoadingState should render a loader");
+assert.match(emptyState, /InboxOutlinedIcon/, "EmptyState should render an empty icon");
+assert.match(errorState, /Tentar novamente/, "ErrorState should render retry copy");
+assert.match(errorState, /onRetry/, "ErrorState should expose retry callback");
 
 const orderDetailsModal = readSrc("components/volunteer/OrderDetailsModal.jsx");
 
@@ -265,14 +295,19 @@ for (const [pattern, message] of [
   [/volunteerPagePaths/, "VolunteerLayout should map volunteer pages to URLs"],
   [/\/voluntario\/idosos/, "VolunteerLayout should prepare the elders route"],
   [/\/login/, "VolunteerLayout should prepare login redirect"],
-  [/overflowX: "hidden"/, "VolunteerLayout should prevent horizontal page scroll"],
-  [/pb: \{ xs: 9/, "VolunteerLayout should leave space for mobile navigation"],
+  [/isDarkMode/, "VolunteerLayout should keep dark mode state"],
+  [/handleToggleTheme/, "VolunteerLayout should toggle volunteer theme"],
+  [/onToggleTheme/, "VolunteerLayout should pass theme toggle to pages"],
+  [/colorScheme/, "VolunteerLayout should update browser color scheme"],
+  [/pb: \{ xs: 9/, "VolunteerLayout should leave room for mobile navigation"],
+  [/overflowX: "hidden"/, "VolunteerLayout should prevent horizontal overflow"],
   [/onNavigateToElders/, "VolunteerLayout should pass elders navigation to the home"],
   [/isLogoutConfirmOpen/, "VolunteerLayout should confirm logout before ending session"],
   [/handleLogoutRequest/, "VolunteerLayout should reuse logout request from sidebar and profile"],
   [/handleConfirmLogout/, "VolunteerLayout should execute confirmed logout"],
   [/VolunteerHistoryPage/, "VolunteerLayout should render volunteer history page"],
   [/VolunteerProfilePage/, "VolunteerLayout should render volunteer profile page"],
+  [/isDarkMode={isDarkMode}/, "VolunteerLayout should pass dark mode state to volunteer pages"],
 ]) {
   assert.match(layout, pattern, message);
 }
@@ -280,16 +315,26 @@ for (const [pattern, message] of [
 const sidebar = readSrc("components/volunteer/VolunteerSidebar.jsx");
 
 for (const [pattern, message] of [
-  [/Abrir menu lateral/, "VolunteerSidebar should expose a mobile button to open the sidebar drawer"],
-  [/MenuIcon/, "VolunteerSidebar should render a mobile menu icon"],
-  [/handleDrawerToggle/, "VolunteerSidebar should toggle the mobile sidebar drawer"],
-  [/BottomNavigation/, "VolunteerSidebar should provide mobile bottom navigation"],
-  [/BottomNavigationAction/, "VolunteerSidebar should provide mobile bottom navigation actions"],
-  [/display: \{ xs: "flex", sm: "none" \}/, "VolunteerSidebar mobile nav should show only on small screens"],
+  [/Abrir menu lateral/, "VolunteerSidebar should expose a mobile button to open the drawer"],
+  [/MenuIcon/, "VolunteerSidebar should render the mobile menu icon"],
+  [/IconButton/, "VolunteerSidebar should use an accessible mobile menu button"],
+  [/BottomNavigation/, "VolunteerSidebar should keep mobile navigation usable"],
+  [/display: \{ xs: "inline-flex", sm: "none" \}/, "VolunteerSidebar menu button should only show on mobile"]
   [/position: "fixed"/, "VolunteerSidebar mobile nav should stay fixed"],
   [/onPageChange/, "VolunteerSidebar mobile nav should navigate between pages"],
 ]) {
   assert.match(sidebar, pattern, message);
+}
+
+const homeHeader = readSrc("components/volunteer/VolunteerHomeHeader.jsx");
+
+for (const [pattern, message] of [
+  [/onToggleTheme/, "VolunteerHomeHeader should expose theme toggle callback"],
+  [/isDarkMode/, "VolunteerHomeHeader should receive dark mode state"],
+  [/aria-pressed/, "VolunteerHomeHeader should expose pressed state for theme button"],
+  [/LightModeOutlinedIcon/, "VolunteerHomeHeader should show light icon in dark mode"],
+]) {
+  assert.match(homeHeader, pattern, message);
 }
 
 const profilePage = readSrc("components/volunteer/pages/VolunteerProfilePage.jsx");
@@ -300,9 +345,12 @@ for (const text of ["Versão 1.0.0"]) {
 
 for (const [pattern, message] of [
   [/getVolunteerProfile/, "VolunteerProfilePage should load volunteer profile"],
+  [/isDarkMode/, "VolunteerProfilePage should receive dark mode state"],
+  [/bgcolor: isDarkMode \? "#0f172a" : "#fbfbfc"/, "VolunteerProfilePage should react to dark mode background"],
   [/maxWidth: "100%"/, "VolunteerProfilePage should avoid horizontal overflow"],
-  [/gridTemplateColumns/, "VolunteerProfilePage should control profile columns with CSS grid"],
-  [/md: "minmax\(340px, 0.9fr\) minmax\(420px, 1.3fr\)"/, "VolunteerProfilePage should expand both columns on desktop"],
+  [/overflowX: "hidden"/, "VolunteerProfilePage should prevent horizontal page scroll"],
+  [/gridTemplateColumns/, "VolunteerProfilePage should use CSS grid for responsive columns"],
+  [/md: "minmax\(340px, 0.9fr\) minmax\(420px, 1.3fr\)"/, "VolunteerProfilePage should expand profile columns on desktop"],
   [/updateVolunteerProfile/, "VolunteerProfilePage should save profile updates"],
   [/updateVolunteerAvailability/, "VolunteerProfilePage should save availability updates"],
   [/isEditProfileOpen/, "VolunteerProfilePage should open edit profile modal"],
@@ -321,6 +369,12 @@ for (const [pattern, message] of [
 ]) {
   assert.match(profilePage, pattern, message);
 }
+
+assert.doesNotMatch(
+  profilePage,
+  /Grid/,
+  "VolunteerProfilePage should not use Grid for the main responsive layout",
+);
 
 const profileCard = readSrc("components/volunteer/VolunteerProfileCard.jsx");
 
@@ -476,6 +530,12 @@ for (const text of [
 
 for (const [pattern, message] of [
   [/getVolunteerHistory/, "VolunteerHistoryPage should load volunteer history"],
+  [/LoadingState/, "VolunteerHistoryPage should use shared loading state"],
+  [/EmptyState/, "VolunteerHistoryPage should use shared empty state"],
+  [/ErrorState/, "VolunteerHistoryPage should use shared error state"],
+  [/isLoadingHistory/, "VolunteerHistoryPage should track history loading"],
+  [/historyError/, "VolunteerHistoryPage should track history errors"],
+  [/handleRetryLoadHistory/, "VolunteerHistoryPage should retry loading history"],
   [/maxWidth: "100%"/, "VolunteerHistoryPage should avoid horizontal overflow"],
   [/md: "repeat\(2, minmax\(0, 1fr\)\)"/, "VolunteerHistoryPage should use a responsive history grid"],
   [/activeHistoryFilter/, "VolunteerHistoryPage should keep active filter state"],
@@ -564,7 +624,12 @@ for (const [pattern, message] of [
   [/md: "repeat\(2, minmax\(0, 1fr\)\)"/, "VolunteerElderlyNearbyPage should use a tablet grid"],
   [/xl: "repeat\(3, minmax\(0, 1fr\)\)"/, "VolunteerElderlyNearbyPage should use a wide desktop grid"],
   [/getNearbyElderly/, "VolunteerElderlyNearbyPage should load nearby elderly"],
+  [/LoadingState/, "VolunteerElderlyNearbyPage should use shared loading state"],
+  [/EmptyState/, "VolunteerElderlyNearbyPage should use shared empty state"],
+  [/ErrorState/, "VolunteerElderlyNearbyPage should use shared error state"],
   [/isLoadingNearbyElderly/, "VolunteerElderlyNearbyPage should handle loading state"],
+  [/nearbyElderlyError/, "VolunteerElderlyNearbyPage should track nearby elderly errors"],
+  [/handleRetryLoadNearbyElderly/, "VolunteerElderlyNearbyPage should retry loading nearby elderly"],
   [/nearbyElderly/, "VolunteerElderlyNearbyPage should keep nearby elderly state"],
   [/favoriteElderlyIds/, "VolunteerElderlyNearbyPage should keep interest state"],
   [/selectedElderlyId/, "VolunteerElderlyNearbyPage should keep selected elderly state"],

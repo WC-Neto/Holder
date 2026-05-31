@@ -24,7 +24,7 @@ const profilePageCopy = {
   versionLabel: "Versão 1.0.0",
 };
 
-function VolunteerProfilePage({ onLogout }) {
+function VolunteerProfilePage({ onLogout, isDarkMode = false }) {
   const [profileData, setProfileData] = useState(null);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isEditAvailabilityOpen, setIsEditAvailabilityOpen] = useState(false);
@@ -135,7 +135,7 @@ function VolunteerProfilePage({ onLogout }) {
         py: { xs: 3, md: 3.5 },
         minHeight: "100vh",
         maxWidth: "100%",
-        bgcolor: "#fbfbfc",
+        bgcolor: isDarkMode ? "#0f172a" : "#fbfbfc",
         overflowX: "hidden",
       }}
     >
@@ -166,7 +166,7 @@ function VolunteerProfilePage({ onLogout }) {
           />
           <Typography
             sx={{
-              color: "#98a1b0",
+              color: isDarkMode ? "#a8b3c7" : "#98a1b0",
               fontSize: 12,
               textAlign: "center",
               mt: 3,
