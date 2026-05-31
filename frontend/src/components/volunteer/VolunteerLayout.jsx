@@ -30,12 +30,11 @@ function getVolunteerPageFromPath(pathname) {
   return matchedPage?.[0] ?? "inicio";
 }
 
-function VolunteerLayout({ onLogout }) {
+function VolunteerLayout({ onLogout, isDarkMode, onToggleTheme }) {
   const [currentPage, setCurrentPage] = useState(() =>
     getVolunteerPageFromPath(window.location.pathname),
   );
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -61,10 +60,6 @@ function VolunteerLayout({ onLogout }) {
     setIsLogoutConfirmOpen(true);
   };
 
-  const handleToggleTheme = () => {
-    setIsDarkMode((currentMode) => !currentMode);
-  };
-
   const handleCancelLogout = () => {
     setIsLogoutConfirmOpen(false);
   };
@@ -82,14 +77,13 @@ function VolunteerLayout({ onLogout }) {
             nearbyEldersCount={3}
             onNavigateToElders={() => handlePageChange("idosos")}
             isDarkMode={isDarkMode}
-            onToggleTheme={handleToggleTheme}
+            onToggleTheme={onToggleTheme}
           />
         );
       case "historico":
         return <VolunteerHistoryPage isDarkMode={isDarkMode} />;
       case "idosos":
-        return <IdososPage isDarkMode={isDarkMode} />;
-      case "perfil":
+        return <VolunteerElderlyNearbyPage isDarkMode={isDarkMode} />; case "perfil":
         return (
           <VolunteerProfilePage
             onLogout={handleLogoutRequest}
@@ -102,7 +96,7 @@ function VolunteerLayout({ onLogout }) {
             nearbyEldersCount={3}
             onNavigateToElders={() => handlePageChange("idosos")}
             isDarkMode={isDarkMode}
-            onToggleTheme={handleToggleTheme}
+            onToggleTheme={onToggleTheme}
           />
         );
     }

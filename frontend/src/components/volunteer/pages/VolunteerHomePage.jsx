@@ -7,6 +7,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Grid,
   Snackbar,
   Stack,
   Typography,
@@ -325,7 +326,7 @@ function VolunteerHomePage({
   };
 
   return (
-    <Box
+    <Grid
       sx={{
         px: { xs: 2, md: 4 },
         py: { xs: 3, md: 3.5 },
@@ -405,9 +406,9 @@ function VolunteerHomePage({
               description="Tente buscar por outro título, descrição, categoria ou local."
             />
           )}
-        </Box>
+        </Grid>
 
-        <Box sx={{ minWidth: 0 }}>
+        <Grid item sx={{ minWidth: 0 }}>
           <Stack spacing={3} sx={{ position: { lg: "sticky" }, top: 24 }}>
             <VolunteerCommunityCard
               nearbyEldersCount={dashboardSummary.nearbyEldersNeedingHelp}
@@ -415,8 +416,8 @@ function VolunteerHomePage({
             />
             <VolunteerStatsCard stats={volunteerStats} />
           </Stack>
-        </Box>
-      </Box>
+        </Grid>
+      </Grid>
 
       <OrderDetailsModal
         open={isDetailsOpen}
@@ -495,7 +496,7 @@ function VolunteerHomePage({
           {feedbackMessage}
         </Alert>
       </Snackbar>
-    </Box>
+    </Grid>
   );
 }
 
