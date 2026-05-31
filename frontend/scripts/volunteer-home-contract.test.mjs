@@ -18,8 +18,8 @@ const requiredFiles = [
   "components/volunteer/VolunteerHistoryFilters.jsx",
   "components/volunteer/VolunteerHistoryCard.jsx",
   "components/volunteer/NearbyElderlyBanner.jsx",
+  "components/volunteer/NearbyElderlyCard.jsx",
   "components/volunteer/NearbyElderlyDetailsModal.jsx",
-  "components/volunteer/ElderlyCard.jsx",
   "components/volunteer/VolunteerHomeHeader.jsx",
   "components/volunteer/SearchInput.jsx",
   "components/volunteer/VolunteerOrderFilters.jsx",
@@ -290,6 +290,7 @@ for (const [pattern, message] of [
   [/isLoadingNearbyElderly/, "VolunteerElderlyNearbyPage should handle loading state"],
   [/nearbyElderly/, "VolunteerElderlyNearbyPage should keep nearby elderly state"],
   [/favoriteElderlyIds/, "VolunteerElderlyNearbyPage should keep interest state"],
+  [/selectedElderlyId/, "VolunteerElderlyNearbyPage should keep selected elderly state"],
   [/selectedElderly/, "VolunteerElderlyNearbyPage should keep selected elderly details"],
   [/isDetailsOpen/, "VolunteerElderlyNearbyPage should open elderly details"],
   [/handleContactElderly/, "VolunteerElderlyNearbyPage should implement contact action"],
@@ -297,8 +298,8 @@ for (const [pattern, message] of [
   [/handleCloseDetails/, "VolunteerElderlyNearbyPage should close elderly details"],
   [/handleToggleInterest/, "VolunteerElderlyNearbyPage should implement interest action"],
   [/NearbyElderlyBanner/, "VolunteerElderlyNearbyPage should use the info banner"],
+  [/NearbyElderlyCard/, "VolunteerElderlyNearbyPage should use elderly cards"],
   [/NearbyElderlyDetailsModal/, "VolunteerElderlyNearbyPage should show elderly details modal"],
-  [/ElderlyCard/, "VolunteerElderlyNearbyPage should use elderly cards"],
   [/onClick={handleSelectElderly}/, "VolunteerElderlyNearbyPage should pass card click action"],
 ]) {
   assert.match(elderlyNearbyPage, pattern, message);
@@ -336,9 +337,11 @@ for (const text of ["idosos precisam de ajuda perto de você", "nearbyCount"]) {
   assert.match(nearbyBanner, new RegExp(text), `NearbyElderlyBanner should include ${text}`);
 }
 
-const elderlyCard = readSrc("components/volunteer/ElderlyCard.jsx");
+const elderlyCard = readSrc("components/volunteer/NearbyElderlyCard.jsx");
 
 for (const text of [
+  "NearbyElderlyCard",
+  "nearbyElderlyShape",
   "photoUrl",
   "name",
   "distance",
@@ -348,7 +351,18 @@ for (const text of [
   "isSelected",
   "isInterested",
 ]) {
-  assert.match(elderlyCard, new RegExp(text), `ElderlyCard should include ${text}`);
+  assert.match(elderlyCard, new RegExp(text), `NearbyElderlyCard should include ${text}`);
+}
+
+for (const [pattern, message] of [
+  [/ChatBubbleOutlineIcon/, "NearbyElderlyCard should include a message icon"],
+  [/PlaceOutlinedIcon/, "NearbyElderlyCard should include a location icon"],
+  [/FavoriteBorderIcon|FavoriteIcon/, "NearbyElderlyCard should include a heart icon"],
+  [/&:hover/, "NearbyElderlyCard should provide hover state"],
+  [/&:focus-within/, "NearbyElderlyCard should provide focus state"],
+  [/cursor: "pointer"/, "NearbyElderlyCard should be clickable"],
+]) {
+  assert.match(elderlyCard, pattern, message);
 }
 
 const nearbyElderlyMock = readSrc("data/mockNearbyElderly.js");

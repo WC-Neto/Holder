@@ -17,7 +17,14 @@ import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 function DetailItem({ label, children }) {
   return (
     <Box>
-      <Typography sx={{ color: "#98a1b0", fontSize: 12, fontWeight: 800, mb: 0.5 }}>
+      <Typography
+        sx={{
+          color: "#98a1b0",
+          fontSize: 12,
+          fontWeight: 800,
+          mb: 0.5,
+        }}
+      >
         {label}
       </Typography>
       <Typography sx={{ color: "#20283a", fontSize: 15, lineHeight: 1.5 }}>
@@ -69,7 +76,9 @@ function NearbyElderlyDetailsModal({ open, elderly, onClose, onContact }) {
                 <DetailItem label="Localização">{elderly.neighborhood}</DetailItem>
               </Stack>
 
-              <DetailItem label="Necessidade atual">{elderly.helpSummary}</DetailItem>
+              <DetailItem label="Necessidade atual">
+                {elderly.helpSummary}
+              </DetailItem>
             </Stack>
           </DialogContent>
 

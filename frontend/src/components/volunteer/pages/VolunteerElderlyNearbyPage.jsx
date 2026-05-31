@@ -7,8 +7,8 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import ElderlyCard from "../ElderlyCard";
 import NearbyElderlyBanner from "../NearbyElderlyBanner";
+import NearbyElderlyCard from "../NearbyElderlyCard";
 import NearbyElderlyDetailsModal from "../NearbyElderlyDetailsModal";
 import { getNearbyElderly } from "../../../services/nearbyElderly";
 
@@ -17,6 +17,7 @@ const MOCK_VOLUNTEER_ID = 1;
 function VolunteerElderlyNearbyPage() {
   const [nearbyElderly, setNearbyElderly] = useState([]);
   const [favoriteElderlyIds, setFavoriteElderlyIds] = useState([]);
+  const [selectedElderlyId, setSelectedElderlyId] = useState(null);
   const [selectedElderly, setSelectedElderly] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isLoadingNearbyElderly, setIsLoadingNearbyElderly] = useState(true);
@@ -44,6 +45,7 @@ function VolunteerElderlyNearbyPage() {
   };
 
   const handleSelectElderly = (elderly) => {
+    setSelectedElderlyId(elderly.id);
     setSelectedElderly(elderly);
     setIsDetailsOpen(true);
   };
@@ -97,10 +99,10 @@ function VolunteerElderlyNearbyPage() {
             }}
           >
             {nearbyElderly.map((elderly) => (
-              <ElderlyCard
+              <NearbyElderlyCard
                 key={elderly.id}
                 elderly={elderly}
-                isSelected={selectedElderly?.id === elderly.id}
+                isSelected={selectedElderlyId === elderly.id}
                 isInterested={favoriteElderlyIds.includes(elderly.id)}
                 onClick={handleSelectElderly}
                 onContact={handleContactElderly}
