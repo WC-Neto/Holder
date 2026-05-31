@@ -7,23 +7,52 @@ import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 
 function ElderlyCard({
   elderly,
+  isSelected = false,
   isInterested = false,
   onContact,
   onToggleInterest,
+  onClick,
 }) {
   const { photoUrl, name, distance } = elderly;
+  const handleCardClick = () => {
+    onClick?.(elderly);
+  };
 
   return (
     <Card
       variant="outlined"
+      tabIndex={0}
+      onClick={handleCardClick}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          handleCardClick();
+        }
+      }}
       sx={{
         minHeight: 82,
         px: 2,
         py: 1.6,
         bgcolor: "#fff",
-        borderColor: "#eceef2",
+        borderColor: isSelected ? "#96C0BE" : "#eceef2",
         borderRadius: 3,
-        boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
+        boxShadow: isSelected
+          ? "0 0 0 3px rgba(150, 192, 190, 0.18)"
+          : "0 1px 2px rgba(37, 48, 68, 0.03)",
+        cursor: "pointer",
+        transition: "border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease",
+        "&:hover": {
+          borderColor: "#dbe9e8",
+          boxShadow: "0 8px 24px rgba(37, 48, 68, 0.08)",
+          transform: "translateY(-1px)",
+        },
+        "&:focus-within": {
+          borderColor: "#96C0BE",
+          boxShadow: "0 0 0 3px rgba(150, 192, 190, 0.22)",
+        },
+        "&:focus": {
+          outline: "none",
+        },
       }}
     >
       <Stack direction="row" alignItems="center" spacing={2}>
@@ -52,7 +81,10 @@ function ElderlyCard({
         <Stack direction="row" spacing={1}>
           <IconButton
             aria-label={`Entrar em contato com ${name}`}
-            onClick={() => onContact?.(elderly)}
+            onClick={(event) => {
+              event.stopPropagation();
+              onContact?.(elderly);
+            }}
             sx={{
               width: 42,
               height: 42,
@@ -70,7 +102,10 @@ function ElderlyCard({
                 ? `Remover interesse em ${name}`
                 : `Demonstrar interesse em ${name}`
             }
-            onClick={() => onToggleInterest?.(elderly)}
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleInterest?.(elderly);
+            }}
             sx={{
               width: 42,
               height: 42,

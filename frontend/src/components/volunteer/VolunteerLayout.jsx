@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import VolunteerSidebar from "./VolunteerSidebar";
 import VolunteerHomePage from "./pages/VolunteerHomePage";
-import HistoricoPage from "./pages/HistoricoPage";
+import VolunteerHistoryPage from "./pages/VolunteerHistoryPage";
 import IdososPage from "./pages/IdososPage";
 import PerfilPage from "./pages/PerfilPage";
 
@@ -56,7 +56,7 @@ function VolunteerLayout({ onLogout }) {
           />
         );
       case "historico":
-        return <HistoricoPage />;
+        return <VolunteerHistoryPage />;
       case "idosos":
         return <IdososPage />;
       case "perfil":

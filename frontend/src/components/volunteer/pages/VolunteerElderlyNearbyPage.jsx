@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import ElderlyCard from "../ElderlyCard";
 import NearbyElderlyBanner from "../NearbyElderlyBanner";
+import NearbyElderlyDetailsModal from "../NearbyElderlyDetailsModal";
 import { getNearbyElderly } from "../../../services/nearbyElderly";
 
 const MOCK_VOLUNTEER_ID = 1;
@@ -16,6 +17,8 @@ const MOCK_VOLUNTEER_ID = 1;
 function VolunteerElderlyNearbyPage() {
   const [nearbyElderly, setNearbyElderly] = useState([]);
   const [favoriteElderlyIds, setFavoriteElderlyIds] = useState([]);
+  const [selectedElderly, setSelectedElderly] = useState(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isLoadingNearbyElderly, setIsLoadingNearbyElderly] = useState(true);
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
@@ -38,6 +41,15 @@ function VolunteerElderlyNearbyPage() {
 
   const handleContactElderly = (elderly) => {
     setFeedbackMessage(`Contato iniciado com ${elderly.name}.`);
+  };
+
+  const handleSelectElderly = (elderly) => {
+    setSelectedElderly(elderly);
+    setIsDetailsOpen(true);
+  };
+
+  const handleCloseDetails = () => {
+    setIsDetailsOpen(false);
   };
 
   const handleToggleInterest = (elderly) => {
@@ -88,7 +100,9 @@ function VolunteerElderlyNearbyPage() {
               <ElderlyCard
                 key={elderly.id}
                 elderly={elderly}
+                isSelected={selectedElderly?.id === elderly.id}
                 isInterested={favoriteElderlyIds.includes(elderly.id)}
+                onClick={handleSelectElderly}
                 onContact={handleContactElderly}
                 onToggleInterest={handleToggleInterest}
               />
@@ -113,6 +127,13 @@ function VolunteerElderlyNearbyPage() {
           </Box>
         )}
       </Box>
+
+      <NearbyElderlyDetailsModal
+        open={isDetailsOpen}
+        elderly={selectedElderly}
+        onClose={handleCloseDetails}
+        onContact={handleContactElderly}
+      />
 
       <Snackbar
         open={Boolean(feedbackMessage)}

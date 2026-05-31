@@ -12,8 +12,13 @@ const orderIds = (orders) => orders.map((order) => order.id);
 const requiredFiles = [
   "components/volunteer/VolunteerLayout.jsx",
   "components/volunteer/pages/VolunteerHomePage.jsx",
+  "components/volunteer/pages/VolunteerHistoryPage.jsx",
   "components/volunteer/pages/VolunteerElderlyNearbyPage.jsx",
+  "components/volunteer/VolunteerHistorySummary.jsx",
+  "components/volunteer/VolunteerHistoryFilters.jsx",
+  "components/volunteer/VolunteerHistoryCard.jsx",
   "components/volunteer/NearbyElderlyBanner.jsx",
+  "components/volunteer/NearbyElderlyDetailsModal.jsx",
   "components/volunteer/ElderlyCard.jsx",
   "components/volunteer/VolunteerHomeHeader.jsx",
   "components/volunteer/SearchInput.jsx",
@@ -26,9 +31,11 @@ const requiredFiles = [
   "components/volunteer/VolunteerStatsCard.jsx",
   "components/volunteer/LoadMoreButton.jsx",
   "data/mockOrders.js",
+  "data/mockVolunteerHistory.js",
   "data/mockNearbyElderly.js",
   "data/mockVolunteerStats.js",
   "services/availableOrders.js",
+  "services/volunteerHistory.js",
   "services/nearbyElderly.js",
   "services/volunteerStats.js",
 ];
@@ -193,8 +200,73 @@ for (const [pattern, message] of [
   [/volunteerPagePaths/, "VolunteerLayout should map volunteer pages to URLs"],
   [/\/voluntario\/idosos/, "VolunteerLayout should prepare the elders route"],
   [/onNavigateToElders/, "VolunteerLayout should pass elders navigation to the home"],
+  [/VolunteerHistoryPage/, "VolunteerLayout should render volunteer history page"],
 ]) {
   assert.match(layout, pattern, message);
+}
+
+const historyPage = readSrc("components/volunteer/pages/VolunteerHistoryPage.jsx");
+
+for (const text of [
+  "Meu Histórico",
+  "Veja todas as pessoas que você ajudou",
+  "Nenhuma ajuda encontrada",
+]) {
+  assert.match(historyPage, new RegExp(text), `VolunteerHistoryPage should include ${text}`);
+}
+
+for (const [pattern, message] of [
+  [/getVolunteerHistory/, "VolunteerHistoryPage should load volunteer history"],
+  [/activeHistoryFilter/, "VolunteerHistoryPage should keep active filter state"],
+  [/filteredHistory/, "VolunteerHistoryPage should filter history locally"],
+  [/selectedHistoryItem/, "VolunteerHistoryPage should keep selected item for details"],
+  [/handleViewHistoryDetails/, "VolunteerHistoryPage should implement details click"],
+  [/handleContactElderly/, "VolunteerHistoryPage should implement contact action"],
+  [/VolunteerHistorySummary/, "VolunteerHistoryPage should render summary"],
+  [/VolunteerHistoryFilters/, "VolunteerHistoryPage should render filters"],
+  [/VolunteerHistoryCard/, "VolunteerHistoryPage should render cards"],
+]) {
+  assert.match(historyPage, pattern, message);
+}
+
+const historySummary = readSrc("components/volunteer/VolunteerHistorySummary.jsx");
+
+for (const text of ["Total de ajudas", "Concluídas"]) {
+  assert.match(historySummary, new RegExp(text), `VolunteerHistorySummary should include ${text}`);
+}
+
+const historyFilters = readSrc("components/volunteer/VolunteerHistoryFilters.jsx");
+
+for (const text of ["Todos", "Em Andamento", "Concluídos"]) {
+  assert.match(historyFilters, new RegExp(text), `VolunteerHistoryFilters should include ${text}`);
+}
+
+for (const [pattern, message] of [
+  [/isActive/, "VolunteerHistoryFilters should style the active filter"],
+  [/onFilterChange/, "VolunteerHistoryFilters should notify filter changes"],
+]) {
+  assert.match(historyFilters, pattern, message);
+}
+
+const historyCard = readSrc("components/volunteer/VolunteerHistoryCard.jsx");
+
+for (const text of [
+  "elderName",
+  "neighborhood",
+  "date",
+  "status",
+  "onContact",
+  "onViewDetails",
+]) {
+  assert.match(historyCard, new RegExp(text), `VolunteerHistoryCard should include ${text}`);
+}
+
+for (const [pattern, message] of [
+  [/categoryIcons/, "VolunteerHistoryCard should render category icon"],
+  [/ChatBubbleOutlineIcon/, "VolunteerHistoryCard should render contact action"],
+  [/ChevronRightIcon/, "VolunteerHistoryCard should render details arrow"],
+]) {
+  assert.match(historyCard, pattern, message);
 }
 
 const elderlyNearbyPage = readSrc(
@@ -218,12 +290,44 @@ for (const [pattern, message] of [
   [/isLoadingNearbyElderly/, "VolunteerElderlyNearbyPage should handle loading state"],
   [/nearbyElderly/, "VolunteerElderlyNearbyPage should keep nearby elderly state"],
   [/favoriteElderlyIds/, "VolunteerElderlyNearbyPage should keep interest state"],
+  [/selectedElderly/, "VolunteerElderlyNearbyPage should keep selected elderly details"],
+  [/isDetailsOpen/, "VolunteerElderlyNearbyPage should open elderly details"],
   [/handleContactElderly/, "VolunteerElderlyNearbyPage should implement contact action"],
+  [/handleSelectElderly/, "VolunteerElderlyNearbyPage should react when elderly card data is clicked"],
+  [/handleCloseDetails/, "VolunteerElderlyNearbyPage should close elderly details"],
   [/handleToggleInterest/, "VolunteerElderlyNearbyPage should implement interest action"],
   [/NearbyElderlyBanner/, "VolunteerElderlyNearbyPage should use the info banner"],
+  [/NearbyElderlyDetailsModal/, "VolunteerElderlyNearbyPage should show elderly details modal"],
   [/ElderlyCard/, "VolunteerElderlyNearbyPage should use elderly cards"],
+  [/onClick={handleSelectElderly}/, "VolunteerElderlyNearbyPage should pass card click action"],
 ]) {
   assert.match(elderlyNearbyPage, pattern, message);
+}
+
+const elderlyDetailsModal = readSrc("components/volunteer/NearbyElderlyDetailsModal.jsx");
+
+for (const text of [
+  "Detalhes do idoso",
+  "Idade",
+  "Distância aproximada",
+  "Localização",
+  "Necessidade atual",
+  "Fechar",
+  "Enviar mensagem",
+]) {
+  assert.match(
+    elderlyDetailsModal,
+    new RegExp(text),
+    `NearbyElderlyDetailsModal should include ${text}`,
+  );
+}
+
+for (const [pattern, message] of [
+  [/onClose/, "NearbyElderlyDetailsModal should expose close callback"],
+  [/onContact/, "NearbyElderlyDetailsModal should expose contact callback"],
+  [/Avatar/, "NearbyElderlyDetailsModal should show elderly photo"],
+]) {
+  assert.match(elderlyDetailsModal, pattern, message);
 }
 
 const nearbyBanner = readSrc("components/volunteer/NearbyElderlyBanner.jsx");
@@ -238,8 +342,10 @@ for (const text of [
   "photoUrl",
   "name",
   "distance",
+  "onClick",
   "onContact",
   "onToggleInterest",
+  "isSelected",
   "isInterested",
 ]) {
   assert.match(elderlyCard, new RegExp(text), `ElderlyCard should include ${text}`);
@@ -247,7 +353,7 @@ for (const text of [
 
 const nearbyElderlyMock = readSrc("data/mockNearbyElderly.js");
 
-for (const field of ["photoUrl", "name", "distance", "needsHelp"]) {
+for (const field of ["photoUrl", "name", "distance", "age", "neighborhood", "helpSummary", "needsHelp"]) {
   assert.match(nearbyElderlyMock, new RegExp(field), `mock nearby elderly should include ${field}`);
 }
 
@@ -269,6 +375,10 @@ for (const field of [
 
 const availableOrdersModule = await import(
   pathToFileURL(join(src, "services/availableOrders.js")).href,
+);
+
+const volunteerHistoryModule = await import(
+  pathToFileURL(join(src, "services/volunteerHistory.js")).href,
 );
 
 const volunteerStatsModule = await import(
@@ -402,6 +512,30 @@ await assert.rejects(
   () => availableOrdersModule.acceptOrder({ volunteerId: 7 }),
   /Pedido inválido/,
   "acceptOrder should fail for invalid order requests",
+);
+
+const volunteerHistory = await volunteerHistoryModule.getVolunteerHistory({
+  volunteerId: 7,
+});
+
+assert.equal(
+  volunteerHistory.length,
+  2,
+  "getVolunteerHistory should load mocked volunteer history",
+);
+
+assert.deepEqual(
+  volunteerHistoryModule.filterVolunteerHistory(volunteerHistory, "in_progress").map(
+    (historyItem) => historyItem.id,
+  ),
+  [1],
+  "filterVolunteerHistory should filter in-progress history",
+);
+
+assert.deepEqual(
+  volunteerHistoryModule.getVolunteerHistorySummary(volunteerHistory),
+  { total: 2, completed: 1 },
+  "getVolunteerHistorySummary should calculate history indicators",
 );
 
 const nearbyElderly = await nearbyElderlyModule.getNearbyElderly({
