@@ -13,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import AvailableOrderCard from "../AvailableOrderCard";
+import FinishHelpReportModal from "../FinishHelpReportModal";
 import LoadMoreButton from "../LoadMoreButton";
 import OrderDetailsModal from "../OrderDetailsModal";
 import SearchInput from "../SearchInput";
@@ -25,6 +26,7 @@ import {
   acceptOrder,
   buildAvailableOrdersSearchParams,
   fetchAvailableOrderDetails,
+  finishOrder,
   searchAvailableOrders,
 } from "../../../services/availableOrders";
 import { fetchVolunteerStats } from "../../../services/volunteerStats";
@@ -55,9 +57,12 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
   const [orderToAccept, setOrderToAccept] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false);
+  const [isFinishReportOpen, setIsFinishReportOpen] = useState(false);
   const [acceptingOrderId, setAcceptingOrderId] = useState(null);
+  const [finishingOrderId, setFinishingOrderId] = useState(null);
   const [acceptedOrderId, setAcceptedOrderId] = useState(null);
   const [acceptedOrderStatus, setAcceptedOrderStatus] = useState(null);
+  const [orderToFinish, setOrderToFinish] = useState(null);
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [feedbackSeverity, setFeedbackSeverity] = useState("success");
 
@@ -157,6 +162,16 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
     setIsAcceptDialogOpen(true);
   };
 
+  const handleFinishOrder = (order) => {
+    if (order.id !== acceptedOrderId) {
+      handleUnavailableOrder();
+      return;
+    }
+
+    setOrderToFinish(order);
+    setIsFinishReportOpen(true);
+  };
+
   const handleUnavailableOrder = () => {
     setFeedbackSeverity("warning");
     setFeedbackMessage(
@@ -184,9 +199,6 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
         volunteerId: MOCK_VOLUNTEER_ID,
       });
 
-      setAvailableOrders((currentOrders) =>
-        currentOrders.filter((order) => order.id !== orderId),
-      );
       setAcceptedOrderId(orderId);
       setAcceptedOrderStatus(acceptedOrder.status);
       setFeedbackSeverity("success");
@@ -200,6 +212,51 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
       );
     } finally {
       setAcceptingOrderId(null);
+    }
+  };
+
+  const handleCloseFinishReport = () => {
+    if (!finishingOrderId) {
+      setIsFinishReportOpen(false);
+      setOrderToFinish(null);
+    }
+  };
+
+  const handleConfirmFinishOrder = async (report) => {
+    if (!orderToFinish) {
+      return;
+    }
+
+    const orderId = orderToFinish.id;
+    setFinishingOrderId(orderId);
+
+    try {
+      await finishOrder({
+        orderId,
+        volunteerId: MOCK_VOLUNTEER_ID,
+        report,
+      });
+
+      setAvailableOrders((currentOrders) =>
+        currentOrders.filter((order) => order.id !== orderId),
+      );
+      setAcceptedOrderId(null);
+      setAcceptedOrderStatus(null);
+      setFeedbackSeverity("success");
+      setFeedbackMessage(`Ajuda finalizada: ${orderToFinish.title}`);
+      setIsFinishReportOpen(false);
+      setOrderToFinish(null);
+      if (selectedOrder?.id === orderId) {
+        setIsDetailsOpen(false);
+        setSelectedOrder(null);
+      }
+    } catch (error) {
+      setFeedbackSeverity("error");
+      setFeedbackMessage(
+        error?.message ?? "Não foi possível finalizar a ajuda.",
+      );
+    } finally {
+      setFinishingOrderId(null);
     }
   };
 
@@ -249,9 +306,11 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
                     order={order}
                     isAccepted={acceptedOrderId === order.id}
                     isAccepting={acceptingOrderId === order.id}
+                    isFinishing={finishingOrderId === order.id}
                     isDisabled={hasAcceptedOrder && acceptedOrderId !== order.id}
                     onViewDetails={handleViewDetails}
                     onAcceptOrder={handleAcceptOrder}
+                    onFinishOrder={handleFinishOrder}
                     onUnavailableOrder={handleUnavailableOrder}
                   />
                 ))}
@@ -310,6 +369,18 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
           handleCloseDetails();
           handleAcceptOrder(order);
         }}
+        onFinishOrder={(order) => {
+          handleCloseDetails();
+          handleFinishOrder(order);
+        }}
+      />
+
+      <FinishHelpReportModal
+        open={isFinishReportOpen}
+        order={orderToFinish}
+        isFinishing={Boolean(finishingOrderId)}
+        onClose={handleCloseFinishReport}
+        onConfirm={handleConfirmFinishOrder}
       />
 
       <Dialog

@@ -29,13 +29,20 @@ function AvailableOrderCard({
   order,
   isAccepted = false,
   isAccepting = false,
+  isFinishing = false,
   isDisabled = false,
   onViewDetails,
   onAcceptOrder,
+  onFinishOrder,
   onUnavailableOrder,
 }) {
   const CategoryIcon = categoryIcons[order.category] ?? BoltOutlinedIcon;
-  const handleAcceptClick = () => {
+  const handlePrimaryActionClick = () => {
+    if (isAccepted) {
+      onFinishOrder?.(order);
+      return;
+    }
+
     if (isDisabled) {
       onUnavailableOrder?.(order);
       return;
@@ -160,8 +167,8 @@ function AvailableOrderCard({
             </Button>
             <Button
               variant="contained"
-              disabled={isAccepted || isAccepting}
-              onClick={handleAcceptClick}
+              disabled={isAccepting || isFinishing}
+              onClick={handlePrimaryActionClick}
               sx={{
                 flex: 1,
                 minHeight: 46,
@@ -184,7 +191,9 @@ function AvailableOrderCard({
               }}
             >
               {isAccepted
-                ? "Pedido aceito"
+                ? isFinishing
+                  ? "Finalizando..."
+                  : "Finalizar ajuda"
                 : isAccepting
                   ? "Aceitando..."
                   : isDisabled

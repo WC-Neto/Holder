@@ -39,6 +39,7 @@ const requiredFiles = [
   "components/volunteer/VolunteerOrderFilters.jsx",
   "components/volunteer/AvailableOrderCard.jsx",
   "components/volunteer/OrderDetailsModal.jsx",
+  "components/volunteer/FinishHelpReportModal.jsx",
   "components/volunteer/UrgencyBadge.jsx",
   "components/volunteer/OrderMetaInfo.jsx",
   "components/volunteer/VolunteerCommunityCard.jsx",
@@ -50,6 +51,7 @@ const requiredFiles = [
   "data/mockNearbyElderly.js",
   "data/mockVolunteerStats.js",
   "services/authSession.js",
+  "services/volunteerService.js",
   "services/availableOrders.js",
   "services/volunteerHistory.js",
   "services/volunteerProfile.js",
@@ -93,6 +95,12 @@ for (const [pattern, message] of [
   [/setFeedbackSeverity/, "VolunteerHomePage should show success and error feedback"],
   [/Pedido aceito/, "VolunteerHomePage should show visible acceptance feedback"],
   [/acceptedOrderId/, "VolunteerHomePage should allow only one accepted order"],
+  [/orderToFinish/, "VolunteerHomePage should keep order selected for finish report"],
+  [/isFinishReportOpen/, "VolunteerHomePage should open finish report dialog"],
+  [/finishOrder/, "VolunteerHomePage should finish accepted order through the service"],
+  [/handleFinishOrder/, "VolunteerHomePage should start finish flow from accepted order"],
+  [/handleConfirmFinishOrder/, "VolunteerHomePage should remove finished order after report"],
+  [/FinishHelpReportModal/, "VolunteerHomePage should render finish report modal"],
   [
     /selectedOrderIsAccepted/,
     "VolunteerHomePage details dialog should know when selected order is accepted",
@@ -142,8 +150,11 @@ for (const text of [
   "onAcceptOrder",
   "isAccepted",
   "isAccepting",
+  "isFinishing",
   "isDisabled",
   "onUnavailableOrder",
+  "onFinishOrder",
+  "Finalizar ajuda",
 ]) {
   assert.match(orderCard, new RegExp(text), `AvailableOrderCard should include ${text}`);
 }
@@ -168,8 +179,41 @@ for (const text of [
   "Informações do idoso",
   "Fechar",
   "Ajudar agora",
+  "Finalizar ajuda",
 ]) {
   assert.match(orderDetailsModal, new RegExp(text), `OrderDetailsModal should include ${text}`);
+}
+
+for (const [pattern, message] of [
+  [/onFinishOrder/, "OrderDetailsModal should expose finish action for accepted orders"],
+  [/isAccepted/, "OrderDetailsModal should switch accepted orders to finish action"],
+]) {
+  assert.match(orderDetailsModal, pattern, message);
+}
+
+const finishHelpReportModal = readSrc("components/volunteer/FinishHelpReportModal.jsx");
+
+for (const text of [
+  "Finalizar ajuda",
+  "Relatório breve",
+  "Descreva como a ajuda foi finalizada",
+  "Cancelar",
+  "Finalizar",
+]) {
+  assert.match(
+    finishHelpReportModal,
+    new RegExp(text),
+    `FinishHelpReportModal should include ${text}`,
+  );
+}
+
+for (const [pattern, message] of [
+  [/reportText/, "FinishHelpReportModal should keep report text state"],
+  [/reportError/, "FinishHelpReportModal should validate report text"],
+  [/onConfirm/, "FinishHelpReportModal should expose confirm callback"],
+  [/isFinishing/, "FinishHelpReportModal should support loading state"],
+]) {
+  assert.match(finishHelpReportModal, pattern, message);
 }
 
 const urgencyBadge = readSrc("components/volunteer/UrgencyBadge.jsx");
@@ -405,6 +449,7 @@ for (const text of [
   "Meu Histórico",
   "Veja todas as pessoas que você ajudou",
   "Nenhuma ajuda encontrada",
+  "Relatório da finalização",
 ]) {
   assert.match(historyPage, new RegExp(text), `VolunteerHistoryPage should include ${text}`);
 }
@@ -414,6 +459,7 @@ for (const [pattern, message] of [
   [/activeHistoryFilter/, "VolunteerHistoryPage should keep active filter state"],
   [/filteredHistory/, "VolunteerHistoryPage should filter history locally"],
   [/selectedHistoryItem/, "VolunteerHistoryPage should keep selected item for details"],
+  [/completionReport/, "VolunteerHistoryPage should show finish report in details"],
   [/handleViewHistoryDetails/, "VolunteerHistoryPage should implement details click"],
   [/handleContactElderly/, "VolunteerHistoryPage should implement contact action"],
   [/VolunteerHistorySummary/, "VolunteerHistoryPage should render summary"],
@@ -466,6 +512,14 @@ for (const [pattern, message] of [
 ]) {
   assert.match(historyCard, pattern, message);
 }
+
+const volunteerHistoryMock = readSrc("data/mockVolunteerHistory.js");
+
+assert.match(
+  volunteerHistoryMock,
+  /completionReport/,
+  "mock volunteer history should include final reports",
+);
 
 const elderlyNearbyPage = readSrc(
   "components/volunteer/pages/VolunteerElderlyNearbyPage.jsx",
@@ -601,6 +655,10 @@ const authSessionModule = await import(
   pathToFileURL(join(src, "services/authSession.js")).href,
 );
 
+const volunteerServiceModule = await import(
+  pathToFileURL(join(src, "services/volunteerService.js")).href,
+);
+
 const volunteerStatsModule = await import(
   pathToFileURL(join(src, "services/volunteerStats.js")).href,
 );
@@ -728,6 +786,32 @@ assert.deepEqual(
   "acceptOrder should prepare future API acceptance",
 );
 
+assert.deepEqual(
+  await availableOrdersModule.finishOrder({
+    orderId: 2,
+    volunteerId: 7,
+    report: "Compra entregue e medicamentos conferidos.",
+  }),
+  {
+    id: 2,
+    volunteerId: 7,
+    status: "concluido",
+    report: "Compra entregue e medicamentos conferidos.",
+  },
+  "finishOrder should prepare future API completion with report",
+);
+
+await assert.rejects(
+  () =>
+    availableOrdersModule.finishOrder({
+      orderId: 2,
+      volunteerId: 7,
+      report: "",
+    }),
+  /Relatório obrigatório/,
+  "finishOrder should require a final report",
+);
+
 await assert.rejects(
   () => availableOrdersModule.acceptOrder({ volunteerId: 7 }),
   /Pedido inválido/,
@@ -847,6 +931,136 @@ assert.equal(
   fakeWindow.location.pathname,
   "/login",
   "logout should update browser path to login",
+);
+
+for (const functionName of [
+  "getAvailableOrders",
+  "getOrderDetails",
+  "acceptOrder",
+  "finishOrder",
+  "getNearbyElderly",
+  "getVolunteerHistory",
+  "getVolunteerProfile",
+  "updateVolunteerProfile",
+  "updateVolunteerAvailability",
+]) {
+  assert.equal(
+    typeof volunteerServiceModule[functionName],
+    "function",
+    `volunteerService should export ${functionName}`,
+  );
+}
+
+assert.equal(
+  typeof volunteerServiceModule.handleVolunteerServiceError,
+  "function",
+  "volunteerService should centralize error handling",
+);
+
+assert.match(
+  readSrc("services/volunteerService.js"),
+  /@typedef|VolunteerServiceResponse|AvailableOrder|NearbyElderly|VolunteerProfile/,
+  "volunteerService should document return interfaces",
+);
+
+const availableOrdersResponse = await volunteerServiceModule.getAvailableOrders({
+  volunteerId: 7,
+});
+
+assert.equal(
+  availableOrdersResponse.loading,
+  false,
+  "volunteer service success responses should finish loading",
+);
+assert.equal(
+  availableOrdersResponse.success,
+  true,
+  "volunteer service success responses should mark success",
+);
+assert.equal(
+  availableOrdersResponse.error,
+  null,
+  "volunteer service success responses should not include an error",
+);
+assert.equal(
+  Array.isArray(availableOrdersResponse.data),
+  true,
+  "getAvailableOrders should return available orders data",
+);
+
+assert.equal(
+  (await volunteerServiceModule.getOrderDetails({ orderId: 1 })).success,
+  true,
+  "getOrderDetails should return a standardized success response",
+);
+
+assert.equal(
+  (await volunteerServiceModule.acceptOrder({ orderId: 1, volunteerId: 7 })).success,
+  true,
+  "acceptOrder should return a standardized success response",
+);
+
+assert.equal(
+  (
+    await volunteerServiceModule.finishOrder({
+      orderId: 1,
+      volunteerId: 7,
+      report: "Ajuda finalizada.",
+    })
+  ).success,
+  true,
+  "finishOrder should return a standardized success response",
+);
+
+assert.equal(
+  (await volunteerServiceModule.getNearbyElderly({ volunteerId: 7 })).success,
+  true,
+  "getNearbyElderly should return a standardized success response",
+);
+
+assert.equal(
+  (await volunteerServiceModule.getVolunteerHistory({ volunteerId: 7 })).success,
+  true,
+  "getVolunteerHistory should return a standardized success response",
+);
+
+assert.equal(
+  (await volunteerServiceModule.getVolunteerProfile({ volunteerId: 7 })).success,
+  true,
+  "getVolunteerProfile should return a standardized success response",
+);
+
+assert.equal(
+  (
+    await volunteerServiceModule.updateVolunteerProfile({
+      volunteerId: 7,
+      updates: { name: "Ana Maria" },
+    })
+  ).success,
+  true,
+  "updateVolunteerProfile should return a standardized success response",
+);
+
+assert.equal(
+  (
+    await volunteerServiceModule.updateVolunteerAvailability({
+      volunteerId: 7,
+      availability: ["Manhã"],
+    })
+  ).success,
+  true,
+  "updateVolunteerAvailability should return a standardized success response",
+);
+
+assert.deepEqual(
+  await volunteerServiceModule.acceptOrder({ volunteerId: 7 }),
+  {
+    data: null,
+    error: "Pedido inválido",
+    success: false,
+    loading: false,
+  },
+  "volunteerService should convert failures into standardized error responses",
 );
 
 assert.deepEqual(
