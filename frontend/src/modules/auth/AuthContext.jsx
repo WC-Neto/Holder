@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios"; // Configurado para usar Axios conforme decisões do projeto
+import { clearSensitiveAuthData } from "../../services/authSession";
 
 const AuthContext = createContext(null);
 
@@ -51,8 +52,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem("idoso_id_manual");
-    localStorage.removeItem("token");
+    clearSensitiveAuthData();
     setUser(null);
   };
 
