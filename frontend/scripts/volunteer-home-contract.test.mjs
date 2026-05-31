@@ -22,7 +22,9 @@ const requiredFiles = [
   "components/volunteer/VolunteerStatsCard.jsx",
   "components/volunteer/LoadMoreButton.jsx",
   "data/mockOrders.js",
+  "data/mockVolunteerStats.js",
   "services/availableOrders.js",
+  "services/volunteerStats.js",
 ];
 
 for (const file of requiredFiles) {
@@ -155,6 +157,36 @@ for (const text of ["distance", "neighborhood", "timeAgo"]) {
   assert.match(orderMetaInfo, new RegExp(text), `OrderMetaInfo should render ${text}`);
 }
 
+const communityCard = readSrc("components/volunteer/VolunteerCommunityCard.jsx");
+
+for (const text of ["Comunidade Ativa", "Ver Idosos Próximos", "precisam de ajuda"]) {
+  assert.match(communityCard, new RegExp(text), `VolunteerCommunityCard should include ${text}`);
+}
+
+for (const [pattern, message] of [
+  [
+    /nearbyEldersCount|activeElders/,
+    "VolunteerCommunityCard should receive nearby elders quantity by prop",
+  ],
+  [/onViewElders/, "VolunteerCommunityCard should expose elders navigation callback"],
+  [
+    /FavoriteBorderIcon|PeopleAltOutlinedIcon/,
+    "VolunteerCommunityCard should render an icon or illustration",
+  ],
+]) {
+  assert.match(communityCard, pattern, message);
+}
+
+const layout = readSrc("components/volunteer/VolunteerLayout.jsx");
+
+for (const [pattern, message] of [
+  [/volunteerPagePaths/, "VolunteerLayout should map volunteer pages to URLs"],
+  [/\/voluntario\/idosos/, "VolunteerLayout should prepare the elders route"],
+  [/onNavigateToElders/, "VolunteerLayout should pass elders navigation to the home"],
+]) {
+  assert.match(layout, pattern, message);
+}
+
 const orders = readSrc("data/mockOrders.js");
 
 for (const field of [
@@ -173,6 +205,10 @@ for (const field of [
 
 const availableOrdersModule = await import(
   pathToFileURL(join(src, "services/availableOrders.js")).href,
+);
+
+const volunteerStatsModule = await import(
+  pathToFileURL(join(src, "services/volunteerStats.js")).href,
 );
 
 const sampleOrders = [
@@ -283,4 +319,19 @@ assert.deepEqual(
   await availableOrdersModule.fetchAvailableOrderDetails(sampleOrders, 2),
   sampleOrders[1],
   "fetchAvailableOrderDetails should prepare future detailed lookup by ID",
+);
+
+assert.deepEqual(
+  await availableOrdersModule.acceptOrder({
+    orderId: 2,
+    volunteerId: 7,
+  }),
+  { id: 2, volunteerId: 7, status: "em_andamento" },
+  "acceptOrder should prepare future API acceptance",
+);
+
+await assert.rejects(
+  () => availableOrdersModule.acceptOrder({ volunteerId: 7 }),
+  /Pedido inválido/,
+  "acceptOrder should fail for invalid order requests",
 );

@@ -26,6 +26,7 @@ import {
   fetchAvailableOrderDetails,
   searchAvailableOrders,
 } from "../../../services/availableOrders";
+import { fetchVolunteerStats } from "../../../services/volunteerStats";
 
 const INITIAL_VISIBLE_ORDERS = 3;
 const LOAD_MORE_STEP = 3;
@@ -54,6 +55,7 @@ function VolunteerHomePage() {
   const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false);
   const [acceptingOrderId, setAcceptingOrderId] = useState(null);
   const [acceptedOrderId, setAcceptedOrderId] = useState(null);
+  const [acceptedOrderStatus, setAcceptedOrderStatus] = useState(null);
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
   useEffect(() => {
@@ -63,6 +65,20 @@ function VolunteerHomePage() {
 
     return () => window.clearTimeout(debounceId);
   }, [searchTerm]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchVolunteerStats({ volunteerId: MOCK_VOLUNTEER_ID }).then((stats) => {
+      if (isMounted) {
+        setVolunteerStats(stats);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const availableOrderSearchParams = useMemo(
     () =>
@@ -251,7 +267,10 @@ function VolunteerHomePage() {
 
         <Grid item xs={12} lg={3.3}>
           <Stack spacing={3} sx={{ position: { lg: "sticky" }, top: 24 }}>
-            <VolunteerCommunityCard activeElders={3} onViewElders={handleViewElders} />
+            <VolunteerCommunityCard
+              nearbyEldersCount={dashboardSummary.nearbyEldersNeedingHelp}
+              onViewElders={handleViewElders}
+            />
             <VolunteerStatsCard peopleHelped={24} tasksCompleted={38} avgRating={4.9} />
           </Stack>
         </Grid>
