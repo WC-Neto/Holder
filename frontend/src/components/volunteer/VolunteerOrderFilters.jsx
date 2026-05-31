@@ -102,7 +102,13 @@ function VolunteerOrderFilters({ activeFilter = "all", onFilterChange }) {
         gap: 1,
         mb: 3,
         overflowX: "auto",
+        WebkitOverflowScrolling: "touch",
+        scrollbarWidth: "none",
         pb: 0.5,
+        maxWidth: "100%",
+        "&::-webkit-scrollbar": {
+          display: "none",
+        },
       }}
     >
       {renderFilterButton(mainFilter)}

@@ -28,14 +28,28 @@ function VolunteerHistoryPage() {
   const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
+  const historyQueryParams = useMemo(
+    () =>
+      buildVolunteerHistoryQueryParams({
+        volunteerId: MOCK_VOLUNTEER_ID,
+        activeHistoryFilter,
+      }),
+    [activeHistoryFilter],
+  );
+
   useEffect(() => {
-    const historyQueryParams = buildVolunteerHistoryQueryParams({
-      volunteerId: MOCK_VOLUNTEER_ID,
-      activeHistoryFilter,
+    let isMounted = true;
+
+    getVolunteerHistory(historyQueryParams).then((nextHistoryItems) => {
+      if (isMounted) {
+        setHistoryItems(nextHistoryItems);
+      }
     });
 
-    getVolunteerHistory(historyQueryParams).then(setHistoryItems);
-  }, []);
+    return () => {
+      isMounted = false;
+    };
+  }, [historyQueryParams]);
 
   const filteredHistory = useMemo(
     () => filterVolunteerHistory(historyItems, activeHistoryFilter),
@@ -61,7 +75,9 @@ function VolunteerHistoryPage() {
         px: { xs: 2, md: 4 },
         py: { xs: 3, md: 3.5 },
         minHeight: "100vh",
+        maxWidth: "100%",
         bgcolor: "#fbfbfc",
+        overflowX: "hidden",
       }}
     >
       <Box sx={{ mb: 3 }}>
@@ -93,6 +109,7 @@ function VolunteerHistoryPage() {
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
+                md: "repeat(2, minmax(0, 1fr))",
                 lg: "repeat(2, minmax(0, 1fr))",
               },
               gap: 2,
