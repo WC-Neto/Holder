@@ -23,7 +23,9 @@ const requiredFiles = [
   "components/volunteer/VolunteerStatsCard.jsx",
   "components/volunteer/LoadMoreButton.jsx",
   "data/mockOrders.js",
+  "data/mockVolunteerStats.js",
   "services/availableOrders.js",
+  "services/volunteerStats.js",
 ];
 
 for (const file of requiredFiles) {
@@ -208,6 +210,10 @@ for (const field of [
 
 const availableOrdersModule = await import(
   pathToFileURL(join(src, "services/availableOrders.js")).href,
+);
+
+const volunteerStatsModule = await import(
+  pathToFileURL(join(src, "services/volunteerStats.js")).href,
 );
 
 const sampleOrders = [

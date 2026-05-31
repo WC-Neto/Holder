@@ -27,6 +27,7 @@ import {
   fetchAvailableOrderDetails,
   searchAvailableOrders,
 } from "../../../services/availableOrders";
+import { fetchVolunteerStats } from "../../../services/volunteerStats";
 
 const INITIAL_VISIBLE_ORDERS = 3;
 const LOAD_MORE_STEP = 3;
@@ -67,6 +68,20 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
 
     return () => window.clearTimeout(debounceId);
   }, [searchTerm]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchVolunteerStats({ volunteerId: MOCK_VOLUNTEER_ID }).then((stats) => {
+      if (isMounted) {
+        setVolunteerStats(stats);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const availableOrderSearchParams = useMemo(
     () =>

@@ -1,15 +1,29 @@
 import React from "react";
 import { Box, Card, Stack, Typography } from "@mui/material";
+import { normalizeVolunteerStats } from "../../services/volunteerStats";
 
-function VolunteerStatsCard({
-  peopleHelped = 24,
-  tasksCompleted = 38,
-  avgRating = 4.9,
-}) {
-  const stats = [
-    { label: "Pessoas ajudadas", value: peopleHelped, color: "#253044" },
-    { label: "Pedidos concluídos", value: tasksCompleted, color: "#96C0BE" },
-    { label: "Avaliação média", value: avgRating.toFixed(1), color: "#f0b4a3" },
+/**
+ * @typedef {import("../../services/volunteerStats").VolunteerStats} VolunteerStats
+ */
+
+function VolunteerStatsCard({ stats }) {
+  const volunteerStats = normalizeVolunteerStats(stats);
+  const statsRows = [
+    {
+      label: "Pessoas ajudadas",
+      value: volunteerStats.peopleHelped,
+      color: "#253044",
+    },
+    {
+      label: "Pedidos concluídos",
+      value: volunteerStats.completedOrders,
+      color: "#96C0BE",
+    },
+    {
+      label: "Avaliação média",
+      value: volunteerStats.averageRating.toFixed(1),
+      color: "#f0b4a3",
+    },
   ];
 
   return (
@@ -28,7 +42,7 @@ function VolunteerStatsCard({
       </Typography>
 
       <Stack spacing={2.2}>
-        {stats.map((stat) => (
+        {statsRows.map((stat) => (
           <Box
             key={stat.label}
             sx={{
