@@ -18,6 +18,16 @@ function validateVolunteerProfileUpdates(updates = {}) {
       throw new Error("Telefone inválido");
     }
   }
+
+  if (updates.availability !== undefined) {
+    validateVolunteerAvailability(updates.availability);
+  }
+}
+
+function validateVolunteerAvailability(availability = []) {
+  if (!Array.isArray(availability) || availability.length === 0) {
+    throw new Error("Selecione pelo menos um período");
+  }
 }
 
 export function buildVolunteerProfileQueryParams({ volunteerId } = {}) {
@@ -58,5 +68,27 @@ export async function updateVolunteerProfile({ volunteerId, updates = {}, should
       ...mockVolunteerProfile.personalInfo,
       ...(updates.personalInfo ?? {}),
     },
+  };
+}
+
+export async function updateVolunteerAvailability({
+  volunteerId,
+  availability = [],
+  shouldFail = false,
+} = {}) {
+  if (!volunteerId) {
+    throw new Error("Voluntário inválido");
+  }
+
+  if (shouldFail) {
+    throw new Error("Não foi possível atualizar a disponibilidade");
+  }
+
+  validateVolunteerAvailability(availability);
+
+  // Futuramente: PATCH /voluntarios/{volunteerId}/disponibilidade.
+  return {
+    ...mockVolunteerProfile,
+    availability,
   };
 }

@@ -9,12 +9,14 @@ import {
   Snackbar,
   Typography,
 } from "@mui/material";
+import EditAvailabilityForm from "../EditAvailabilityForm";
 import EditVolunteerProfileForm from "../EditVolunteerProfileForm";
 import VolunteerProfileCard from "../VolunteerProfileCard";
 import VolunteerSettingsMenu from "../VolunteerSettingsMenu";
 import {
   buildVolunteerProfileQueryParams,
   getVolunteerProfile,
+  updateVolunteerAvailability,
   updateVolunteerProfile,
 } from "../../../services/volunteerProfile";
 
@@ -28,7 +30,9 @@ const profilePageCopy = {
 function VolunteerProfilePage({ onLogout }) {
   const [profileData, setProfileData] = useState(null);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isEditAvailabilityOpen, setIsEditAvailabilityOpen] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isSavingAvailability, setIsSavingAvailability] = useState(false);
   const [profileFeedback, setProfileFeedback] = useState(null);
 
   useEffect(() => {
@@ -46,6 +50,12 @@ function VolunteerProfilePage({ onLogout }) {
   const handleCloseEditProfile = () => {
     if (!isSavingProfile) {
       setIsEditProfileOpen(false);
+    }
+  };
+
+  const handleCloseEditAvailability = () => {
+    if (!isSavingAvailability) {
+      setIsEditAvailabilityOpen(false);
     }
   };
 
@@ -75,11 +85,41 @@ function VolunteerProfilePage({ onLogout }) {
   };
 
   const handleSettingsNavigate = (route, item) => {
+    if (item.id === "availability") {
+      setIsEditAvailabilityOpen(true);
+      return;
+    }
+
     setProfileFeedback({
       severity: "info",
       message: `Navegação preparada para ${item.title}.`,
       route,
     });
+  };
+
+  const handleSaveAvailability = async (availability) => {
+    setIsSavingAvailability(true);
+
+    try {
+      const updatedProfile = await updateVolunteerAvailability({
+        volunteerId: MOCK_VOLUNTEER_ID,
+        availability,
+      });
+
+      setProfileData(updatedProfile);
+      setProfileFeedback({
+        severity: "success",
+        message: "Disponibilidade atualizada com sucesso.",
+      });
+      setIsEditAvailabilityOpen(false);
+    } catch (error) {
+      setProfileFeedback({
+        severity: "error",
+        message: error?.message ?? "Não foi possível atualizar a disponibilidade.",
+      });
+    } finally {
+      setIsSavingAvailability(false);
+    }
   };
 
   return (
@@ -132,6 +172,25 @@ function VolunteerProfilePage({ onLogout }) {
             isSaving={isSavingProfile}
             onCancel={handleCloseEditProfile}
             onSave={handleSaveProfile}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isEditAvailabilityOpen}
+        onClose={handleCloseEditAvailability}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle sx={{ color: "#20283a", fontWeight: 900 }}>
+          Editar Disponibilidade
+        </DialogTitle>
+        <DialogContent>
+          <EditAvailabilityForm
+            availability={profileData?.availability ?? []}
+            isSaving={isSavingAvailability}
+            onCancel={handleCloseEditAvailability}
+            onSave={handleSaveAvailability}
           />
         </DialogContent>
       </Dialog>
