@@ -19,6 +19,23 @@ export function filterVolunteerHistory(historyItems, activeHistoryFilter = DEFAU
   return historyItems.filter((historyItem) => historyItem.status === activeHistoryFilter);
 }
 
+export function buildVolunteerHistoryQueryParams({
+  volunteerId,
+  activeHistoryFilter = DEFAULT_FILTER,
+} = {}) {
+  const params = {};
+
+  if (volunteerId !== undefined && volunteerId !== null) {
+    params.volunteerId = volunteerId;
+  }
+
+  if (activeHistoryFilter !== DEFAULT_FILTER) {
+    params.status = activeHistoryFilter;
+  }
+
+  return params;
+}
+
 export function getVolunteerHistorySummary(historyItems) {
   return {
     total: historyItems.length,

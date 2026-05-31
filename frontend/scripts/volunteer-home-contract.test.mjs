@@ -16,6 +16,7 @@ const requiredFiles = [
   "components/volunteer/pages/VolunteerElderlyNearbyPage.jsx",
   "components/volunteer/VolunteerHistorySummary.jsx",
   "components/volunteer/VolunteerHistoryFilters.jsx",
+  "components/volunteer/VolunteerHistoryStatusTabs.jsx",
   "components/volunteer/VolunteerHistoryCard.jsx",
   "components/volunteer/NearbyElderlyBanner.jsx",
   "components/volunteer/NearbyElderlyCard.jsx",
@@ -223,7 +224,7 @@ for (const [pattern, message] of [
   [/handleViewHistoryDetails/, "VolunteerHistoryPage should implement details click"],
   [/handleContactElderly/, "VolunteerHistoryPage should implement contact action"],
   [/VolunteerHistorySummary/, "VolunteerHistoryPage should render summary"],
-  [/VolunteerHistoryFilters/, "VolunteerHistoryPage should render filters"],
+  [/VolunteerHistoryStatusTabs/, "VolunteerHistoryPage should render status tabs"],
   [/VolunteerHistoryCard/, "VolunteerHistoryPage should render cards"],
 ]) {
   assert.match(historyPage, pattern, message);
@@ -236,16 +237,20 @@ for (const text of ["Total de ajudas", "Concluídas"]) {
 }
 
 const historyFilters = readSrc("components/volunteer/VolunteerHistoryFilters.jsx");
+const historyStatusTabs = readSrc("components/volunteer/VolunteerHistoryStatusTabs.jsx");
 
 for (const text of ["Todos", "Em Andamento", "Concluídos"]) {
   assert.match(historyFilters, new RegExp(text), `VolunteerHistoryFilters should include ${text}`);
+  assert.match(historyStatusTabs, new RegExp(text), `VolunteerHistoryStatusTabs should include ${text}`);
 }
 
 for (const [pattern, message] of [
-  [/isActive/, "VolunteerHistoryFilters should style the active filter"],
-  [/onFilterChange/, "VolunteerHistoryFilters should notify filter changes"],
+  [/historyStatusOptions/, "VolunteerHistoryStatusTabs should expose status options enum"],
+  [/isActive/, "VolunteerHistoryStatusTabs should style the active filter"],
+  [/onStatusChange/, "VolunteerHistoryStatusTabs should notify filter changes"],
+  [/aria-pressed/, "VolunteerHistoryStatusTabs should expose active state accessibly"],
 ]) {
-  assert.match(historyFilters, pattern, message);
+  assert.match(historyStatusTabs, pattern, message);
 }
 
 const historyCard = readSrc("components/volunteer/VolunteerHistoryCard.jsx");
@@ -550,6 +555,15 @@ assert.deepEqual(
   volunteerHistoryModule.getVolunteerHistorySummary(volunteerHistory),
   { total: 2, completed: 1 },
   "getVolunteerHistorySummary should calculate history indicators",
+);
+
+assert.deepEqual(
+  volunteerHistoryModule.buildVolunteerHistoryQueryParams({
+    volunteerId: 7,
+    activeHistoryFilter: "completed",
+  }),
+  { volunteerId: 7, status: "completed" },
+  "buildVolunteerHistoryQueryParams should prepare future API status params",
 );
 
 const nearbyElderly = await nearbyElderlyModule.getNearbyElderly({
