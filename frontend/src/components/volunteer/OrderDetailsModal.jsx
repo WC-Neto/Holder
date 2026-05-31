@@ -40,10 +40,11 @@ function OrderDetailsModal({
   isAcceptBlocked = false,
   onClose,
   onAcceptOrder,
+  onFinishOrder,
 }) {
   const elderSummary = order?.elderSummary;
   const actionLabel = isAccepted
-    ? "Pedido aceito"
+    ? "Finalizar ajuda"
     : isAcceptBlocked
       ? "Atividade em andamento"
       : "Ajudar agora";
@@ -142,8 +143,9 @@ function OrderDetailsModal({
             </Button>
             <Button
               variant="contained"
-              disabled={isAccepted}
-              onClick={() => onAcceptOrder?.(order)}
+              onClick={() =>
+                isAccepted ? onFinishOrder?.(order) : onAcceptOrder?.(order)
+              }
               sx={{
                 bgcolor: isAcceptBlocked ? "#96C0BE" : "#e4a0aa",
                 textTransform: "none",

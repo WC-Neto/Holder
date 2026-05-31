@@ -123,3 +123,34 @@ export async function acceptOrder({ orderId, volunteerId, shouldFail = false } =
     status: "em_andamento",
   };
 }
+
+export async function finishOrder({
+  orderId,
+  volunteerId,
+  report,
+  shouldFail = false,
+} = {}) {
+  if (!orderId) {
+    throw new Error("Pedido inválido");
+  }
+
+  if (!volunteerId) {
+    throw new Error("Voluntário inválido");
+  }
+
+  if (!report?.trim()) {
+    throw new Error("Relatório obrigatório");
+  }
+
+  if (shouldFail) {
+    throw new Error("Não foi possível finalizar a ajuda");
+  }
+
+  // Futuramente: PATCH /pedidos/{orderId}/finalizar com relatório no payload.
+  return {
+    id: orderId,
+    volunteerId,
+    status: "concluido",
+    report: report.trim(),
+  };
+}

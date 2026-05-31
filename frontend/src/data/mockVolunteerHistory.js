@@ -9,6 +9,7 @@ export const mockVolunteerHistory = [
     status: "in_progress",
     statusLabel: "EM ANDAMENTO",
     details: "Ajuda aceita para compras no mercado do bairro.",
+    completionReport: "",
   },
   {
     id: 2,
@@ -20,5 +21,7 @@ export const mockVolunteerHistory = [
     status: "completed",
     statusLabel: "CONCLUÍDO",
     details: "Passeio concluído com acompanhamento no parque.",
+    completionReport:
+      "Passeio realizado no parque, idoso retornou em segurança e confirmou que não precisava de apoio adicional.",
   },
 ];

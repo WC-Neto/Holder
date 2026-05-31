@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  Divider,
   Snackbar,
   Stack,
   Typography,
@@ -148,6 +149,23 @@ function VolunteerHistoryPage() {
                 <Typography sx={{ color: "#667085", fontSize: 14 }}>
                   {selectedHistoryItem.details}
                 </Typography>
+                <Divider />
+                <Box>
+                  <Typography
+                    sx={{
+                      color: "#98a1b0",
+                      fontSize: 12,
+                      fontWeight: 900,
+                      mb: 0.6,
+                    }}
+                  >
+                    Relatório da finalização
+                  </Typography>
+                  <Typography sx={{ color: "#667085", fontSize: 14, lineHeight: 1.55 }}>
+                    {selectedHistoryItem.completionReport ||
+                      "Relatório disponível quando a ajuda for finalizada."}
+                  </Typography>
+                </Box>
               </Stack>
             </DialogContent>
           </>
