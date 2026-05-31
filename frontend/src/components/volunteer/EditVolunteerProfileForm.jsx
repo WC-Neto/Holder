@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Box,
   Button,
   Checkbox,
@@ -56,6 +57,10 @@ export function validateProfileForm(formData) {
     errors.phone = "Informe um telefone válido com DDD.";
   }
 
+  if (!formData.availability || formData.availability.length === 0) {
+    errors.availability = "Selecione pelo menos um período.";
+  }
+
   return errors;
 }
 
@@ -71,6 +76,7 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
   const [imagePreview, setImagePreview] = useState("");
   const [nameError, setNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
+  const [availabilityError, setAvailabilityError] = useState("");
   const previewRef = useRef(null);
   const [dragState, setDragState] = useState(null);
   const objectPosition = `${formData.avatarPosition.x}% ${formData.avatarPosition.y}%`;
@@ -93,6 +99,7 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
     setImagePreview(initialAvatarUrl);
     setNameError("");
     setPhoneError("");
+    setAvailabilityError("");
   }, [profile]);
 
   const handleInputChange = (field) => (event) => {
@@ -179,6 +186,7 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
           : [...currentData.availability, period],
       };
     });
+    setAvailabilityError("");
   };
 
   const handleSubmit = (event) => {
@@ -187,6 +195,7 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
 
     setNameError(validationErrors.name ?? "");
     setPhoneError(validationErrors.phone ?? "");
+    setAvailabilityError(validationErrors.availability ?? "");
 
     if (Object.keys(validationErrors).length > 0) {
       return;
@@ -310,6 +319,11 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
               />
             ))}
           </Stack>
+          {availabilityError && (
+            <Alert severity="error" variant="outlined" sx={{ mt: 1 }}>
+              {availabilityError}
+            </Alert>
+          )}
         </Box>
 
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} justifyContent="flex-end">

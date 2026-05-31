@@ -19,7 +19,9 @@ const requiredFiles = [
   "components/volunteer/EditVolunteerProfileForm.jsx",
   "components/volunteer/VolunteerProfileStats.jsx",
   "components/volunteer/AvailabilityTags.jsx",
+  "components/volunteer/AvailabilityCard.jsx",
   "components/volunteer/PersonalInfoList.jsx",
+  "components/volunteer/EditAvailabilityForm.jsx",
   "components/volunteer/VolunteerSettingsMenu.jsx",
   "components/volunteer/SettingsMenuItem.jsx",
   "components/volunteer/VolunteerSettingsList.jsx",
@@ -233,13 +235,18 @@ for (const text of [
 for (const [pattern, message] of [
   [/getVolunteerProfile/, "VolunteerProfilePage should load volunteer profile"],
   [/updateVolunteerProfile/, "VolunteerProfilePage should save profile updates"],
+  [/updateVolunteerAvailability/, "VolunteerProfilePage should save availability updates"],
   [/isEditProfileOpen/, "VolunteerProfilePage should open edit profile modal"],
+  [/isEditAvailabilityOpen/, "VolunteerProfilePage should open availability edit modal"],
   [/isSavingProfile/, "VolunteerProfilePage should track save loading"],
+  [/isSavingAvailability/, "VolunteerProfilePage should track availability save loading"],
   [/profileFeedback/, "VolunteerProfilePage should show success and error feedback"],
   [/handleEditProfile/, "VolunteerProfilePage should handle edit profile action"],
   [/handleSaveProfile/, "VolunteerProfilePage should handle profile save"],
+  [/handleSaveAvailability/, "VolunteerProfilePage should handle availability save"],
   [/VolunteerProfileCard/, "VolunteerProfilePage should render profile card"],
   [/EditVolunteerProfileForm/, "VolunteerProfilePage should render edit form"],
+  [/EditAvailabilityForm/, "VolunteerProfilePage should render availability form"],
   [/VolunteerSettingsMenu/, "VolunteerProfilePage should render settings menu"],
   [/profileData/, "VolunteerProfilePage should keep profile data state"],
 ]) {
@@ -288,6 +295,7 @@ for (const [pattern, message] of [
   [/validateProfileForm/, "EditVolunteerProfileForm should validate profile fields before saving"],
   [/nameError/, "EditVolunteerProfileForm should validate volunteer name"],
   [/phoneError/, "EditVolunteerProfileForm should validate volunteer phone"],
+  [/availabilityError/, "EditVolunteerProfileForm should require at least one availability period"],
   [/availabilityOptions/, "EditVolunteerProfileForm should reuse availability selection"],
   [/onSave/, "EditVolunteerProfileForm should expose save callback"],
   [/isSaving/, "EditVolunteerProfileForm should show loading state"],
@@ -311,6 +319,41 @@ const availabilityTags = readSrc("components/volunteer/AvailabilityTags.jsx");
 
 for (const text of ["Manhã", "Tarde", "Noite"]) {
   assert.match(availabilityTags, new RegExp(text), `AvailabilityTags should include ${text}`);
+}
+
+const availabilityCard = readSrc("components/volunteer/AvailabilityCard.jsx");
+
+for (const text of ["period", "selected", "onToggle"]) {
+  assert.match(availabilityCard, new RegExp(text), `AvailabilityCard should include ${text}`);
+}
+
+for (const [pattern, message] of [
+  [/LightModeOutlinedIcon/, "AvailabilityCard should render morning icon"],
+  [/WbTwilightOutlinedIcon/, "AvailabilityCard should render afternoon icon"],
+  [/NightsStayOutlinedIcon/, "AvailabilityCard should render night icon"],
+  [/aria-pressed/, "AvailabilityCard should expose selected state accessibly"],
+]) {
+  assert.match(availabilityCard, pattern, message);
+}
+
+const editAvailabilityForm = readSrc("components/volunteer/EditAvailabilityForm.jsx");
+
+for (const text of ["Manhã", "Tarde", "Noite", "Salvar alterações", "Cancelar"]) {
+  assert.match(
+    editAvailabilityForm,
+    new RegExp(text),
+    `EditAvailabilityForm should include ${text}`,
+  );
+}
+
+for (const [pattern, message] of [
+  [/selectedAvailability/, "EditAvailabilityForm should keep selected availability state"],
+  [/AvailabilityCard/, "EditAvailabilityForm should reuse AvailabilityCard"],
+  [/validateAvailabilitySelection/, "EditAvailabilityForm should validate at least one period"],
+  [/onSave/, "EditAvailabilityForm should expose save callback"],
+  [/isSaving/, "EditAvailabilityForm should show loading state"],
+]) {
+  assert.match(editAvailabilityForm, pattern, message);
 }
 
 const personalInfoList = readSrc("components/volunteer/PersonalInfoList.jsx");
@@ -750,6 +793,38 @@ assert.deepEqual(
     availability: ["Manhã", "Noite"],
   },
   "updateVolunteerProfile should merge mocked profile updates",
+);
+
+assert.deepEqual(
+  await volunteerProfileModule.updateVolunteerAvailability({
+    volunteerId: 7,
+    availability: ["Tarde", "Noite"],
+  }),
+  {
+    ...volunteerProfile,
+    availability: ["Tarde", "Noite"],
+  },
+  "updateVolunteerAvailability should update mocked availability",
+);
+
+await assert.rejects(
+  () =>
+    volunteerProfileModule.updateVolunteerAvailability({
+      volunteerId: 7,
+      availability: [],
+    }),
+  /Selecione pelo menos um período/,
+  "updateVolunteerAvailability should require at least one period",
+);
+
+await assert.rejects(
+  () =>
+    volunteerProfileModule.updateVolunteerProfile({
+      volunteerId: 7,
+      updates: { availability: [] },
+    }),
+  /Selecione pelo menos um período/,
+  "updateVolunteerProfile should not allow empty availability",
 );
 
 await assert.rejects(
