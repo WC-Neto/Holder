@@ -5,7 +5,6 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Grid,
   Snackbar,
   Typography,
 } from "@mui/material";
@@ -22,8 +21,6 @@ import {
 
 const MOCK_VOLUNTEER_ID = 1;
 const profilePageCopy = {
-  settingsTitle: "Configurações",
-  logoutLabel: "Sair da Conta",
   versionLabel: "Versão 1.0.0",
 };
 
@@ -36,11 +33,20 @@ function VolunteerProfilePage({ onLogout }) {
   const [profileFeedback, setProfileFeedback] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
     const profileQueryParams = buildVolunteerProfileQueryParams({
       volunteerId: MOCK_VOLUNTEER_ID,
     });
 
-    getVolunteerProfile(profileQueryParams).then(setProfileData);
+    getVolunteerProfile(profileQueryParams).then((profile) => {
+      if (isMounted) {
+        setProfileData(profile);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleEditProfile = () => {
@@ -128,18 +134,32 @@ function VolunteerProfilePage({ onLogout }) {
         px: { xs: 2, md: 4 },
         py: { xs: 3, md: 3.5 },
         minHeight: "100vh",
+        maxWidth: "100%",
         bgcolor: "#fbfbfc",
+        overflowX: "hidden",
       }}
     >
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            md: "minmax(340px, 0.9fr) minmax(420px, 1.3fr)",
+            xl: "minmax(420px, 0.9fr) minmax(560px, 1.5fr)",
+          },
+          gap: 3,
+          alignItems: "start",
+          width: "100%",
+        }}
+      >
+        <Box sx={{ minWidth: 0 }}>
           <VolunteerProfileCard
             profile={profileData}
             onEditProfile={handleEditProfile}
           />
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={8}>
+        <Box sx={{ minWidth: 0 }}>
           <VolunteerSettingsMenu
             onNavigate={handleSettingsNavigate}
             onLogout={onLogout}
@@ -154,8 +174,8 @@ function VolunteerProfilePage({ onLogout }) {
           >
             Versão {profileData?.appVersion ?? profilePageCopy.versionLabel.replace("Versão ", "")}
           </Typography>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       <Dialog
         open={isEditProfileOpen}

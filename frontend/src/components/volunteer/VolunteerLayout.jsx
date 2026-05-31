@@ -11,7 +11,7 @@ import {
 import VolunteerSidebar from "./VolunteerSidebar";
 import VolunteerHomePage from "./pages/VolunteerHomePage";
 import VolunteerHistoryPage from "./pages/VolunteerHistoryPage";
-import IdososPage from "./pages/IdososPage";
+import VolunteerElderlyNearbyPage from "./pages/VolunteerElderlyNearbyPage";
 import VolunteerProfilePage from "./pages/VolunteerProfilePage";
 
 const volunteerPagePaths = {
@@ -81,7 +81,7 @@ function VolunteerLayout({ onLogout }) {
       case "historico":
         return <VolunteerHistoryPage />;
       case "idosos":
-        return <IdososPage />;
+        return <VolunteerElderlyNearbyPage />;
       case "perfil":
         return <VolunteerProfilePage onLogout={handleLogoutRequest} />;
       default:
@@ -95,7 +95,16 @@ function VolunteerLayout({ onLogout }) {
   };
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#fafafa" }}>
+    <Box
+      sx={{
+        display: "flex",
+        width: "100%",
+        maxWidth: "100%",
+        minHeight: "100vh",
+        bgcolor: "#fafafa",
+        overflowX: "hidden",
+      }}
+    >
       <VolunteerSidebar
         currentPage={currentPage}
         onPageChange={handlePageChange}
@@ -105,9 +114,13 @@ function VolunteerLayout({ onLogout }) {
         component="main"
         sx={{
           flex: 1,
+          minWidth: 0,
           ml: { xs: 0, sm: "250px" },
+          pb: { xs: 9, sm: 0 },
           transition: "margin-left 0.3s",
+          maxWidth: "100%",
           overflowY: "auto",
+          overflowX: "hidden",
         }}
       >
         {renderContent()}

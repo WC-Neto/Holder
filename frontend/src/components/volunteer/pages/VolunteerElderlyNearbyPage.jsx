@@ -52,6 +52,8 @@ function VolunteerElderlyNearbyPage() {
 
   const handleCloseDetails = () => {
     setIsDetailsOpen(false);
+    setSelectedElderlyId(null);
+    setSelectedElderly(null);
   };
 
   const handleToggleInterest = (elderly) => {
@@ -67,7 +69,7 @@ function VolunteerElderlyNearbyPage() {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#fbfbfc" }}>
+    <Box sx={{ minHeight: "100vh", maxWidth: "100%", bgcolor: "#fbfbfc", overflowX: "hidden" }}>
       <Box sx={{ px: { xs: 2, md: 4 }, pt: { xs: 3, md: 3.5 }, pb: 2.5 }}>
         <Typography
           component="h1"
@@ -93,7 +95,8 @@ function VolunteerElderlyNearbyPage() {
               display: "grid",
               gridTemplateColumns: {
                 xs: "1fr",
-                lg: "repeat(3, minmax(0, 1fr))",
+                md: "repeat(2, minmax(0, 1fr))",
+                xl: "repeat(3, minmax(0, 1fr))",
               },
               gap: 2,
             }}

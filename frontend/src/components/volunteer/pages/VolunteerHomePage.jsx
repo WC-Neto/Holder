@@ -7,7 +7,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Grid,
   Snackbar,
   Stack,
   Typography,
@@ -35,6 +34,11 @@ const INITIAL_VISIBLE_ORDERS = 3;
 const LOAD_MORE_STEP = 3;
 const SEARCH_DEBOUNCE_MS = 300;
 const MOCK_VOLUNTEER_ID = 1;
+const INITIAL_VOLUNTEER_STATS = {
+  peopleHelped: 0,
+  completedOrders: 0,
+  averageRating: 0,
+};
 
 const pageCopy = {
   title: "Pedidos Disponíveis",
@@ -63,6 +67,7 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
   const [acceptedOrderId, setAcceptedOrderId] = useState(null);
   const [acceptedOrderStatus, setAcceptedOrderStatus] = useState(null);
   const [orderToFinish, setOrderToFinish] = useState(null);
+  const [volunteerStats, setVolunteerStats] = useState(INITIAL_VOLUNTEER_STATS);
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [feedbackSeverity, setFeedbackSeverity] = useState("success");
 
@@ -270,7 +275,9 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
         px: { xs: 2, md: 4 },
         py: { xs: 3, md: 3.5 },
         minHeight: "100vh",
+        maxWidth: "100%",
         bgcolor: "#fbfbfc",
+        overflowX: "hidden",
       }}
     >
       <VolunteerHomeHeader totalNeeded={filteredOrders.length} title={pageCopy.title} />
@@ -286,8 +293,20 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
         onFilterChange={handleFilterChange}
       />
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} lg={8.7}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            lg: "minmax(0, 1fr) 300px",
+            xl: "minmax(0, 1fr) 320px",
+          },
+          gap: 3,
+          alignItems: "start",
+          width: "100%",
+        }}
+      >
+        <Box sx={{ minWidth: 0 }}>
           {visibleOrders.length > 0 ? (
             <Stack spacing={2}>
               <Box
@@ -296,6 +315,7 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
                   gridTemplateColumns: {
                     xs: "1fr",
                     md: "repeat(2, minmax(0, 1fr))",
+                    xl: "repeat(3, minmax(0, 1fr))",
                   },
                   gap: 2,
                 }}
@@ -346,18 +366,18 @@ function VolunteerHomePage({ nearbyEldersCount = 3, onNavigateToElders }) {
               </Typography>
             </Box>
           )}
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} lg={3.3}>
+        <Box sx={{ minWidth: 0 }}>
           <Stack spacing={3} sx={{ position: { lg: "sticky" }, top: 24 }}>
             <VolunteerCommunityCard
               nearbyEldersCount={dashboardSummary.nearbyEldersNeedingHelp}
               onViewElders={handleViewElders}
             />
-            <VolunteerStatsCard peopleHelped={24} tasksCompleted={38} avgRating={4.9} />
+            <VolunteerStatsCard stats={volunteerStats} />
           </Stack>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       <OrderDetailsModal
         open={isDetailsOpen}
