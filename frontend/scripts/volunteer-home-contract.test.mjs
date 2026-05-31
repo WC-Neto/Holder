@@ -49,6 +49,7 @@ const requiredFiles = [
   "data/mockVolunteerProfile.js",
   "data/mockNearbyElderly.js",
   "data/mockVolunteerStats.js",
+  "services/authSession.js",
   "services/availableOrders.js",
   "services/volunteerHistory.js",
   "services/volunteerProfile.js",
@@ -215,7 +216,11 @@ const layout = readSrc("components/volunteer/VolunteerLayout.jsx");
 for (const [pattern, message] of [
   [/volunteerPagePaths/, "VolunteerLayout should map volunteer pages to URLs"],
   [/\/voluntario\/idosos/, "VolunteerLayout should prepare the elders route"],
+  [/\/login/, "VolunteerLayout should prepare login redirect"],
   [/onNavigateToElders/, "VolunteerLayout should pass elders navigation to the home"],
+  [/isLogoutConfirmOpen/, "VolunteerLayout should confirm logout before ending session"],
+  [/handleLogoutRequest/, "VolunteerLayout should reuse logout request from sidebar and profile"],
+  [/handleConfirmLogout/, "VolunteerLayout should execute confirmed logout"],
   [/VolunteerHistoryPage/, "VolunteerLayout should render volunteer history page"],
   [/VolunteerProfilePage/, "VolunteerLayout should render volunteer profile page"],
 ]) {
@@ -592,6 +597,10 @@ const volunteerProfileModule = await import(
   pathToFileURL(join(src, "services/volunteerProfile.js")).href,
 );
 
+const authSessionModule = await import(
+  pathToFileURL(join(src, "services/authSession.js")).href,
+);
+
 const volunteerStatsModule = await import(
   pathToFileURL(join(src, "services/volunteerStats.js")).href,
 );
@@ -793,6 +802,51 @@ assert.deepEqual(
     availability: ["Manhã", "Noite"],
   },
   "updateVolunteerProfile should merge mocked profile updates",
+);
+
+const removedLocalKeys = [];
+const removedSessionKeys = [];
+const fakeLocalStorage = {
+  removeItem: (key) => removedLocalKeys.push(key),
+};
+const fakeSessionStorage = {
+  removeItem: (key) => removedSessionKeys.push(key),
+};
+const fakeWindow = {
+  location: { pathname: "/voluntario/perfil" },
+  history: {
+    replaceState: (_, __, nextPath) => {
+      fakeWindow.location.pathname = nextPath;
+    },
+  },
+};
+
+assert.deepEqual(
+  authSessionModule.logout({
+    localStorage: fakeLocalStorage,
+    sessionStorage: fakeSessionStorage,
+    windowRef: fakeWindow,
+  }),
+  { redirectTo: "/login" },
+  "logout should redirect to login",
+);
+
+assert.deepEqual(
+  removedLocalKeys,
+  ["token", "idoso_id_manual", "user", "volunteer_user", "auth_user"],
+  "logout should clear sensitive local storage keys",
+);
+
+assert.deepEqual(
+  removedSessionKeys,
+  ["token", "idoso_id_manual", "user", "volunteer_user", "auth_user"],
+  "logout should clear sensitive session storage keys",
+);
+
+assert.equal(
+  fakeWindow.location.pathname,
+  "/login",
+  "logout should update browser path to login",
 );
 
 assert.deepEqual(

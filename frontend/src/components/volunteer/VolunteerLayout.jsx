@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Box } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import VolunteerSidebar from "./VolunteerSidebar";
 import VolunteerHomePage from "./pages/VolunteerHomePage";
 import VolunteerHistoryPage from "./pages/VolunteerHistoryPage";
@@ -12,6 +20,7 @@ const volunteerPagePaths = {
   idosos: "/voluntario/idosos",
   perfil: "/voluntario/perfil",
 };
+const loginRedirectPath = "/login";
 
 function getVolunteerPageFromPath(pathname) {
   const matchedPage = Object.entries(volunteerPagePaths).find(
@@ -25,6 +34,7 @@ function VolunteerLayout({ onLogout }) {
   const [currentPage, setCurrentPage] = useState(() =>
     getVolunteerPageFromPath(window.location.pathname),
   );
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -46,6 +56,19 @@ function VolunteerLayout({ onLogout }) {
     }
   };
 
+  const handleLogoutRequest = () => {
+    setIsLogoutConfirmOpen(true);
+  };
+
+  const handleCancelLogout = () => {
+    setIsLogoutConfirmOpen(false);
+  };
+
+  const handleConfirmLogout = () => {
+    setIsLogoutConfirmOpen(false);
+    onLogout?.({ redirectTo: loginRedirectPath });
+  };
+
   const renderContent = () => {
     switch (currentPage) {
       case "inicio":
@@ -60,7 +83,7 @@ function VolunteerLayout({ onLogout }) {
       case "idosos":
         return <IdososPage />;
       case "perfil":
-        return <VolunteerProfilePage onLogout={onLogout} />;
+        return <VolunteerProfilePage onLogout={handleLogoutRequest} />;
       default:
         return (
           <VolunteerHomePage
@@ -76,7 +99,7 @@ function VolunteerLayout({ onLogout }) {
       <VolunteerSidebar
         currentPage={currentPage}
         onPageChange={handlePageChange}
-        onLogout={onLogout}
+        onLogout={handleLogoutRequest}
       />
       <Box
         component="main"
@@ -89,6 +112,42 @@ function VolunteerLayout({ onLogout }) {
       >
         {renderContent()}
       </Box>
+
+      <Dialog
+        open={isLogoutConfirmOpen}
+        onClose={handleCancelLogout}
+        aria-labelledby="logout-confirm-title"
+      >
+        <DialogTitle id="logout-confirm-title" sx={{ color: "#20283a", fontWeight: 900 }}>
+          Sair da conta?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ color: "#667085" }}>
+            Sua sessão local será encerrada e você voltará para a tela de login.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleCancelLogout} sx={{ textTransform: "none" }}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleConfirmLogout}
+            variant="contained"
+            sx={{
+              bgcolor: "#ff4d4f",
+              boxShadow: "none",
+              fontWeight: 800,
+              textTransform: "none",
+              "&:hover": {
+                bgcolor: "#e04446",
+                boxShadow: "none",
+              },
+            }}
+          >
+            Sair
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
