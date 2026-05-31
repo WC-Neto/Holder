@@ -4,7 +4,7 @@ import VolunteerSidebar from "./VolunteerSidebar";
 import VolunteerHomePage from "./pages/VolunteerHomePage";
 import VolunteerHistoryPage from "./pages/VolunteerHistoryPage";
 import IdososPage from "./pages/IdososPage";
-import PerfilPage from "./pages/PerfilPage";
+import VolunteerProfilePage from "./pages/VolunteerProfilePage";
 
 const volunteerPagePaths = {
   inicio: "/voluntario",
@@ -60,7 +60,7 @@ function VolunteerLayout({ onLogout }) {
       case "idosos":
         return <IdososPage />;
       case "perfil":
-        return <PerfilPage />;
+        return <VolunteerProfilePage onLogout={onLogout} />;
       default:
         return (
           <VolunteerHomePage
