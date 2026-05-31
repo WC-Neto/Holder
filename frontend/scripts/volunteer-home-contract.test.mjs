@@ -16,6 +16,7 @@ const requiredFiles = [
   "components/volunteer/pages/VolunteerElderlyNearbyPage.jsx",
   "components/volunteer/pages/VolunteerProfilePage.jsx",
   "components/volunteer/VolunteerProfileCard.jsx",
+  "components/volunteer/EditVolunteerProfileForm.jsx",
   "components/volunteer/VolunteerProfileStats.jsx",
   "components/volunteer/AvailabilityTags.jsx",
   "components/volunteer/PersonalInfoList.jsx",
@@ -229,7 +230,14 @@ for (const text of [
 
 for (const [pattern, message] of [
   [/getVolunteerProfile/, "VolunteerProfilePage should load volunteer profile"],
+  [/updateVolunteerProfile/, "VolunteerProfilePage should save profile updates"],
+  [/isEditProfileOpen/, "VolunteerProfilePage should open edit profile modal"],
+  [/isSavingProfile/, "VolunteerProfilePage should track save loading"],
+  [/profileFeedback/, "VolunteerProfilePage should show success and error feedback"],
+  [/handleEditProfile/, "VolunteerProfilePage should handle edit profile action"],
+  [/handleSaveProfile/, "VolunteerProfilePage should handle profile save"],
   [/VolunteerProfileCard/, "VolunteerProfilePage should render profile card"],
+  [/EditVolunteerProfileForm/, "VolunteerProfilePage should render edit form"],
   [/VolunteerSettingsList/, "VolunteerProfilePage should render settings list"],
   [/profileData/, "VolunteerProfilePage should keep profile data state"],
 ]) {
@@ -246,10 +254,50 @@ for (const [pattern, message] of [
   [/VolunteerProfileStats/, "VolunteerProfileCard should render volunteer stats"],
   [/AvailabilityTags/, "VolunteerProfileCard should render availability tags"],
   [/PersonalInfoList/, "VolunteerProfileCard should render personal info"],
+  [/onEditProfile/, "VolunteerProfileCard should expose edit profile callback"],
   [/avatarUrl/, "VolunteerProfileCard should show volunteer photo"],
 ]) {
   assert.match(profileCard, pattern, message);
 }
+
+const editProfileForm = readSrc("components/volunteer/EditVolunteerProfileForm.jsx");
+
+for (const text of [
+  "Foto",
+  "Nome",
+  "Telefone",
+  "Endereço",
+  "Disponibilidade",
+  "Salvar alterações",
+  "Cancelar",
+]) {
+  assert.match(editProfileForm, new RegExp(text), `EditVolunteerProfileForm should include ${text}`);
+}
+
+for (const [pattern, message] of [
+  [/profile/, "EditVolunteerProfileForm should receive current profile data"],
+  [/formData/, "EditVolunteerProfileForm should keep editable form data"],
+  [/avatarUrl/, "EditVolunteerProfileForm should prepare photo editing"],
+  [/type="file"/, "EditVolunteerProfileForm should allow choosing a local image"],
+  [/imagePreview/, "EditVolunteerProfileForm should show selected image preview"],
+  [/objectPosition/, "EditVolunteerProfileForm should allow adjusting image center"],
+  [/handleAvatarDragStart/, "EditVolunteerProfileForm should let users drag the photo preview"],
+  [/formatPhoneNumber/, "EditVolunteerProfileForm should format phone while typing"],
+  [/validateProfileForm/, "EditVolunteerProfileForm should validate profile fields before saving"],
+  [/nameError/, "EditVolunteerProfileForm should validate volunteer name"],
+  [/phoneError/, "EditVolunteerProfileForm should validate volunteer phone"],
+  [/availabilityOptions/, "EditVolunteerProfileForm should reuse availability selection"],
+  [/onSave/, "EditVolunteerProfileForm should expose save callback"],
+  [/isSaving/, "EditVolunteerProfileForm should show loading state"],
+]) {
+  assert.match(editProfileForm, pattern, message);
+}
+
+assert.doesNotMatch(
+  editProfileForm,
+  /Slider|Centro horizontal|Centro vertical/,
+  "EditVolunteerProfileForm should not use separate image adjustment buttons or sliders",
+);
 
 const profileStats = readSrc("components/volunteer/VolunteerProfileStats.jsx");
 
@@ -672,6 +720,53 @@ assert.deepEqual(
   volunteerProfileModule.buildVolunteerProfileQueryParams({ volunteerId: 7 }),
   { volunteerId: 7 },
   "buildVolunteerProfileQueryParams should prepare future profile API params",
+);
+
+assert.deepEqual(
+  await volunteerProfileModule.updateVolunteerProfile({
+    volunteerId: 7,
+    updates: {
+      name: "Ana Maria",
+      personalInfo: { phone: "(11) 98888-0000" },
+      availability: ["Manhã", "Noite"],
+    },
+  }),
+  {
+    ...volunteerProfile,
+    name: "Ana Maria",
+    personalInfo: {
+      ...volunteerProfile.personalInfo,
+      phone: "(11) 98888-0000",
+    },
+    availability: ["Manhã", "Noite"],
+  },
+  "updateVolunteerProfile should merge mocked profile updates",
+);
+
+await assert.rejects(
+  () => volunteerProfileModule.updateVolunteerProfile({ updates: { name: "" } }),
+  /Voluntário inválido/,
+  "updateVolunteerProfile should validate volunteer id",
+);
+
+await assert.rejects(
+  () =>
+    volunteerProfileModule.updateVolunteerProfile({
+      volunteerId: 7,
+      updates: { name: "A" },
+    }),
+  /Nome inválido/,
+  "updateVolunteerProfile should validate volunteer name",
+);
+
+await assert.rejects(
+  () =>
+    volunteerProfileModule.updateVolunteerProfile({
+      volunteerId: 7,
+      updates: { personalInfo: { phone: "123" } },
+    }),
+  /Telefone inválido/,
+  "updateVolunteerProfile should validate volunteer phone",
 );
 
 const nearbyElderly = await nearbyElderlyModule.getNearbyElderly({

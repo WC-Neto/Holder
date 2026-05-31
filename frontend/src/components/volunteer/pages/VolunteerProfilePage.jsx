@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Box, Grid, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  Snackbar,
+  Typography,
+} from "@mui/material";
+import EditVolunteerProfileForm from "../EditVolunteerProfileForm";
 import VolunteerProfileCard from "../VolunteerProfileCard";
 import VolunteerSettingsList from "../VolunteerSettingsList";
 import {
   buildVolunteerProfileQueryParams,
   getVolunteerProfile,
+  updateVolunteerProfile,
 } from "../../../services/volunteerProfile";
 
 const MOCK_VOLUNTEER_ID = 1;
@@ -16,6 +27,9 @@ const profilePageCopy = {
 
 function VolunteerProfilePage({ onLogout }) {
   const [profileData, setProfileData] = useState(null);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [profileFeedback, setProfileFeedback] = useState(null);
 
   useEffect(() => {
     const profileQueryParams = buildVolunteerProfileQueryParams({
@@ -24,6 +38,41 @@ function VolunteerProfilePage({ onLogout }) {
 
     getVolunteerProfile(profileQueryParams).then(setProfileData);
   }, []);
+
+  const handleEditProfile = () => {
+    setIsEditProfileOpen(true);
+  };
+
+  const handleCloseEditProfile = () => {
+    if (!isSavingProfile) {
+      setIsEditProfileOpen(false);
+    }
+  };
+
+  const handleSaveProfile = async (updates) => {
+    setIsSavingProfile(true);
+
+    try {
+      const updatedProfile = await updateVolunteerProfile({
+        volunteerId: MOCK_VOLUNTEER_ID,
+        updates,
+      });
+
+      setProfileData(updatedProfile);
+      setProfileFeedback({
+        severity: "success",
+        message: "Perfil atualizado com sucesso.",
+      });
+      setIsEditProfileOpen(false);
+    } catch (error) {
+      setProfileFeedback({
+        severity: "error",
+        message: error?.message ?? "Não foi possível atualizar o perfil.",
+      });
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
 
   return (
     <Box
@@ -36,7 +85,10 @@ function VolunteerProfilePage({ onLogout }) {
     >
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
-          <VolunteerProfileCard profile={profileData} />
+          <VolunteerProfileCard
+            profile={profileData}
+            onEditProfile={handleEditProfile}
+          />
         </Grid>
 
         <Grid item xs={12} md={8}>
@@ -53,6 +105,40 @@ function VolunteerProfilePage({ onLogout }) {
           </Typography>
         </Grid>
       </Grid>
+
+      <Dialog
+        open={isEditProfileOpen}
+        onClose={handleCloseEditProfile}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle sx={{ color: "#20283a", fontWeight: 900 }}>
+          Editar Perfil
+        </DialogTitle>
+        <DialogContent>
+          <EditVolunteerProfileForm
+            profile={profileData}
+            isSaving={isSavingProfile}
+            onCancel={handleCloseEditProfile}
+            onSave={handleSaveProfile}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Snackbar
+        open={Boolean(profileFeedback)}
+        autoHideDuration={3000}
+        onClose={() => setProfileFeedback(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          severity={profileFeedback?.severity ?? "success"}
+          variant="filled"
+          onClose={() => setProfileFeedback(null)}
+        >
+          {profileFeedback?.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
