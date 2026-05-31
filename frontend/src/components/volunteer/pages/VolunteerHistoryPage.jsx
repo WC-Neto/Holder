@@ -10,9 +10,10 @@ import {
   Typography,
 } from "@mui/material";
 import VolunteerHistoryCard from "../VolunteerHistoryCard";
-import VolunteerHistoryFilters from "../VolunteerHistoryFilters";
+import VolunteerHistoryStatusTabs from "../VolunteerHistoryStatusTabs";
 import VolunteerHistorySummary from "../VolunteerHistorySummary";
 import {
+  buildVolunteerHistoryQueryParams,
   filterVolunteerHistory,
   getVolunteerHistory,
   getVolunteerHistorySummary,
@@ -27,7 +28,12 @@ function VolunteerHistoryPage() {
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
   useEffect(() => {
-    getVolunteerHistory({ volunteerId: MOCK_VOLUNTEER_ID }).then(setHistoryItems);
+    const historyQueryParams = buildVolunteerHistoryQueryParams({
+      volunteerId: MOCK_VOLUNTEER_ID,
+      activeHistoryFilter,
+    });
+
+    getVolunteerHistory(historyQueryParams).then(setHistoryItems);
   }, []);
 
   const filteredHistory = useMemo(
@@ -75,9 +81,9 @@ function VolunteerHistoryPage() {
           completed={historySummary.completed}
         />
 
-        <VolunteerHistoryFilters
-          activeFilter={activeHistoryFilter}
-          onFilterChange={setActiveHistoryFilter}
+        <VolunteerHistoryStatusTabs
+          activeStatus={activeHistoryFilter}
+          onStatusChange={setActiveHistoryFilter}
         />
 
         {filteredHistory.length > 0 ? (
