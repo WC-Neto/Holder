@@ -86,9 +86,16 @@ class UsuarioResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class NecessidadeEspecialResponse(BaseModel):
+    id: int
+    necessidade: NecessidadesEspeciais
+
+    class Config:
+        from_attributes = True
+        
 class IdosoResponse(UsuarioResponse):
     enderecos: list[EnderecoResponse]
-    necessidades_especiais: list[NecessidadesEspeciais]
+    necessidades_especiais: list[NecessidadeEspecialResponse]
     tamanho_fonte: int
     alto_contraste: bool
 
@@ -172,3 +179,14 @@ class Prioridade(str, Enum):
     baixa = "baixa"
     media = "media"
     alta = "alta"
+    
+    
+'''
+[{"cep": "79000-000", "logradouro": "Rua das Flores", "numero": "123", "bairro": "Centro", "cidade": "Três Lagoas", "estado": "MS"}]
+
+["baixa_visao", "cadeirante"]
+
+[{"dia_semana":"segunda","periodo":"matutino"},{"dia_semana":"terca","periodo":"vespertino"}]
+
+
+'''

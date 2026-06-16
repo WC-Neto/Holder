@@ -92,42 +92,44 @@ async def criar_idoso(
     except (json.JSONDecodeError, TypeError, KeyError):
         raise HTTPException(status_code=400, detail="Erro no formato do enderecos_json")
 
- 
-   
     try:
-        conteudo = necessidades_json.strip().strip('"').strip("'")
-        
-      
-        if not conteudo.startswith("["):
-            conteudo = f'["{conteudo}"]'
-            
-      
-        conteudo = necessidades_json.strip() if necessidades_json else "[]"
-        
-    
-        necessidades = json.loads(conteudo)
 
-        if isinstance(necessidades, str):
-            necessidades = json.loads(necessidades)
-            
-       
-        if isinstance(necessidades, list):
-            for necessidade in necessidades:
-                db.add(models.NecessidadeEspecialIdoso(
-                    necessidade=str(necessidade).strip(),
-                    idoso_id=novo_idoso.id
-                ))
-    except (json.JSONDecodeError, TypeError) as e:
-    
+        if necessidades_json.startswith("["):
+            necessidades_raw = json.loads(necessidades_json)
+        else:
+            necessidades_raw = [
+                n.strip()
+                for n in necessidades_json.split(",")
+                if n.strip()
+            ]
+
+        # garante lista
+        if isinstance(necessidades_raw, str):
+            necessidades_raw = [necessidades_raw]
+
+        necessidades = [
+            schemas.NecessidadesEspeciais(n)
+            for n in necessidades_raw
+        ]
+
+    except (json.JSONDecodeError, ValueError, TypeError):
         raise HTTPException(
-            status_code=400, 
-            detail=f"Erro no JSON: {str(e)}. Recebido: {necessidades_json}"
+            status_code=400,
+            detail=f"necessidades_json inválido: {necessidades_json}"
+        )
+        
+    for necessidade in necessidades:
+        db.add(
+            models.NecessidadeEspecialIdoso(
+                necessidade=necessidade.value,
+                idoso_id=novo_idoso.id
+            )
         )
             
     db.commit()
     db.refresh(novo_idoso)
+
     return novo_idoso
-    
 
 @router_idoso.get("/{idoso_id}", response_model=schemas.IdosoResponse)
 def exibir_perfil_idoso(idoso_id: int, db: Session = Depends(get_db)):

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-import models
+from models import models
 from database import engine, Base
 from controllers.router_usuarios import router_idoso, router_voluntario
 from controllers.router_pedidos import router_pedidos
