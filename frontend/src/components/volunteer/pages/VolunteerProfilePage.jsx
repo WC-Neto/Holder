@@ -19,12 +19,11 @@ import {
   updateVolunteerProfile,
 } from "../../../services/volunteerProfile";
 
-const MOCK_VOLUNTEER_ID = 1;
 const profilePageCopy = {
   versionLabel: "Versão 1.0.0",
 };
 
-function VolunteerProfilePage({ onLogout, isDarkMode = false }) {
+function VolunteerProfilePage({ volunteerId = 1, onLogout, isDarkMode = false }) {
   const [profileData, setProfileData] = useState(null);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isEditAvailabilityOpen, setIsEditAvailabilityOpen] = useState(false);
@@ -35,7 +34,7 @@ function VolunteerProfilePage({ onLogout, isDarkMode = false }) {
   useEffect(() => {
     let isMounted = true;
     const profileQueryParams = buildVolunteerProfileQueryParams({
-      volunteerId: MOCK_VOLUNTEER_ID,
+      volunteerId,
     });
 
     getVolunteerProfile(profileQueryParams).then((profile) => {
@@ -47,7 +46,7 @@ function VolunteerProfilePage({ onLogout, isDarkMode = false }) {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [volunteerId]);
 
   const handleEditProfile = () => {
     setIsEditProfileOpen(true);
@@ -70,7 +69,7 @@ function VolunteerProfilePage({ onLogout, isDarkMode = false }) {
 
     try {
       const updatedProfile = await updateVolunteerProfile({
-        volunteerId: MOCK_VOLUNTEER_ID,
+        volunteerId,
         updates,
       });
 
@@ -108,7 +107,7 @@ function VolunteerProfilePage({ onLogout, isDarkMode = false }) {
 
     try {
       const updatedProfile = await updateVolunteerAvailability({
-        volunteerId: MOCK_VOLUNTEER_ID,
+        volunteerId,
         availability,
       });
 

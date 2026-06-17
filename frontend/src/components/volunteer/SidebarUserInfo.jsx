@@ -1,9 +1,9 @@
 import React from "react";
 import { Avatar, Box, Typography } from "@mui/material";
 
-function SidebarUserInfo() {
+function SidebarUserInfo({ currentUser }) {
   const user = {
-    name: "Ana Santos",
+    name: currentUser?.name ?? "Ana Santos",
     type: "Voluntário",
     avatar: "https://i.pravatar.cc/80?img=47",
   };

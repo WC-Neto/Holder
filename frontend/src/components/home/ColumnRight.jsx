@@ -12,42 +12,61 @@ import {
   Typography,
 } from "@mui/material";
 import ProfileTabs from "./ProfileTabs";
+import { initialMockUsers } from "../../data/mockUsers";
+import {
+  authenticateMockUser,
+  saveCurrentMockUser,
+} from "../../services/mockUserService";
 
-function ColumnRight({ onLogin }) {
+const anaVolunteer = initialMockUsers.find(
+  (user) => user.type === "voluntario" && user.name === "Ana Santos",
+);
+
+function ColumnRight({ onLogin, onForgotPassword, onRegister }) {
   const [selectedProfile, setSelectedProfile] = useState("idoso");
+  const [loginError, setLoginError] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email") || "").trim().toLowerCase();
     const loginData = {
       userType: selectedProfile,
-      emailOrCpf: formData.get("emailOrCpf"),
+      email,
       password: formData.get("password"),
       remember: formData.get("remember") === "remember",
     };
 
-    console.log("Dados preparados para login:", loginData);
+    const authenticatedUser = authenticateMockUser({
+      type: loginData.userType,
+      email: loginData.email,
+      password: loginData.password,
+    });
 
-    if (selectedProfile === "voluntario" && onLogin) {
-      onLogin();
+    if (!authenticatedUser) {
+      setLoginError("E-mail ou senha inválidos.");
+      return;
+    }
+
+    setLoginError("");
+    saveCurrentMockUser(authenticatedUser);
+    console.log("Dados preparados para login:", {
+      ...loginData,
+      userId: authenticatedUser.id,
+    });
+
+    if (onLogin) {
+      onLogin(authenticatedUser);
     }
   };
 
   const handleGoogleLogin = () => {
-    if (selectedProfile === "voluntario" && onLogin) {
-      onLogin();
-    } else {
-      window.alert("Sign in with Google");
-    }
+    window.alert("Sign in with Google");
   };
 
   const handleFacebookLogin = () => {
-    if (selectedProfile === "voluntario" && onLogin) {
-      onLogin();
-    } else {
-      window.alert("Sign in with Facebook");
-    }
+    window.alert("Sign in with Facebook");
   };
 
   return (
@@ -100,12 +119,19 @@ function ColumnRight({ onLogin }) {
             <Stack spacing={2}>
               <TextField
                 fullWidth
-                label="E-mail ou CPF"
-                name="emailOrCpf"
-                placeholder="Digite seu e-mail ou CPF"
+                label="E-mail"
+                name="email"
+                type="email"
+                placeholder={
+                  selectedProfile === "voluntario"
+                    ? anaVolunteer?.email
+                    : "Digite seu e-mail"
+                }
                 autoComplete="email"
                 variant="outlined"
                 size="medium"
+                error={Boolean(loginError)}
+                onChange={() => setLoginError("")}
               />
 
               <TextField
@@ -117,6 +143,9 @@ function ColumnRight({ onLogin }) {
                 autoComplete="current-password"
                 variant="outlined"
                 size="medium"
+                error={Boolean(loginError)}
+                helperText={loginError}
+                onChange={() => setLoginError("")}
               />
 
               <FormControlLabel
@@ -164,8 +193,10 @@ function ColumnRight({ onLogin }) {
               </Button>
 
               <Link
-                href="#"
+                component="button"
+                type="button"
                 underline="hover"
+                onClick={onForgotPassword}
                 sx={{
                   alignSelf: "center",
                   color: "#8ab9b6",
@@ -219,8 +250,10 @@ function ColumnRight({ onLogin }) {
           <Typography sx={{ color: "#a3aaba", fontSize: 13, textAlign: "center" }}>
             Primeiro acesso?{" "}
             <Link
-              href="#"
+              component="button"
+              type="button"
               underline="hover"
+              onClick={onRegister}
               sx={{ color: "#8ab9b6", fontWeight: 800 }}
             >
               Faça seu cadastro aqui

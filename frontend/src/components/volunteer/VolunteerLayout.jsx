@@ -30,7 +30,7 @@ function getVolunteerPageFromPath(pathname) {
   return matchedPage?.[0] ?? "inicio";
 }
 
-function VolunteerLayout({ onLogout, isDarkMode, onToggleTheme }) {
+function VolunteerLayout({ currentUser, onLogout, isDarkMode, onToggleTheme }) {
   const [currentPage, setCurrentPage] = useState(() =>
     getVolunteerPageFromPath(window.location.pathname),
   );
@@ -74,6 +74,7 @@ function VolunteerLayout({ onLogout, isDarkMode, onToggleTheme }) {
       case "inicio":
         return (
           <VolunteerHomePage
+            volunteerId={currentUser?.id}
             nearbyEldersCount={3}
             onNavigateToElders={() => handlePageChange("idosos")}
             isDarkMode={isDarkMode}
@@ -81,11 +82,23 @@ function VolunteerLayout({ onLogout, isDarkMode, onToggleTheme }) {
           />
         );
       case "historico":
-        return <VolunteerHistoryPage isDarkMode={isDarkMode} />;
+        return (
+          <VolunteerHistoryPage
+            volunteerId={currentUser?.id}
+            isDarkMode={isDarkMode}
+          />
+        );
       case "idosos":
-        return <VolunteerElderlyNearbyPage isDarkMode={isDarkMode} />; case "perfil":
+        return (
+          <VolunteerElderlyNearbyPage
+            volunteerId={currentUser?.id}
+            isDarkMode={isDarkMode}
+          />
+        );
+      case "perfil":
         return (
           <VolunteerProfilePage
+            volunteerId={currentUser?.id}
             onLogout={handleLogoutRequest}
             isDarkMode={isDarkMode}
           />
@@ -93,6 +106,7 @@ function VolunteerLayout({ onLogout, isDarkMode, onToggleTheme }) {
       default:
         return (
           <VolunteerHomePage
+            volunteerId={currentUser?.id}
             nearbyEldersCount={3}
             onNavigateToElders={() => handlePageChange("idosos")}
             isDarkMode={isDarkMode}
@@ -115,6 +129,7 @@ function VolunteerLayout({ onLogout, isDarkMode, onToggleTheme }) {
       }}
     >
       <VolunteerSidebar
+        currentUser={currentUser}
         currentPage={currentPage}
         onPageChange={handlePageChange}
         onLogout={handleLogoutRequest}

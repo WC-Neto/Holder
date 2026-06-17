@@ -1,4 +1,5 @@
 import { mockVolunteerProfile } from "../data/mockVolunteerProfile.js";
+import { getMockUserById, updateMockUser } from "./mockUserService.js";
 
 function getPhoneDigits(phone = "") {
   return phone.replace(/\D/g, "");
@@ -40,13 +41,28 @@ export function buildVolunteerProfileQueryParams({ volunteerId } = {}) {
   return params;
 }
 
+function buildVolunteerProfileFromUser(volunteerId) {
+  const user = getMockUserById(volunteerId);
+
+  if (!user || user.type !== "voluntario") {
+    return null;
+  }
+
+  return {
+    ...mockVolunteerProfile,
+    id: user.id,
+    name: user.name,
+    email: user.email,
+  };
+}
+
 export async function getVolunteerProfile({ volunteerId } = {}) {
   if (!volunteerId) {
     return null;
   }
 
   // Futuramente: GET /voluntarios/{volunteerId}/perfil.
-  return mockVolunteerProfile;
+  return buildVolunteerProfileFromUser(volunteerId);
 }
 
 export async function updateVolunteerProfile({ volunteerId, updates = {}, shouldFail = false } = {}) {
@@ -59,13 +75,25 @@ export async function updateVolunteerProfile({ volunteerId, updates = {}, should
   }
 
   validateVolunteerProfileUpdates(updates);
+  const currentProfile = buildVolunteerProfileFromUser(volunteerId);
+
+  if (!currentProfile) {
+    throw new Error("Perfil nÃ£o encontrado");
+  }
+
+  if (updates.name || updates.email) {
+    updateMockUser(volunteerId, {
+      name: updates.name ?? currentProfile.name,
+      email: updates.email ?? currentProfile.email,
+    });
+  }
 
   // Futuramente: PATCH /voluntarios/{volunteerId}/perfil com suporte a upload de foto.
   return {
-    ...mockVolunteerProfile,
+    ...currentProfile,
     ...updates,
     personalInfo: {
-      ...mockVolunteerProfile.personalInfo,
+      ...currentProfile.personalInfo,
       ...(updates.personalInfo ?? {}),
     },
   };
@@ -85,10 +113,15 @@ export async function updateVolunteerAvailability({
   }
 
   validateVolunteerAvailability(availability);
+  const currentProfile = buildVolunteerProfileFromUser(volunteerId);
+
+  if (!currentProfile) {
+    throw new Error("Perfil nÃ£o encontrado");
+  }
 
   // Futuramente: PATCH /voluntarios/{volunteerId}/disponibilidade.
   return {
-    ...mockVolunteerProfile,
+    ...currentProfile,
     availability,
   };
 }

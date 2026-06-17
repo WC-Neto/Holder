@@ -23,9 +23,7 @@ import {
   getVolunteerHistorySummary,
 } from "../../../services/volunteerHistory";
 
-const MOCK_VOLUNTEER_ID = 1;
-
-function VolunteerHistoryPage({ isDarkMode = false }) {
+function VolunteerHistoryPage({ volunteerId = 1, isDarkMode = false }) {
   const [historyItems, setHistoryItems] = useState([]);
   const [activeHistoryFilter, setActiveHistoryFilter] = useState("all");
   const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
@@ -36,10 +34,10 @@ function VolunteerHistoryPage({ isDarkMode = false }) {
   const historyQueryParams = useMemo(
     () =>
       buildVolunteerHistoryQueryParams({
-        volunteerId: MOCK_VOLUNTEER_ID,
+        volunteerId,
         activeHistoryFilter,
       }),
-    [activeHistoryFilter],
+    [activeHistoryFilter, volunteerId],
   );
 
   const loadVolunteerHistory = async () => {

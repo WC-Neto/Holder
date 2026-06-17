@@ -1,12 +1,18 @@
-import React from 'react';
-import { Container, Typography, Box, Paper } from '@mui/material';
-import NewOrderForm from '../NewOrderForm';
+import React from "react";
+import { Container, Typography, Box, Paper } from "@mui/material";
+import NewOrderForm from "../NewOrderForm";
 
-const ElderlyNewOrderPage = () => {
+const ElderlyNewOrderPage = ({ currentUser }) => {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4, textAlign: 'center' }}>
-        <Typography variant="h4" component="h1" gutterBottom fontWeight="bold" x={{ color: '#20283a' }}>
+      <Box sx={{ mb: 4, textAlign: "center" }}>
+        <Typography
+          variant="h4"
+          component="h1"
+          gutterBottom
+          fontWeight="bold"
+          sx={{ color: "#20283a" }}
+        >
           Novo Pedido
         </Typography>
         <Typography variant="subtitle1" color="text.secondary">
@@ -14,14 +20,16 @@ const ElderlyNewOrderPage = () => {
         </Typography>
       </Box>
 
-      <Paper variant="outlined"
+      <Paper
+        variant="outlined"
         sx={{
           p: { xs: 2, md: 4 },
           borderRadius: 3,
-          borderColor: '#e7e7ea',
-          boxShadow: '0 2px 8px rgba(31, 41, 55, 0.08)'
-        }}>
-        <NewOrderForm />
+          borderColor: "#e7e7ea",
+          boxShadow: "0 2px 8px rgba(31, 41, 55, 0.08)",
+        }}
+      >
+        <NewOrderForm elderlyId={currentUser?.id} />
       </Paper>
     </Container>
   );

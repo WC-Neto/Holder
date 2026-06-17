@@ -4,6 +4,7 @@ export const sensitiveAuthStorageKeys = [
   "user",
   "volunteer_user",
   "auth_user",
+  "holder_mock_current_user",
 ];
 
 export function clearSensitiveAuthData({

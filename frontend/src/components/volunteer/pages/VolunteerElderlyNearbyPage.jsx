@@ -14,9 +14,7 @@ import NearbyElderlyCard from "../NearbyElderlyCard";
 import NearbyElderlyDetailsModal from "../NearbyElderlyDetailsModal";
 import { getNearbyElderly } from "../../../services/nearbyElderly";
 
-const MOCK_VOLUNTEER_ID = 1;
-
-function VolunteerElderlyNearbyPage({ isDarkMode = false }) {
+function VolunteerElderlyNearbyPage({ volunteerId = 1, isDarkMode = false }) {
   const [nearbyElderly, setNearbyElderly] = useState([]);
   const [favoriteElderlyIds, setFavoriteElderlyIds] = useState([]);
   const [selectedElderlyId, setSelectedElderlyId] = useState(null);
@@ -31,7 +29,7 @@ function VolunteerElderlyNearbyPage({ isDarkMode = false }) {
     setNearbyElderlyError("");
 
     try {
-      const elderlyList = await getNearbyElderly({ volunteerId: MOCK_VOLUNTEER_ID });
+      const elderlyList = await getNearbyElderly({ volunteerId });
       setNearbyElderly(elderlyList);
     } catch (error) {
       setNearbyElderly([]);
@@ -53,7 +51,7 @@ function VolunteerElderlyNearbyPage({ isDarkMode = false }) {
     setIsLoadingNearbyElderly(true);
     setNearbyElderlyError("");
 
-    getNearbyElderly({ volunteerId: MOCK_VOLUNTEER_ID })
+    getNearbyElderly({ volunteerId })
       .then((elderlyList) => {
         if (isMounted) {
           setNearbyElderly(elderlyList);
@@ -76,7 +74,7 @@ function VolunteerElderlyNearbyPage({ isDarkMode = false }) {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [volunteerId]);
 
   const handleContactElderly = (elderly) => {
     setFeedbackMessage(`Contato iniciado com ${elderly.name}.`);

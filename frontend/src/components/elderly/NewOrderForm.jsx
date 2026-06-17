@@ -5,7 +5,7 @@ import UrgencySelector from "./UrgencySelector";
 import InfoMessage from "./InfoMessage";
 import { createOrder } from "../../services/elderlyOrders";
 
-const NewOrderForm = () => {
+const NewOrderForm = ({ elderlyId }) => {
   const [formData, setFormData] = useState({
     titulo: "",
     descricao: "",
@@ -47,10 +47,9 @@ const NewOrderForm = () => {
     setSuccess(false);
 
     try {
-      // lidar com esse idoso_id_manual
       const payload = {
         ...formData,
-        idoso_id_manual: 1,
+        idoso_id_manual: elderlyId,
       };
 
       await createOrder(payload);

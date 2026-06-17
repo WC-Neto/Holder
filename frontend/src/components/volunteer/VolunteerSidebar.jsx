@@ -34,7 +34,7 @@ const bottomNavigationIcons = {
   perfil: <PersonOutlineOutlinedIcon />,
 };
 
-function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
+function VolunteerSidebar({ currentUser, currentPage, onPageChange, onLogout }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -66,7 +66,7 @@ function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
         <Box sx={{ color: "#8ab9b6", fontSize: 18, fontWeight: 800 }}>Holder</Box>
       </Box>
 
-      <SidebarUserInfo />
+      <SidebarUserInfo currentUser={currentUser} />
 
       <Box sx={{ flex: 1, py: 2, px: 1.5, overflowY: "auto" }}>
         {menuItems.map((item) => (

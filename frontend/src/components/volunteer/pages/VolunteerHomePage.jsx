@@ -37,7 +37,6 @@ import { getAvailableOrders as requestAvailableOrders } from "../../../services/
 const INITIAL_VISIBLE_ORDERS = 3;
 const LOAD_MORE_STEP = 3;
 const SEARCH_DEBOUNCE_MS = 300;
-const MOCK_VOLUNTEER_ID = 1;
 const INITIAL_VOLUNTEER_STATS = {
   peopleHelped: 0,
   completedOrders: 0,
@@ -55,6 +54,7 @@ const pageCopy = {
 };
 
 function VolunteerHomePage({
+  volunteerId = 1,
   nearbyEldersCount = 3,
   onNavigateToElders,
   isDarkMode = false,
@@ -87,7 +87,7 @@ function VolunteerHomePage({
     setOrdersError("");
 
     const response = await requestAvailableOrders({
-      volunteerId: MOCK_VOLUNTEER_ID,
+      volunteerId,
     });
 
     if (response.success) {
@@ -107,7 +107,7 @@ function VolunteerHomePage({
   useEffect(() => {
     let isMounted = true;
 
-    requestAvailableOrders({ volunteerId: MOCK_VOLUNTEER_ID }).then((response) => {
+    requestAvailableOrders({ volunteerId }).then((response) => {
       if (!isMounted) {
         return;
       }
@@ -125,7 +125,7 @@ function VolunteerHomePage({
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [volunteerId]);
 
   useEffect(() => {
     const debounceId = window.setTimeout(() => {
@@ -138,7 +138,7 @@ function VolunteerHomePage({
   useEffect(() => {
     let isMounted = true;
 
-    fetchVolunteerStats({ volunteerId: MOCK_VOLUNTEER_ID }).then((stats) => {
+    fetchVolunteerStats({ volunteerId }).then((stats) => {
       if (isMounted) {
         setVolunteerStats(stats);
       }
@@ -147,16 +147,16 @@ function VolunteerHomePage({
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [volunteerId]);
 
   const availableOrderSearchParams = useMemo(
     () =>
       buildAvailableOrdersSearchParams({
         searchTerm: debouncedSearchTerm,
         activeFilter,
-        volunteerId: MOCK_VOLUNTEER_ID,
+        volunteerId,
       }),
-    [activeFilter, debouncedSearchTerm],
+    [activeFilter, debouncedSearchTerm, volunteerId],
   );
 
   const filteredOrders = useMemo(
@@ -257,7 +257,7 @@ function VolunteerHomePage({
     try {
       const acceptedOrder = await acceptOrder({
         orderId,
-        volunteerId: MOCK_VOLUNTEER_ID,
+        volunteerId,
       });
 
       setAcceptedOrderId(orderId);
@@ -294,7 +294,7 @@ function VolunteerHomePage({
     try {
       await finishOrder({
         orderId,
-        volunteerId: MOCK_VOLUNTEER_ID,
+        volunteerId,
         report,
       });
 
