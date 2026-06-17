@@ -10,7 +10,7 @@ const NewOrderForm = () => {
     titulo: "",
     descricao: "",
     categoria: "",
-    prioridade: "",
+    prioridade: "media",
     localizacao: "",
   });
 
@@ -24,9 +24,6 @@ const NewOrderForm = () => {
   };
 
 
-  const handleUrgencyChange = (e) => {
-    setFormData((prev) => ({ ...prev, prioridade: e.target.value }));
-  };
 
   const isFormValid = () => {
     return (
@@ -60,7 +57,7 @@ const NewOrderForm = () => {
         titulo: "",
         descricao: "",
         categoria: "",
-        prioridade: "",
+        prioridade: "media",
         localizacao: "",
       });
     } catch (err) {
@@ -126,7 +123,7 @@ const NewOrderForm = () => {
 
       <UrgencySelector
         value={formData.prioridade}
-        onChange={handleUrgencyChange}
+        onSelect={(valor) => setFormData((prev) => ({ ...prev, prioridade: valor }))}
       />
 
       <TextField
