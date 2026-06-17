@@ -1,50 +1,98 @@
 import React from "react";
-import {
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-} from "@mui/material";
+import { Typography, Box, Card, CardActionArea, Radio, FormControl, FormLabel, RadioGroup } from "@mui/material";
 
 const urgencies = [
-  { value: "baixa", label: "Baixa (pode esperar alguns dias)" },
-  { value: "media", label: "Média (preciso em breve)" },
-  { value: "alta", label: "Alta (urgente, para hoje ou amanhã)" },
+  {
+    value: "baixa",
+    label: "Baixa (pode esperar alguns dias)",
+    colors: { bg: "#dcfbef", main: "#00a76f" },
+  },
+  {
+    value: "media",
+    label: "Média (preciso em breve)",
+    colors: { bg: "#fff4de", main: "#c98218" },
+  },
+  {
+    value: "alta",
+    label: "Alta (urgente, para hoje ou amanhã)",
+    colors: { bg: "#fde4e6", main: "#ef3f4d" },
+  },
 ];
 
-const UrgencySelector = ({ value, onChange }) => {
+const UrgencyOption = ({ label, value, selected, onClick, colors }) => {
   return (
-    <FormControl component="fieldset" fullWidth sx={{ mb: 3 }}>
-      <FormLabel
-        component="legend"
-        sx={{ mb: 1, fontWeight: "bold", color: "text.primary" }}
+    <Card
+      variant="outlined"
+      sx={{
+        mb: 2,
+        borderRadius: 3,
+        borderColor: selected ? colors.main : "#e7e7ea",
+        bgcolor: selected ? colors.bg : "transparent",
+        transition: "all 0.2s ease-in-out",
+        boxShadow: "none",
+        "&:hover": {
+          borderColor: selected ? colors.main : "#9ba3b3",
+        },
+      }}
+    >
+      <CardActionArea
+        onClick={() => onClick(value)}
+        sx={{
+          p: 2,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-start",
+        }}
+      >
+        <Radio
+          checked={selected}
+          onChange={() => onClick(value)}
+          value={value}
+          name="urgency-radio"
+          inputProps={{ "aria-label": label }}
+          sx={{
+            p: 0,
+            mr: 2,
+            color: selected ? colors.main : "#9ba3b3",
+            "&.Mui-checked": {
+              color: colors.main,
+            },
+          }}
+        />
+        <Typography
+          variant="body1"
+          fontWeight={selected ? 600 : 500}
+          sx={{ color: selected ? "#253044" : "text.secondary" }}
+        >
+          {label}
+        </Typography>
+      </CardActionArea>
+    </Card>
+  );
+};
+
+const UrgencySelector = ({ value, onSelect }) => {
+  return (
+    <FormControl component="fieldset" fullWidth sx={{ mb: 4 }}>
+      <FormLabel 
+        component="legend" 
+        sx={{ mb: 2, fontWeight: "bold", color: "#253044" }}
       >
         Qual a urgência?
       </FormLabel>
       <RadioGroup
-        aria-label="prioridade"
-        name="prioridade"
+        name="urgencia"
         value={value}
-        onChange={onChange}
+        onChange={(e) => onSelect && onSelect(e.target.value)}
       >
         {urgencies.map((urg) => (
-          <FormControlLabel
+          <UrgencyOption
             key={urg.value}
             value={urg.value}
-            control={<Radio color="primary" />}
             label={urg.label}
-            sx={{
-              border: 1,
-              borderColor: value === urg.value ? "primary.main" : "grey.300",
-              borderRadius: 2,
-              p: 1,
-              mb: 1,
-              ml: 0,
-              mr: 0,
-              bgcolor: value === urg.value ? "primary.50" : "transparent",
-              transition: "all 0.2s",
-            }}
+            selected={value === urg.value}
+            onClick={(val) => onSelect && onSelect(val)}
+            colors={urg.colors}
           />
         ))}
       </RadioGroup>

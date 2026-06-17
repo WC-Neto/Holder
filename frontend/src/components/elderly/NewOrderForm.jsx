@@ -10,7 +10,7 @@ const NewOrderForm = () => {
     titulo: "",
     descricao: "",
     categoria: "",
-    prioridade: "",
+    prioridade: "media",
     localizacao: "",
   });
 
@@ -24,17 +24,18 @@ const NewOrderForm = () => {
   };
 
 
-  const handleUrgencyChange = (e) => {
-    setFormData((prev) => ({ ...prev, prioridade: e.target.value }));
+
+  const getMissingFields = () => {
+    const missing = [];
+    if (formData.titulo.trim() === "") missing.push("Título");
+    if (formData.categoria === "") missing.push("Categoria");
+    if (formData.descricao.trim() === "") missing.push("Descrição");
+    if (formData.prioridade === "") missing.push("Urgência");
+    return missing;
   };
 
   const isFormValid = () => {
-    return (
-      formData.titulo.trim() !== "" &&
-      formData.descricao.trim() !== "" &&
-      formData.categoria !== "" &&
-      formData.prioridade !== ""
-    );
+    return getMissingFields().length === 0;
   };
 
   const handleSubmit = async (e) => {
@@ -60,7 +61,7 @@ const NewOrderForm = () => {
         titulo: "",
         descricao: "",
         categoria: "",
-        prioridade: "",
+        prioridade: "media",
         localizacao: "",
       });
     } catch (err) {
@@ -91,7 +92,6 @@ const NewOrderForm = () => {
 
   return (
     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
-      <InfoMessage message="Ao publicar, voluntários próximos serão notificados e poderão se oferecer para ajudar." />
 
       <TextField
         fullWidth
@@ -126,7 +126,7 @@ const NewOrderForm = () => {
 
       <UrgencySelector
         value={formData.prioridade}
-        onChange={handleUrgencyChange}
+        onSelect={(valor) => setFormData((prev) => ({ ...prev, prioridade: valor }))}
       />
 
       <TextField
@@ -145,6 +145,18 @@ const NewOrderForm = () => {
           {error}
         </Alert>
       )}
+
+      <Box sx={{ mb: 3 }}>
+        {getMissingFields().length > 0 ? (
+          <InfoMessage 
+            message={`Os seguintes campos obrigatórios ainda não foram preenchidos: ${getMissingFields().join(", ")}`} 
+          />
+        ) : (
+          <InfoMessage 
+            message="Ao publicar, voluntários próximos serão notificados e poderão se oferecer para ajudar." 
+          />
+        )}
+      </Box>
 
       <Button
         type="submit"
