@@ -1,47 +1,86 @@
-import React from 'react';
-import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import React, { useState, useEffect } from "react";
+import { Grid, Typography, Box } from "@mui/material";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import HomeRepairServiceOutlinedIcon from "@mui/icons-material/HomeRepairServiceOutlined";
+import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
+import BuildOutlinedIcon from "@mui/icons-material/BuildOutlined";
+import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
+import OrderCategoryCard from "./OrderCategoryCard";
 
-const categories = [
-  'Compras',
-  'Consertos',
-  'Companhia',
-  'Reparos',
-  'Outros'
+const CATEGORIES = [
+  {
+    id: "Compras",
+    title: "Compras",
+    icon: <ShoppingCartOutlinedIcon fontSize="large" />,
+  },
+  {
+    id: "Consertos",
+    title: "Consertos",
+    icon: <HomeRepairServiceOutlinedIcon fontSize="large" />,
+  },
+  {
+    id: "Companhia",
+    title: "Companhia",
+    icon: <PeopleOutlinedIcon fontSize="large" />,
+  },
+  {
+    id: "Reparos",
+    title: "Reparos",
+    icon: <BuildOutlinedIcon fontSize="large" />,
+  },
+  {
+    id: "Outros",
+    title: "Outros",
+    icon: <MoreHorizOutlinedIcon fontSize="large" />,
+  },
 ];
 
-const CategorySelector = ({ value, onChange }) => {
+const CategorySelector = ({ onSelect, value, onChange }) => {
+  const [selectedCategory, setSelectedCategory] = useState(value || "");
+  useEffect(() => {
+    if (value !== undefined) {
+      setSelectedCategory(value);
+    }
+  }, [value]);
+
+  const handleCategoryClick = (categoryId) => {
+    // toggle: limpar a seleção se clicar na categoria já selecionada
+    const newCategory = selectedCategory === categoryId ? "" : categoryId;
+
+    setSelectedCategory(newCategory);
+    if (onSelect) {
+      onSelect(newCategory);
+    }
+    if (onChange) {
+      onChange({ target: { name: "categoria", value: newCategory } });
+    }
+  };
+
   return (
-    <FormControl component="fieldset" fullWidth sx={{ mb: 3 }}>
-      <FormLabel component="legend" sx={{ mb: 1, fontWeight: 'bold', color: 'text.primary' }}>
-        Qual o tipo de ajuda você precisa?
-      </FormLabel>
-      <RadioGroup
-        aria-label="categoria"
-        name="categoria"
-        value={value}
-        onChange={onChange}
-        row
-        sx={{ gap: 2 }}
+    <Box sx={{ mb: 4 }}>
+      <Typography
+        variant="subtitle1"
+        sx={{
+          mb: 2,
+          fontWeight: "bold",
+          color: "#253044",
+        }}
       >
-        {categories.map((cat) => (
-          <FormControlLabel
-            key={cat}
-            value={cat}
-            control={<Radio color="primary" />}
-            label={cat}
-            sx={{
-              border: 1,
-              borderColor: value === cat ? 'primary.main' : 'grey.300',
-              borderRadius: 2,
-              pr: 2,
-              m: 0,
-              bgcolor: value === cat ? 'primary.50' : 'transparent',
-              transition: 'all 0.2s',
-            }}
-          />
+        Qual o tipo de ajuda você precisa?
+      </Typography>
+      <Grid container spacing={2}>
+        {CATEGORIES.map((cat) => (
+          <Grid item xs={6} sm={4} md={2.4} key={cat.id}>
+            <OrderCategoryCard
+              title={cat.title}
+              icon={cat.icon}
+              isSelected={selectedCategory === cat.id}
+              onClick={() => handleCategoryClick(cat.id)}
+            />
+          </Grid>
         ))}
-      </RadioGroup>
-    </FormControl>
+      </Grid>
+    </Box>
   );
 };
 
