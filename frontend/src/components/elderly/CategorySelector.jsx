@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, Box } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import HomeRepairServiceOutlinedIcon from "@mui/icons-material/HomeRepairServiceOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
@@ -35,7 +35,7 @@ const CATEGORIES = [
   },
 ];
 
-const CategorySelector = ({ onSelect, value, onChange }) => {
+const CategorySelector = ({ onSelect, value }) => {
   const [selectedCategory, setSelectedCategory] = useState(value || "");
   useEffect(() => {
     if (value !== undefined) {
@@ -51,9 +51,6 @@ const CategorySelector = ({ onSelect, value, onChange }) => {
     if (onSelect) {
       onSelect(newCategory);
     }
-    if (onChange) {
-      onChange({ target: { name: "categoria", value: newCategory } });
-    }
   };
 
   return (
@@ -68,18 +65,17 @@ const CategorySelector = ({ onSelect, value, onChange }) => {
       >
         Qual o tipo de ajuda você precisa?
       </Typography>
-      <Grid container spacing={2}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
         {CATEGORIES.map((cat) => (
-          <Grid item xs={6} sm={4} md={2.4} key={cat.id}>
-            <OrderCategoryCard
-              title={cat.title}
-              icon={cat.icon}
-              isSelected={selectedCategory === cat.id}
-              onClick={() => handleCategoryClick(cat.id)}
-            />
-          </Grid>
+          <OrderCategoryCard
+            key={cat.id}
+            title={cat.title}
+            icon={cat.icon}
+            isSelected={selectedCategory === cat.id}
+            onClick={() => handleCategoryClick(cat.id)}
+          />
         ))}
-      </Grid>
+      </Box>
     </Box>
   );
 };
