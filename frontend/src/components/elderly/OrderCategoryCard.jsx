@@ -14,15 +14,17 @@ const OrderCategoryCard = ({ title, icon, isSelected, onClick }) => {
       sx={{
         borderRadius: 3,
         borderColor: isSelected ? "#8ab9b6" : "#e7e7ea",
-        bgcolor: isSelected ? "rgba(150, 192, 190, 0.15)" : "background.paper",
+        bgcolor: isSelected ? "#96C0BE26" : "background.paper",
         boxShadow: isSelected
-          ? "0 0 0 2px rgba(138, 185, 182, 0.4)"
-          : "0 2px 8px rgba(31, 41, 55, 0.08)",
+          ? "0 0 0 2px #8ab9b666"
+          : "0 2px 8px #1f293714",
         transition: "all 0.2s ease-in-out",
         height: "100%",
+        flex: 1,
+        minWidth: "110px",
         "&:hover": {
           borderColor: "#8ab9b6",
-          boxShadow: "0 4px 12px rgba(31, 41, 55, 0.12)",
+          boxShadow: "0 4px 12px #1f29371e",
         },
       }}
     >
