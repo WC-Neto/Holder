@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { Box, TextField, Button, CircularProgress, Alert } from '@mui/material';
-import CategorySelector from './CategorySelector';
-import UrgencySelector from './UrgencySelector';
-import InfoMessage from './InfoMessage';
-import { createOrder } from '../../services/elderlyOrders';
+import { useState } from "react";
+import { Box, TextField, Button, CircularProgress, Alert } from "@mui/material";
+import CategorySelector from "./CategorySelector";
+import UrgencySelector from "./UrgencySelector";
+import InfoMessage from "./InfoMessage";
+import { createOrder } from "../../services/elderlyOrders";
 
 const NewOrderForm = () => {
   const [formData, setFormData] = useState({
-    titulo: '',
-    descricao: '',
-    categoria: '',
-    prioridade: '',
-    localizacao: ''
+    titulo: "",
+    descricao: "",
+    categoria: "",
+    prioridade: "",
+    localizacao: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -20,23 +20,20 @@ const NewOrderForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCategoryChange = (e) => {
-    setFormData(prev => ({ ...prev, categoria: e.target.value }));
-  };
 
   const handleUrgencyChange = (e) => {
-    setFormData(prev => ({ ...prev, prioridade: e.target.value }));
+    setFormData((prev) => ({ ...prev, prioridade: e.target.value }));
   };
 
   const isFormValid = () => {
     return (
-      formData.titulo.trim() !== '' &&
-      formData.descricao.trim() !== '' &&
-      formData.categoria !== '' &&
-      formData.prioridade !== ''
+      formData.titulo.trim() !== "" &&
+      formData.descricao.trim() !== "" &&
+      formData.categoria !== "" &&
+      formData.prioridade !== ""
     );
   };
 
@@ -50,24 +47,26 @@ const NewOrderForm = () => {
     setSuccess(false);
 
     try {
-      // idoso_id_manual: 1 fixo conforme instrução
+      // lidar com esse idoso_id_manual
       const payload = {
         ...formData,
-        idoso_id_manual: 1
+        idoso_id_manual: 1,
       };
 
       await createOrder(payload);
 
       setSuccess(true);
       setFormData({
-        titulo: '',
-        descricao: '',
-        categoria: '',
-        prioridade: '',
-        localizacao: ''
+        titulo: "",
+        descricao: "",
+        categoria: "",
+        prioridade: "",
+        localizacao: "",
       });
     } catch (err) {
-      setError(err.message || 'Ocorreu um erro ao criar o pedido. Tente novamente.');
+      setError(
+        err.message || "Ocorreu um erro ao criar o pedido. Tente novamente.",
+      );
     } finally {
       setLoading(false);
     }
@@ -76,12 +75,13 @@ const NewOrderForm = () => {
   if (success) {
     return (
       <Alert severity="success" sx={{ mt: 2 }}>
-        Pedido publicado com sucesso! Os voluntários próximos já podem visualizá-lo.
+        Pedido publicado com sucesso! Os voluntários próximos já podem
+        visualizá-lo.
         <Button
           color="inherit"
           size="small"
           onClick={() => setSuccess(false)}
-          sx={{ ml: 2, textDecoration: 'underline' }}
+          sx={{ ml: 2, textDecoration: "underline" }}
         >
           Criar outro pedido
         </Button>
@@ -91,7 +91,6 @@ const NewOrderForm = () => {
 
   return (
     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
-
       <InfoMessage message="Ao publicar, voluntários próximos serão notificados e poderão se oferecer para ajudar." />
 
       <TextField
@@ -108,7 +107,7 @@ const NewOrderForm = () => {
 
       <CategorySelector
         value={formData.categoria}
-        onChange={handleCategoryChange}
+        onSelect={(valor) => setFormData((prev) => ({ ...prev, categoria: valor }))}
       />
 
       <TextField
@@ -154,22 +153,28 @@ const NewOrderForm = () => {
         disabled={!isFormValid() || loading}
         sx={{
           py: 1.5,
-          fontSize: '1.1rem',
-          fontWeight: 'bold',
+          fontSize: "1.1rem",
+          fontWeight: "bold",
           borderRadius: 2,
           boxShadow: "none",
-          ...(!isFormValid() || loading ? {} : {
-            color: "#fff",
-            bgcolor: "#e6a0a8",
-            background: "linear-gradient(90deg, #df9aa4 0%, #f0b19b 100%)",
-            "&:hover": {
-              bgcolor: "#df9aa4",
-              boxShadow: "none",
-            }
-          })
+          ...(!isFormValid() || loading
+            ? {}
+            : {
+              color: "#fff",
+              bgcolor: "#e6a0a8",
+              background: "linear-gradient(90deg, #df9aa4 0%, #f0b19b 100%)",
+              "&:hover": {
+                bgcolor: "#df9aa4",
+                boxShadow: "none",
+              },
+            }),
         }}
       >
-        {loading ? <CircularProgress size={24} color="inherit" /> : 'Publicar Pedido'}
+        {loading ? (
+          <CircularProgress size={24} color="inherit" />
+        ) : (
+          "Publicar Pedido"
+        )}
       </Button>
     </Box>
   );
