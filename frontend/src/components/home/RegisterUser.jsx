@@ -1,25 +1,44 @@
 import React, { useState } from "react";
 import {
+  Alert,
   Box,
   Button,
   Card,
-  Checkbox,
-  FormControlLabel,
   Link,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import ProfileTabs from "./ProfileTabs";
+import { createMockUser } from "../../services/mockUserService";
 
-function ColumnRight({ onLogin, onForgotPassword, onRegister }) {
+function RegisterUser({ onBackToLogin }) {
   const [selectedProfile, setSelectedProfile] = useState("idoso");
+  const [feedback, setFeedback] = useState(null);
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (onLogin) {
-      onLogin(selectedProfile);
+    const formData = new FormData(event.currentTarget);
+
+    try {
+      const createdUser = createMockUser({
+        type: selectedProfile,
+        name: formData.get("name"),
+        email: formData.get("email"),
+        password: formData.get("password"),
+      });
+
+      setFeedback({
+        severity: "success",
+        message: `Usuário criado com sucesso. ID: ${createdUser.id}`,
+      });
+      event.currentTarget.reset();
+    } catch (error) {
+      setFeedback({
+        severity: "error",
+        message: error?.message ?? "Não foi possível criar o usuário.",
+      });
     }
   };
 
@@ -54,11 +73,11 @@ function ColumnRight({ onLogin, onForgotPassword, onRegister }) {
               fontWeight="bold"
               sx={{ color: "#20283a", mb: 1 }}
             >
-              Bem-vindo ao Holder
+              Criar cadastro
             </Typography>
 
             <Typography sx={{ color: "#9ba3b3", fontSize: 14 }}>
-              Entre para continuar
+              O cadastro será salvo no mock local do frontend.
             </Typography>
           </Box>
 
@@ -68,15 +87,24 @@ function ColumnRight({ onLogin, onForgotPassword, onRegister }) {
           />
 
           <Box component="form" onSubmit={handleSubmit}>
-            <input type="hidden" name="userType" value={selectedProfile} />
-
             <Stack spacing={2}>
               <TextField
                 fullWidth
+                required
+                label="Nome completo"
+                name="name"
+                placeholder="Digite o nome completo"
+                variant="outlined"
+                size="medium"
+              />
+
+              <TextField
+                fullWidth
+                required
                 label="E-mail"
                 name="email"
                 type="email"
-                placeholder="Digite seu e-mail"
+                placeholder="Digite o e-mail"
                 autoComplete="email"
                 variant="outlined"
                 size="medium"
@@ -84,35 +112,14 @@ function ColumnRight({ onLogin, onForgotPassword, onRegister }) {
 
               <TextField
                 fullWidth
+                required
                 label="Senha"
                 name="password"
                 type="password"
-                placeholder="Digite sua senha"
-                autoComplete="current-password"
+                placeholder="Digite a senha"
+                autoComplete="new-password"
                 variant="outlined"
                 size="medium"
-              />
-
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    value="remember"
-                    sx={{
-                      color: "#8ab9b6",
-                      "&.Mui-checked": {
-                        color: "#8ab9b6",
-                      },
-                    }}
-                  />
-                }
-                label="Lembrar de mim"
-                sx={{
-                  color: "#253044",
-                  "& .MuiFormControlLabel-label": {
-                    fontSize: 14,
-                    fontWeight: 500,
-                  },
-                }}
               />
 
               <Button
@@ -134,42 +141,33 @@ function ColumnRight({ onLogin, onForgotPassword, onRegister }) {
                   },
                 }}
               >
-                Entrar
+                Criar usuário
               </Button>
-
-              <Link
-                component="button"
-                type="button"
-                underline="hover"
-                onClick={onForgotPassword}
-                sx={{
-                  alignSelf: "center",
-                  color: "#8ab9b6",
-                  fontSize: 14,
-                  fontWeight: 700,
-                }}
-              >
-                Esqueceu sua senha?
-              </Link>
             </Stack>
           </Box>
 
-          <Typography sx={{ color: "#a3aaba", fontSize: 13, textAlign: "center" }}>
-            Primeiro acesso?{" "}
-            <Link
-              component="button"
-              type="button"
-              underline="hover"
-              onClick={onRegister}
-              sx={{ color: "#8ab9b6", fontWeight: 800 }}
-            >
-              Faça seu cadastro aqui
-            </Link>
-          </Typography>
+          {feedback && (
+            <Alert severity={feedback.severity}>{feedback.message}</Alert>
+          )}
+
+          <Link
+            component="button"
+            type="button"
+            underline="hover"
+            onClick={onBackToLogin}
+            sx={{
+              alignSelf: "center",
+              color: "#8ab9b6",
+              fontSize: 14,
+              fontWeight: 700,
+            }}
+          >
+            Voltar para o login
+          </Link>
         </Stack>
       </Card>
     </Box>
   );
 }
 
-export default ColumnRight;
+export default RegisterUser;
