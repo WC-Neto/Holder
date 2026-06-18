@@ -7,19 +7,25 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutlined';
 import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutlineOutlined';
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 
 import ElderlyHomePage from './pages/ElderlyHomePage';
 import ElderlyNewOrderPage from './pages/ElderlyNewOrderPage';
+import ElderlyHistoryPage from './pages/ElderlyHistoryPage';
+import ElderlyVolunteersPage from './pages/ElderlyVolunteersPage';
+import ElderlyProfilePage from './pages/ElderlyProfilePage';
 
 import SidebarMenuItem from '../shared/SidebarMenuItem';
 import SidebarUserInfo from '../shared/SidebarUserInfo';
 import LogoutButton from '../shared/LogoutButton';
+import LogoutConfirmModal from '../shared/LogoutConfirmModal';
 import logo from '../../assets/logo.png';
 
 const menuItems = [
   { id: "inicio", label: "Início", icon: <HomeOutlinedIcon /> },
   { id: "novo-pedido", label: "Novo Pedido", icon: <AddCircleOutlineIcon /> },
   { id: "historico", label: "Histórico", icon: <HistoryOutlinedIcon /> },
+  { id: "comunidade", label: "Comunidade", icon: <PeopleAltOutlinedIcon /> },
   { id: "perfil", label: "Perfil", icon: <PersonOutlineIcon /> },
 ];
 
@@ -27,18 +33,35 @@ const ElderlyLayout = ({ onLogout, isDarkMode, onToggleTheme }) => {
   const [currentPage, setCurrentPage] = useState(() => {
     const path = window.location.pathname;
     if (path === '/idoso/novo-pedido') return 'novo-pedido';
+    if (path === '/idoso/historico') return 'historico';
+    if (path === '/idoso/comunidade') return 'comunidade';
+    if (path === '/idoso/perfil') return 'perfil';
     return 'inicio';
   });
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+
+  const handleLogoutRequest = () => setIsLogoutConfirmOpen(true);
+  const handleCancelLogout = () => setIsLogoutConfirmOpen(false);
+  const handleConfirmLogout = () => {
+    setIsLogoutConfirmOpen(false);
+    onLogout?.({ redirectTo: "/login" });
+  };
 
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname;
       if (path === '/idoso/novo-pedido') {
         setCurrentPage('novo-pedido');
+      } else if (path === '/idoso/historico') {
+        setCurrentPage('historico');
+      } else if (path === '/idoso/comunidade') {
+        setCurrentPage('comunidade');
+      } else if (path === '/idoso/perfil') {
+        setCurrentPage('perfil');
       } else {
         setCurrentPage('inicio');
       }
@@ -65,6 +88,12 @@ const ElderlyLayout = ({ onLogout, isDarkMode, onToggleTheme }) => {
         return <ElderlyHomePage onNavigate={handlePageChange} />;
       case 'novo-pedido':
         return <ElderlyNewOrderPage />;
+      case 'historico':
+        return <ElderlyHistoryPage />;
+      case 'comunidade':
+        return <ElderlyVolunteersPage isDarkMode={isDarkMode} />;
+      case 'perfil':
+        return <ElderlyProfilePage isDarkMode={isDarkMode} onLogout={handleLogoutRequest} />;
       default:
         return <ElderlyHomePage onNavigate={handlePageChange} />;
     }
@@ -119,7 +148,7 @@ const ElderlyLayout = ({ onLogout, isDarkMode, onToggleTheme }) => {
       </Box>
 
       <Box sx={{ p: 2, borderTop: "1px solid", borderColor: isDarkMode ? '#334155' : '#eef0f4' }}>
-        <LogoutButton onLogout={onLogout} />
+        <LogoutButton onLogout={handleLogoutRequest} />
       </Box>
     </Box>
   );
@@ -184,6 +213,12 @@ const ElderlyLayout = ({ onLogout, isDarkMode, onToggleTheme }) => {
 
         {renderContent()}
       </Box>
+
+      <LogoutConfirmModal
+        open={isLogoutConfirmOpen}
+        onClose={handleCancelLogout}
+        onConfirm={handleConfirmLogout}
+      />
     </Box>
   );
 };
