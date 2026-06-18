@@ -1,12 +1,15 @@
 import React from "react";
 import { Avatar, Box, Typography } from "@mui/material";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 function SidebarUserInfo({ userName, userRole, userImage }) {
+  const { isDarkMode } = useThemeMode();
+
   return (
     <Box
       sx={{
         p: 2,
-        borderBottom: "1px solid #eef0f4",
+        borderBottom: `1px solid ${isDarkMode ? "#253044" : "#eef0f4"}`,
         display: "flex",
         alignItems: "center",
         gap: 1.5,
@@ -14,20 +17,15 @@ function SidebarUserInfo({ userName, userRole, userImage }) {
     >
       <Avatar
         src={userImage}
-        sx={{
-          width: 44,
-          height: 44,
-          bgcolor: "#96C0BE",
-          border: "2px solid #96C0BE",
-        }}
+        sx={{ width: 44, height: 44, bgcolor: "#96C0BE", border: "2px solid #96C0BE" }}
       >
-        {userName ? userName.charAt(0) : ''}
+        {userName ? userName.charAt(0) : ""}
       </Avatar>
 
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Typography
           sx={{
-            color: "#20283a",
+            color: isDarkMode ? "#f8fafc" : "#20283a",
             fontSize: 15,
             fontWeight: 800,
             whiteSpace: "nowrap",
@@ -37,7 +35,7 @@ function SidebarUserInfo({ userName, userRole, userImage }) {
         >
           {userName}
         </Typography>
-        <Typography sx={{ color: "#98a1b0", fontSize: 13 }}>
+        <Typography sx={{ color: isDarkMode ? "#a8b3c7" : "#98a1b0", fontSize: 13 }}>
           {userRole}
         </Typography>
       </Box>

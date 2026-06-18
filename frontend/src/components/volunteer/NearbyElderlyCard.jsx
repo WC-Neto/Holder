@@ -3,6 +3,7 @@ import { Avatar, Box, Card, IconButton, Stack, Typography } from "@mui/material"
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 export const nearbyElderlyShape = {
   id: "number",
@@ -19,6 +20,7 @@ function NearbyElderlyCard({
   onToggleInterest,
   onClick,
 }) {
+  const { isDarkMode } = useThemeMode();
   const { photoUrl, name, distance } = elderly;
 
   const handleCardClick = () => {
@@ -40,8 +42,8 @@ function NearbyElderlyCard({
         minHeight: 82,
         px: 2,
         py: 1.6,
-        bgcolor: "#fff",
-        borderColor: isSelected ? "#96C0BE" : "#eceef2",
+        bgcolor: isDarkMode ? "#1e293b" : "#fff",
+        borderColor: isSelected ? "#96C0BE" : isDarkMode ? "#253044" : "#eceef2",
         borderRadius: 3,
         boxShadow: isSelected
           ? "0 0 0 3px rgba(150, 192, 190, 0.18)"
@@ -49,7 +51,7 @@ function NearbyElderlyCard({
         cursor: "pointer",
         transition: "border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease",
         "&:hover": {
-          borderColor: "#dbe9e8",
+          borderColor: isDarkMode ? "#334155" : "#dbe9e8",
           boxShadow: "0 8px 24px rgba(37, 48, 68, 0.08)",
           transform: "translateY(-1px)",
         },
@@ -57,10 +59,7 @@ function NearbyElderlyCard({
           borderColor: "#96C0BE",
           boxShadow: "0 0 0 3px rgba(150, 192, 190, 0.22)",
         },
-        "&:focus": {
-          outline: "none",
-        },
-        position: "relative",
+        "&:focus": { outline: "none" },
       }}
     >
       <Stack
@@ -71,20 +70,16 @@ function NearbyElderlyCard({
         <Avatar
           src={photoUrl}
           alt={name}
-          sx={{
-            width: 52,
-            height: 52,
-            border: "2px solid #e9b5bd",
-          }}
+          sx={{ width: 52, height: 52, border: "2px solid #e9b5bd" }}
         />
 
         <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Typography sx={{ color: "#20283a", fontSize: 16, fontWeight: 900 }}>
+          <Typography sx={{ color: isDarkMode ? "#f8fafc" : "#20283a", fontSize: 16, fontWeight: 900 }}>
             {name}
           </Typography>
           <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
             <PlaceOutlinedIcon sx={{ color: "#d99da8", fontSize: 16 }} />
-            <Typography sx={{ color: "#98a1b0", fontSize: 13 }}>
+            <Typography sx={{ color: isDarkMode ? "#a8b3c7" : "#98a1b0", fontSize: 13 }}>
               {distance}
             </Typography>
           </Stack>
@@ -98,6 +93,7 @@ function NearbyElderlyCard({
             justifyContent: { xs: "flex-end", sm: "flex-start" },
           }}
         >
+<<<<<<< Updated upstream
         <IconButton
         aria-label={
           isInterested
@@ -118,6 +114,41 @@ function NearbyElderlyCard({
       >
         {isInterested ? <FavoriteIcon /> : <FavoriteBorderIcon />}
       </IconButton>
+=======
+          <IconButton
+            aria-label={`Entrar em contato com ${name}`}
+            onClick={(event) => {
+              event.stopPropagation();
+              onContact?.(elderly);
+            }}
+            sx={{
+              width: 42,
+              height: 42,
+              bgcolor: isDarkMode ? "#1a3a3a" : "#edf8f7",
+              color: "#75b6b3",
+              "&:hover": { bgcolor: isDarkMode ? "#253044" : "#dff1f0" },
+            }}
+          >
+            <ChatBubbleOutlineIcon />
+          </IconButton>
+
+          <IconButton
+            aria-label={isInterested ? `Remover interesse em ${name}` : `Demonstrar interesse em ${name}`}
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleInterest?.(elderly);
+            }}
+            sx={{
+              width: 42,
+              height: 42,
+              bgcolor: isDarkMode ? "#2d1f24" : "#fbf0f2",
+              color: "#d99da8",
+              "&:hover": { bgcolor: isDarkMode ? "#3d2530" : "#f7e3e7" },
+            }}
+          >
+            {isInterested ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          </IconButton>
+>>>>>>> Stashed changes
         </Stack>
       </Stack>
     </Card>

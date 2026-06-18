@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Alert, Box, Button, Stack, Typography } from "@mui/material";
 import AvailabilityCard from "./AvailabilityCard";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 export const availabilityOptions = ["Manhã", "Tarde", "Noite"];
 
@@ -8,7 +9,6 @@ export function validateAvailabilitySelection(selectedAvailability = []) {
   if (selectedAvailability.length === 0) {
     return "Selecione pelo menos um período.";
   }
-
   return "";
 }
 
@@ -18,6 +18,7 @@ function EditAvailabilityForm({
   onCancel,
   onSave,
 }) {
+  const { isDarkMode } = useThemeMode();
   const [selectedAvailability, setSelectedAvailability] = useState([]);
   const [availabilityError, setAvailabilityError] = useState("");
 
@@ -29,7 +30,6 @@ function EditAvailabilityForm({
   const handleToggleAvailability = (period) => {
     setSelectedAvailability((currentAvailability) => {
       const hasPeriod = currentAvailability.includes(period);
-
       return hasPeriod
         ? currentAvailability.filter((item) => item !== period)
         : [...currentAvailability, period];
@@ -40,13 +40,8 @@ function EditAvailabilityForm({
   const handleSubmit = (event) => {
     event.preventDefault();
     const validationMessage = validateAvailabilitySelection(selectedAvailability);
-
     setAvailabilityError(validationMessage);
-
-    if (validationMessage) {
-      return;
-    }
-
+    if (validationMessage) return;
     onSave?.(selectedAvailability);
   };
 
@@ -54,10 +49,10 @@ function EditAvailabilityForm({
     <Box component="form" onSubmit={handleSubmit}>
       <Stack spacing={2}>
         <Box>
-          <Typography sx={{ color: "#20283a", fontSize: 14, fontWeight: 900, mb: 0.5 }}>
+          <Typography sx={{ color: isDarkMode ? "#f8fafc" : "#20283a", fontSize: 14, fontWeight: 900, mb: 0.5 }}>
             Horários disponíveis
           </Typography>
-          <Typography sx={{ color: "#98a1b0", fontSize: 13 }}>
+          <Typography sx={{ color: isDarkMode ? "#a8b3c7" : "#98a1b0", fontSize: 13 }}>
             Selecione um ou mais períodos em que você pode ajudar.
           </Typography>
         </Box>
@@ -84,7 +79,7 @@ function EditAvailabilityForm({
             type="button"
             onClick={onCancel}
             disabled={isSaving}
-            sx={{ textTransform: "none" }}
+            sx={{ textTransform: "none", color: isDarkMode ? "#a8b3c7" : undefined }}
           >
             Cancelar
           </Button>
@@ -97,10 +92,7 @@ function EditAvailabilityForm({
               fontWeight: 800,
               textTransform: "none",
               boxShadow: "none",
-              "&:hover": {
-                bgcolor: "#87afad",
-                boxShadow: "none",
-              },
+              "&:hover": { bgcolor: "#87afad", boxShadow: "none" },
             }}
           >
             {isSaving ? "Salvando..." : "Salvar alterações"}

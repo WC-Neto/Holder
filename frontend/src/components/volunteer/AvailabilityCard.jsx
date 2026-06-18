@@ -3,6 +3,7 @@ import { Box, Stack, Typography } from "@mui/material";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import NightsStayOutlinedIcon from "@mui/icons-material/NightsStayOutlined";
 import WbTwilightOutlinedIcon from "@mui/icons-material/WbTwilightOutlined";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 const availabilityIcons = {
   Manhã: LightModeOutlinedIcon,
@@ -11,6 +12,7 @@ const availabilityIcons = {
 };
 
 function AvailabilityCard({ period, selected = false, onToggle }) {
+  const { isDarkMode } = useThemeMode();
   const PeriodIcon = availabilityIcons[period] ?? LightModeOutlinedIcon;
 
   return (
@@ -25,9 +27,11 @@ function AvailabilityCard({ period, selected = false, onToggle }) {
         alignItems: "center",
         width: "100%",
         border: "1px solid",
-        borderColor: selected ? "#96C0BE" : "#eceef2",
+        borderColor: selected ? "#96C0BE" : isDarkMode ? "#253044" : "#eceef2",
         borderRadius: 2,
-        bgcolor: selected ? "#eef8f7" : "#fff",
+        bgcolor: selected
+          ? isDarkMode ? "#1a3a3a" : "#eef8f7"
+          : isDarkMode ? "#1e293b" : "#fff",
         px: 1.5,
         py: 1.4,
         cursor: "pointer",
@@ -35,7 +39,7 @@ function AvailabilityCard({ period, selected = false, onToggle }) {
         transition: "border-color 160ms ease, background-color 160ms ease",
         "&:hover": {
           borderColor: "#96C0BE",
-          bgcolor: "#f6fbfa",
+          bgcolor: isDarkMode ? "#253044" : "#f6fbfa",
         },
         "&:focus-visible": {
           outline: "2px solid #96C0BE",
@@ -50,7 +54,9 @@ function AvailabilityCard({ period, selected = false, onToggle }) {
           borderRadius: "50%",
           display: "grid",
           placeItems: "center",
-          bgcolor: selected ? "#dcefed" : "#f3f7f7",
+          bgcolor: selected
+            ? isDarkMode ? "#1a4a48" : "#dcefed"
+            : isDarkMode ? "#253044" : "#f3f7f7",
           color: "#88b8b5",
           flexShrink: 0,
         }}
@@ -58,7 +64,7 @@ function AvailabilityCard({ period, selected = false, onToggle }) {
         <PeriodIcon sx={{ fontSize: 20 }} />
       </Box>
 
-      <Typography sx={{ color: "#20283a", fontSize: 15, fontWeight: 800 }}>
+      <Typography sx={{ color: isDarkMode ? "#f8fafc" : "#20283a", fontSize: 15, fontWeight: 800 }}>
         {period}
       </Typography>
     </Stack>

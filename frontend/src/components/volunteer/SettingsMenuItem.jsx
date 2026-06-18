@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, IconButton, Stack, Typography } from "@mui/material";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 function SettingsMenuItem({
   icon: Icon,
@@ -9,9 +10,13 @@ function SettingsMenuItem({
   onClick,
   isDestructive = false,
 }) {
-  const mainColor = isDestructive ? "#ff4d4f" : "#20283a";
+  const { isDarkMode } = useThemeMode();
+
+  const mainColor = isDestructive ? "#ff4d4f" : isDarkMode ? "#f8fafc" : "#20283a";
   const iconColor = isDestructive ? "#ff4d4f" : "#96C0BE";
-  const iconBackground = isDestructive ? "#ffe8ea" : "#eef8f7";
+  const iconBackground = isDestructive
+    ? isDarkMode ? "#3d1a1a" : "#ffe8ea"
+    : isDarkMode ? "#1a3a3a" : "#eef8f7";
 
   return (
     <Stack
@@ -31,7 +36,9 @@ function SettingsMenuItem({
         cursor: "pointer",
         textAlign: "left",
         "&:hover": {
-          bgcolor: isDestructive ? "#fff7f7" : "#fbfbfc",
+          bgcolor: isDestructive
+            ? isDarkMode ? "#2d1a1a" : "#fff7f7"
+            : isDarkMode ? "#253044" : "#fbfbfc",
         },
         "&:focus-within": {
           outline: "2px solid #96C0BE",
@@ -59,19 +66,14 @@ function SettingsMenuItem({
           {title}
         </Typography>
         {description && (
-          <Typography sx={{ color: "#98a1b0", fontSize: 12 }}>
+          <Typography sx={{ color: isDarkMode ? "#a8b3c7" : "#98a1b0", fontSize: 12 }}>
             {description}
           </Typography>
         )}
       </Box>
 
-      <IconButton
-        component="span"
-        size="small"
-        tabIndex={-1}
-        aria-hidden="true"
-      >
-        <ChevronRightIcon sx={{ color: "#98a1b0" }} />
+      <IconButton component="span" size="small" tabIndex={-1} aria-hidden="true">
+        <ChevronRightIcon sx={{ color: isDarkMode ? "#a8b3c7" : "#98a1b0" }} />
       </IconButton>
     </Stack>
   );

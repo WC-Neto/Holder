@@ -6,6 +6,7 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
 import SettingsMenuItem from "./SettingsMenuItem";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 export const settingsMenuOptions = [
   {
@@ -39,28 +40,31 @@ export const settingsMenuOptions = [
 ];
 
 function VolunteerSettingsMenu({ onNavigate, onLogout }) {
+  const { isDarkMode } = useThemeMode();
+
   const handleNavigate = (item) => {
     onNavigate?.(item.route, item);
   };
 
+  const cardSx = {
+    bgcolor: isDarkMode ? "#1e293b" : "#fff",
+    borderColor: isDarkMode ? "#253044" : "#eceef2",
+    borderRadius: 3,
+    boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
+    overflow: "hidden",
+  };
+
+  const dividerSx = { borderColor: isDarkMode ? "#253044" : undefined };
+
   return (
     <Stack spacing={2}>
-      <Card
-        variant="outlined"
-        sx={{
-          bgcolor: "#fff",
-          borderColor: "#eceef2",
-          borderRadius: 3,
-          boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
-          overflow: "hidden",
-        }}
-      >
+      <Card variant="outlined" sx={cardSx}>
         <Typography
           component="h2"
           sx={{
             px: 2.4,
             py: 2,
-            color: "#20283a",
+            color: isDarkMode ? "#f8fafc" : "#20283a",
             fontSize: 18,
             fontWeight: 900,
           }}
@@ -68,26 +72,17 @@ function VolunteerSettingsMenu({ onNavigate, onLogout }) {
           Configurações
         </Typography>
 
-        <Divider />
+        <Divider sx={dividerSx} />
 
         {settingsMenuOptions.map((item, index) => (
           <React.Fragment key={item.id}>
             <SettingsMenuItem {...item} onClick={() => handleNavigate(item)} />
-            {index < settingsMenuOptions.length - 1 && <Divider />}
+            {index < settingsMenuOptions.length - 1 && <Divider sx={dividerSx} />}
           </React.Fragment>
         ))}
       </Card>
 
-      <Card
-        variant="outlined"
-        sx={{
-          bgcolor: "#fff",
-          borderColor: "#eceef2",
-          borderRadius: 3,
-          boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
-          overflow: "hidden",
-        }}
-      >
+      <Card variant="outlined" sx={cardSx}>
         <SettingsMenuItem
           icon={LogoutOutlinedIcon}
           title="Sair da Conta"

@@ -9,6 +9,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 export const availabilityOptions = ["Manhã", "Tarde", "Noite"];
 
@@ -22,49 +23,34 @@ function clampPercent(value) {
 
 export function formatPhoneNumber(phone = "") {
   const digits = getPhoneDigits(phone).slice(0, 11);
-
-  if (!digits) {
-    return "";
-  }
-
-  if (digits.length <= 2) {
-    return `(${digits}`;
-  }
-
+  if (!digits) return "";
+  if (digits.length <= 2) return `(${digits}`;
   const areaCode = digits.slice(0, 2);
   const phoneBody = digits.slice(2);
   const prefixLength = digits.length > 10 ? 5 : 4;
   const prefix = phoneBody.slice(0, prefixLength);
   const suffix = phoneBody.slice(prefixLength);
-
-  if (!suffix) {
-    return `(${areaCode}) ${prefix}`;
-  }
-
+  if (!suffix) return `(${areaCode}) ${prefix}`;
   return `(${areaCode}) ${prefix}-${suffix}`;
 }
 
 export function validateProfileForm(formData) {
   const errors = {};
-
   if (!formData.name.trim() || formData.name.trim().length < 2) {
     errors.name = "Informe um nome com pelo menos 2 caracteres.";
   }
-
   const phoneDigits = getPhoneDigits(formData.phone);
-
   if (phoneDigits.length < 10 || phoneDigits.length > 11) {
     errors.phone = "Informe um telefone válido com DDD.";
   }
-
   if (!formData.availability || formData.availability.length === 0) {
     errors.availability = "Selecione pelo menos um período.";
   }
-
   return errors;
 }
 
 function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave }) {
+  const { isDarkMode } = useThemeMode();
   const [formData, setFormData] = useState({
     avatarUrl: "",
     avatarPosition: { x: 50, y: 50 },
@@ -82,12 +68,8 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
   const objectPosition = `${formData.avatarPosition.x}% ${formData.avatarPosition.y}%`;
 
   useEffect(() => {
-    if (!profile) {
-      return;
-    }
-
+    if (!profile) return;
     const initialAvatarUrl = profile.avatarUrl ?? "";
-
     setFormData({
       avatarUrl: initialAvatarUrl,
       avatarPosition: profile.avatarPosition ?? { x: 50, y: 50 },
@@ -103,71 +85,34 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
   }, [profile]);
 
   const handleInputChange = (field) => (event) => {
-    setFormData((currentData) => ({
-      ...currentData,
-      [field]: event.target.value,
-    }));
+    setFormData((cur) => ({ ...cur, [field]: event.target.value }));
   };
 
   const handlePhoneChange = (event) => {
-    setFormData((currentData) => ({
-      ...currentData,
-      phone: formatPhoneNumber(event.target.value),
-    }));
+    setFormData((cur) => ({ ...cur, phone: formatPhoneNumber(event.target.value) }));
   };
 
   const handlePhotoChange = (event) => {
     const file = event.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
+    if (!file) return;
     const imageUrl = URL.createObjectURL(file);
-
     setImagePreview(imageUrl);
-    setFormData((currentData) => ({
-      ...currentData,
-      avatarUrl: imageUrl,
-      avatarFileName: file.name,
-      avatarPosition: { x: 50, y: 50 },
-    }));
+    setFormData((cur) => ({ ...cur, avatarUrl: imageUrl, avatarFileName: file.name, avatarPosition: { x: 50, y: 50 } }));
   };
 
   const handleAvatarDragStart = (event) => {
-    if (!imagePreview || !previewRef.current) {
-      return;
-    }
-
+    if (!imagePreview || !previewRef.current) return;
     event.preventDefault();
     event.currentTarget.setPointerCapture?.(event.pointerId);
-    const previewRect = previewRef.current.getBoundingClientRect();
-
-    setDragState({
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      width: previewRect.width,
-      height: previewRect.height,
-      initialPosition: formData.avatarPosition,
-    });
+    const rect = previewRef.current.getBoundingClientRect();
+    setDragState({ pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, width: rect.width, height: rect.height, initialPosition: formData.avatarPosition });
   };
 
   const handleAvatarDragMove = (event) => {
-    if (!dragState || dragState.pointerId !== event.pointerId) {
-      return;
-    }
-
+    if (!dragState || dragState.pointerId !== event.pointerId) return;
     const deltaX = ((event.clientX - dragState.startX) / dragState.width) * 100;
     const deltaY = ((event.clientY - dragState.startY) / dragState.height) * 100;
-
-    setFormData((currentData) => ({
-      ...currentData,
-      avatarPosition: {
-        x: clampPercent(dragState.initialPosition.x + deltaX),
-        y: clampPercent(dragState.initialPosition.y + deltaY),
-      },
-    }));
+    setFormData((cur) => ({ ...cur, avatarPosition: { x: clampPercent(dragState.initialPosition.x + deltaX), y: clampPercent(dragState.initialPosition.y + deltaY) } }));
   };
 
   const handleAvatarDragEnd = (event) => {
@@ -176,15 +121,9 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
   };
 
   const handleAvailabilityChange = (period) => {
-    setFormData((currentData) => {
-      const hasPeriod = currentData.availability.includes(period);
-
-      return {
-        ...currentData,
-        availability: hasPeriod
-          ? currentData.availability.filter((item) => item !== period)
-          : [...currentData.availability, period],
-      };
+    setFormData((cur) => {
+      const hasPeriod = cur.availability.includes(period);
+      return { ...cur, availability: hasPeriod ? cur.availability.filter((i) => i !== period) : [...cur.availability, period] };
     });
     setAvailabilityError("");
   };
@@ -192,32 +131,29 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
   const handleSubmit = (event) => {
     event.preventDefault();
     const validationErrors = validateProfileForm(formData);
-
     setNameError(validationErrors.name ?? "");
     setPhoneError(validationErrors.phone ?? "");
     setAvailabilityError(validationErrors.availability ?? "");
+    if (Object.keys(validationErrors).length > 0) return;
+    onSave?.({ avatarUrl: formData.avatarUrl, avatarPosition: formData.avatarPosition, name: formData.name, personalInfo: { phone: formData.phone, address: formData.address }, availability: formData.availability });
+  };
 
-    if (Object.keys(validationErrors).length > 0) {
-      return;
-    }
-
-    onSave?.({
-      avatarUrl: formData.avatarUrl,
-      avatarPosition: formData.avatarPosition,
-      name: formData.name,
-      personalInfo: {
-        phone: formData.phone,
-        address: formData.address,
-      },
-      availability: formData.availability,
-    });
+  const textFieldSx = {
+    "& .MuiOutlinedInput-root": {
+      bgcolor: isDarkMode ? "#0f172a" : undefined,
+      color: isDarkMode ? "#f8fafc" : undefined,
+      "& fieldset": { borderColor: isDarkMode ? "#334155" : undefined },
+      "&:hover fieldset": { borderColor: isDarkMode ? "#475569" : undefined },
+    },
+    "& .MuiInputLabel-root": { color: isDarkMode ? "#64748b" : undefined },
+    "& .MuiFormHelperText-root": { color: isDarkMode ? "#64748b" : undefined },
   };
 
   return (
     <Box component="form" onSubmit={handleSubmit}>
       <Stack spacing={2.2}>
         <Box>
-          <Typography sx={{ color: "#20283a", fontSize: 14, fontWeight: 900, mb: 1 }}>
+          <Typography sx={{ color: isDarkMode ? "#f8fafc" : "#20283a", fontSize: 14, fontWeight: 900, mb: 1 }}>
             Foto
           </Typography>
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ alignItems: "center" }}>
@@ -231,8 +167,8 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
                 width: 116,
                 height: 116,
                 borderRadius: "50%",
-                border: "3px solid #dbe9e8",
-                bgcolor: "#eef8f7",
+                border: `3px solid ${isDarkMode ? "#334155" : "#dbe9e8"}`,
+                bgcolor: isDarkMode ? "#1a3a3a" : "#eef8f7",
                 backgroundImage: imagePreview ? `url(${imagePreview})` : "none",
                 backgroundSize: "cover",
                 backgroundPosition: objectPosition,
@@ -249,55 +185,28 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
                 component="label"
                 variant="outlined"
                 sx={{
-                  borderColor: "#dbe9e8",
-                  color: "#3e4654",
+                  borderColor: isDarkMode ? "#334155" : "#dbe9e8",
+                  color: isDarkMode ? "#a8b3c7" : "#3e4654",
                   fontWeight: 800,
                   textTransform: "none",
                 }}
               >
                 Carregar imagem do computador
-                <input
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={handlePhotoChange}
-                />
+                <input type="file" accept="image/*" hidden onChange={handlePhotoChange} />
               </Button>
-              <Typography sx={{ color: "#98a1b0", fontSize: 12 }}>
+              <Typography sx={{ color: isDarkMode ? "#64748b" : "#98a1b0", fontSize: 12 }}>
                 Depois de carregar, arraste a foto na prévia para ajustar o centro.
               </Typography>
             </Stack>
           </Stack>
         </Box>
-        <TextField
-          label="Nome"
-          value={formData.name}
-          onChange={handleInputChange("name")}
-          fullWidth
-          required
-          error={Boolean(nameError)}
-          helperText={nameError}
-          size="small"
-        />
-        <TextField
-          label="Telefone"
-          value={formData.phone}
-          onChange={handlePhoneChange}
-          fullWidth
-          error={Boolean(phoneError)}
-          helperText={phoneError}
-          size="small"
-        />
-        <TextField
-          label="Endereço"
-          value={formData.address}
-          onChange={handleInputChange("address")}
-          fullWidth
-          size="small"
-        />
+
+        <TextField label="Nome" value={formData.name} onChange={handleInputChange("name")} fullWidth required error={Boolean(nameError)} helperText={nameError} size="small" sx={textFieldSx} />
+        <TextField label="Telefone" value={formData.phone} onChange={handlePhoneChange} fullWidth error={Boolean(phoneError)} helperText={phoneError} size="small" sx={textFieldSx} />
+        <TextField label="Endereço" value={formData.address} onChange={handleInputChange("address")} fullWidth size="small" sx={textFieldSx} />
 
         <Box>
-          <Typography sx={{ color: "#20283a", fontSize: 14, fontWeight: 900, mb: 0.8 }}>
+          <Typography sx={{ color: isDarkMode ? "#f8fafc" : "#20283a", fontSize: 14, fontWeight: 900, mb: 0.8 }}>
             Disponibilidade
           </Typography>
           <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
@@ -308,13 +217,10 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
                   <Checkbox
                     checked={formData.availability.includes(period)}
                     onChange={() => handleAvailabilityChange(period)}
-                    sx={{
-                      color: "#96C0BE",
-                      "&.Mui-checked": { color: "#96C0BE" },
-                    }}
+                    sx={{ color: "#96C0BE", "&.Mui-checked": { color: "#96C0BE" } }}
                   />
                 }
-                label={period}
+                label={<Typography sx={{ color: isDarkMode ? "#f8fafc" : undefined, fontSize: 14 }}>{period}</Typography>}
                 sx={{ mr: 1 }}
               />
             ))}
@@ -327,29 +233,10 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
         </Box>
 
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ justifyContent: "flex-end" }}>
-          <Button
-            type="button"
-            onClick={onCancel}
-            disabled={isSaving}
-            sx={{ textTransform: "none" }}
-          >
+          <Button type="button" onClick={onCancel} disabled={isSaving} sx={{ textTransform: "none", color: isDarkMode ? "#a8b3c7" : undefined }}>
             Cancelar
           </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={isSaving}
-            sx={{
-              bgcolor: "#96C0BE",
-              fontWeight: 800,
-              textTransform: "none",
-              boxShadow: "none",
-              "&:hover": {
-                bgcolor: "#87afad",
-                boxShadow: "none",
-              },
-            }}
-          >
+          <Button type="submit" variant="contained" disabled={isSaving} sx={{ bgcolor: "#96C0BE", fontWeight: 800, textTransform: "none", boxShadow: "none", "&:hover": { bgcolor: "#87afad", boxShadow: "none" } }}>
             {isSaving ? "Salvando..." : "Salvar alterações"}
           </Button>
         </Stack>

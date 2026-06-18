@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Button, Card, Typography } from "@mui/material";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 function CommunityCard({
   title,
@@ -10,13 +11,15 @@ function CommunityCard({
   iconBgColor = "#f7e9eb",
   onButtonClick,
 }) {
+  const { isDarkMode } = useThemeMode();
+
   return (
     <Card
       variant="outlined"
       sx={{
         p: 2.6,
-        bgcolor: "#fff",
-        borderColor: "#eceef2",
+        bgcolor: isDarkMode ? "#1e293b" : "#fff",
+        borderColor: isDarkMode ? "#253044" : "#eceef2",
         borderRadius: 3,
         boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
         textAlign: "center",
@@ -35,11 +38,11 @@ function CommunityCard({
         {icon}
       </Box>
 
-      <Typography sx={{ color: "#20283a", fontSize: 20, fontWeight: 800, mb: 1 }}>
+      <Typography sx={{ color: isDarkMode ? "#f8fafc" : "#20283a", fontSize: 20, fontWeight: 800, mb: 1 }}>
         {title}
       </Typography>
 
-      <Typography sx={{ color: "#98a1b0", fontSize: 14, mb: 2.4 }}>
+      <Typography sx={{ color: isDarkMode ? "#a8b3c7" : "#98a1b0", fontSize: 14, mb: 2.4 }}>
         {subtitle}
       </Typography>
 

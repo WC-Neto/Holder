@@ -5,18 +5,19 @@ import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
 import AvailabilityTags from "./AvailabilityTags";
 import PersonalInfoList from "./PersonalInfoList";
 import VolunteerProfileStats from "./VolunteerProfileStats";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 function VolunteerProfileCard({ profile, onEditProfile }) {
-  if (!profile) {
-    return null;
-  }
+  const { isDarkMode } = useThemeMode();
+
+  if (!profile) return null;
 
   return (
     <Card
       variant="outlined"
       sx={{
-        bgcolor: "#fff",
-        borderColor: "#eceef2",
+        bgcolor: isDarkMode ? "#1e293b" : "#fff",
+        borderColor: isDarkMode ? "#253044" : "#eceef2",
         borderRadius: 3,
         boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
         overflow: "hidden",
@@ -39,12 +40,7 @@ function VolunteerProfileCard({ profile, onEditProfile }) {
         <Avatar
           src={profile.avatarUrl}
           alt={profile.name}
-          sx={{
-            width: 94,
-            height: 94,
-            border: "4px solid rgba(255,255,255,0.92)",
-            mb: 2,
-          }}
+          sx={{ width: 94, height: 94, border: "4px solid rgba(255,255,255,0.92)", mb: 2 }}
         />
         <Typography sx={{ fontSize: 24, fontWeight: 900 }}>{profile.name}</Typography>
         <Typography sx={{ fontSize: 14, opacity: 0.9 }}>{profile.email}</Typography>
@@ -85,15 +81,15 @@ function VolunteerProfileCard({ profile, onEditProfile }) {
 
       <VolunteerProfileStats stats={profile.stats} />
 
-      <Divider />
+      <Divider sx={{ borderColor: isDarkMode ? "#253044" : undefined }} />
 
       <Box sx={{ p: 2.6 }}>
-        <Typography sx={{ color: "#20283a", fontSize: 16, fontWeight: 900, mb: 1.5 }}>
+        <Typography sx={{ color: isDarkMode ? "#f8fafc" : "#20283a", fontSize: 16, fontWeight: 900, mb: 1.5 }}>
           Disponibilidade
         </Typography>
         <AvailabilityTags availability={profile.availability} />
 
-        <Typography sx={{ color: "#20283a", fontSize: 16, fontWeight: 900, mt: 3, mb: 1.5 }}>
+        <Typography sx={{ color: isDarkMode ? "#f8fafc" : "#20283a", fontSize: 16, fontWeight: 900, mt: 3, mb: 1.5 }}>
           Informações Pessoais
         </Typography>
         <PersonalInfoList personalInfo={profile.personalInfo} />

@@ -8,6 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 function FinishHelpReportModal({
   open,
@@ -16,6 +17,7 @@ function FinishHelpReportModal({
   onClose,
   onConfirm,
 }) {
+  const { isDarkMode } = useThemeMode();
   const [reportText, setReportText] = useState("");
   const [reportError, setReportError] = useState("");
 
@@ -28,22 +30,28 @@ function FinishHelpReportModal({
 
   const handleConfirm = () => {
     const trimmedReport = reportText.trim();
-
     if (!trimmedReport) {
       setReportError("Relatório obrigatório.");
       return;
     }
-
     onConfirm?.(trimmedReport);
   };
 
   return (
-    <Dialog open={open} onClose={isFinishing ? undefined : onClose} fullWidth maxWidth="xs">
-      <DialogTitle sx={{ color: "#20283a", fontWeight: 900 }}>
+    <Dialog
+      open={open}
+      onClose={isFinishing ? undefined : onClose}
+      fullWidth
+      maxWidth="xs"
+      PaperProps={{
+        sx: { bgcolor: isDarkMode ? "#1e293b" : "#fff" },
+      }}
+    >
+      <DialogTitle sx={{ color: isDarkMode ? "#f8fafc" : "#20283a", fontWeight: 900 }}>
         Finalizar ajuda
       </DialogTitle>
       <DialogContent>
-        <Typography sx={{ color: "#667085", fontSize: 14, lineHeight: 1.6, mb: 1.5 }}>
+        <Typography sx={{ color: isDarkMode ? "#a8b3c7" : "#667085", fontSize: 14, lineHeight: 1.6, mb: 1.5 }}>
           Relatório breve{order ? ` para "${order.title}"` : ""}.
         </Typography>
         <TextField
@@ -59,13 +67,23 @@ function FinishHelpReportModal({
           minRows={4}
           fullWidth
           disabled={isFinishing}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              bgcolor: isDarkMode ? "#0f172a" : undefined,
+              color: isDarkMode ? "#f8fafc" : undefined,
+              "& fieldset": { borderColor: isDarkMode ? "#334155" : undefined },
+              "&:hover fieldset": { borderColor: isDarkMode ? "#475569" : undefined },
+            },
+            "& .MuiInputLabel-root": { color: isDarkMode ? "#64748b" : undefined },
+            "& .MuiFormHelperText-root": { color: isDarkMode ? "#64748b" : undefined },
+          }}
         />
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2.5 }}>
         <Button
           onClick={onClose}
           disabled={isFinishing}
-          sx={{ textTransform: "none" }}
+          sx={{ textTransform: "none", color: isDarkMode ? "#a8b3c7" : undefined }}
         >
           Cancelar
         </Button>
@@ -78,10 +96,7 @@ function FinishHelpReportModal({
             textTransform: "none",
             fontWeight: 800,
             boxShadow: "none",
-            "&:hover": {
-              bgcolor: "#87afad",
-              boxShadow: "none",
-            },
+            "&:hover": { bgcolor: "#87afad", boxShadow: "none" },
           }}
         >
           {isFinishing ? "Finalizando..." : "Finalizar"}

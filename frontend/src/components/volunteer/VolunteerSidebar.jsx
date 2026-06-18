@@ -19,6 +19,7 @@ import LogoutButton from "../shared/LogoutButton";
 import SidebarMenuItem from "../shared/SidebarMenuItem";
 import SidebarUserInfo from "../shared/SidebarUserInfo";
 import logo from "../../assets/logo.png";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 const menuItems = [
   { id: "inicio", label: "Início", icon: <HomeOutlinedIcon /> },
@@ -28,6 +29,7 @@ const menuItems = [
 ];
 
 function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
+  const { isDarkMode } = useThemeMode();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -36,30 +38,32 @@ function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
     setMobileOpen(!mobileOpen);
   };
 
+  const borderColor = isDarkMode ? "#253044" : "#eef0f4";
+
   const sidebarContent = (
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        bgcolor: "#fff",
-        borderRight: "1px solid #eef0f4",
+        bgcolor: isDarkMode ? "#1e293b" : "#fff",
+        borderRight: `1px solid ${borderColor}`,
       }}
     >
       <Box
         sx={{
           p: 2,
-          borderBottom: "1px solid #eef0f4",
+          borderBottom: `1px solid ${borderColor}`,
           display: "flex",
           alignItems: "center",
           gap: 1,
         }}
       >
-        <Box component="img" src={logo} alt="Holder" sx={{ width: 'auto', height: 40 }} />
-        <Box sx={{ color: "#8ab9b6", fontSize: 18, fontWeight: 800}}>Holder</Box>
+        <Box component="img" src={logo} alt="Holder" sx={{ width: "full", height: 40 }} />
+        <Box sx={{ color: "#8ab9b6", fontSize: 18, fontWeight: 800 }}>Holder</Box>
       </Box>
 
-      <SidebarUserInfo 
+      <SidebarUserInfo
         userName="Ana Santos"
         userRole="Voluntário"
         userImage="https://i.pravatar.cc/80?img=47"
@@ -74,15 +78,13 @@ function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
             isActive={currentPage === item.id}
             onClick={() => {
               onPageChange(item.id);
-              if (isMobile) {
-                setMobileOpen(false);
-              }
+              if (isMobile) setMobileOpen(false);
             }}
           />
         ))}
       </Box>
 
-      <Box sx={{ p: 2, borderTop: "1px solid #eef0f4" }}>
+      <Box sx={{ p: 2, borderTop: `1px solid ${borderColor}` }}>
         <LogoutButton onLogout={onLogout} />
       </Box>
     </Box>
@@ -102,13 +104,11 @@ function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
             display: { xs: "inline-flex", sm: "none" },
             width: 48,
             height: 48,
-            bgcolor: "#fff",
-            color: "#253044",
-            border: "1px solid #eef0f4",
+            bgcolor: isDarkMode ? "#1e293b" : "#fff",
+            color: isDarkMode ? "#f8fafc" : "#253044",
+            border: `1px solid ${borderColor}`,
             boxShadow: "0 10px 28px rgba(37, 48, 68, 0.16)",
-            "&:hover": {
-              bgcolor: "#f7fbfb",
-            },
+            "&:hover": { bgcolor: isDarkMode ? "#253044" : "#f7fbfb" },
           }}
         >
           <MenuIcon />
@@ -139,18 +139,20 @@ function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
             bottom: 0,
             zIndex: (theme) => theme.zIndex.drawer + 1,
             display: { xs: "flex", sm: "none" },
-            borderTop: "1px solid #eef0f4",
+            borderTop: `1px solid ${borderColor}`,
           }}
         >
           <BottomNavigation
             showLabels
             value={currentPage}
             onChange={(_, nextPage) => {
-              if (nextPage !== "logout") {
-                onPageChange(nextPage);
-              }
+              if (nextPage !== "logout") onPageChange(nextPage);
             }}
-            sx={{ width: "100%", height: 68 }}
+            sx={{
+              width: "100%",
+              height: 68,
+              bgcolor: isDarkMode ? "#1e293b" : "#fff",
+            }}
           >
             {menuItems.map((item) => (
               <BottomNavigationAction
@@ -160,12 +162,9 @@ function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
                 icon={item.icon}
                 sx={{
                   minWidth: 0,
-                  color: "#667085",
+                  color: isDarkMode ? "#a8b3c7" : "#667085",
                   "&.Mui-selected": { color: "#96C0BE" },
-                  "& .MuiBottomNavigationAction-label": {
-                    fontSize: 11,
-                    fontWeight: 800,
-                  },
+                  "& .MuiBottomNavigationAction-label": { fontSize: 11, fontWeight: 800 },
                 }}
               />
             ))}
@@ -177,10 +176,7 @@ function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
               sx={{
                 minWidth: 0,
                 color: "#e6a0a8",
-                "& .MuiBottomNavigationAction-label": {
-                  fontSize: 11,
-                  fontWeight: 800,
-                },
+                "& .MuiBottomNavigationAction-label": { fontSize: 11, fontWeight: 800 },
               }}
             />
           </BottomNavigation>

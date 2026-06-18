@@ -1,8 +1,11 @@
 import React from "react";
 import { Button } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 function LoadMoreButton({ onClick, isLoading = false }) {
+  const { isDarkMode } = useThemeMode();
+
   return (
     <Button
       fullWidth
@@ -14,15 +17,15 @@ function LoadMoreButton({ onClick, isLoading = false }) {
         minHeight: 50,
         mt: 2,
         borderRadius: 3,
-        bgcolor: "#fff",
-        border: "1px solid #eceef2",
-        color: "#3e4654",
+        bgcolor: isDarkMode ? "#1e293b" : "#fff",
+        border: `1px solid ${isDarkMode ? "#253044" : "#eceef2"}`,
+        color: isDarkMode ? "#a8b3c7" : "#3e4654",
         fontSize: 14,
         fontWeight: 700,
         textTransform: "none",
         boxShadow: "none",
         "&:hover": {
-          bgcolor: "#f8f9fb",
+          bgcolor: isDarkMode ? "#253044" : "#f8f9fb",
           boxShadow: "none",
         },
       }}

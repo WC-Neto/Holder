@@ -6,6 +6,7 @@ import LocalGroceryStoreOutlinedIcon from "@mui/icons-material/LocalGroceryStore
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import PlumbingOutlinedIcon from "@mui/icons-material/PlumbingOutlined";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 const categoryIcons = {
   shopping: LocalGroceryStoreOutlinedIcon,
@@ -14,17 +15,12 @@ const categoryIcons = {
 };
 
 const statusStyles = {
-  in_progress: {
-    color: "#96C0BE",
-    bg: "#eef8f7",
-  },
-  completed: {
-    color: "#96C0BE",
-    bg: "#eef8f3",
-  },
+  in_progress: { color: "#96C0BE", bg: "#eef8f7" },
+  completed: { color: "#96C0BE", bg: "#eef8f3" },
 };
 
 function VolunteerHistoryCard({ historyItem, onContact, onViewDetails }) {
+  const { isDarkMode } = useThemeMode();
   const CategoryIcon = categoryIcons[historyItem.category] ?? PeopleAltOutlinedIcon;
   const statusStyle = statusStyles[historyItem.status] ?? statusStyles.completed;
 
@@ -33,8 +29,8 @@ function VolunteerHistoryCard({ historyItem, onContact, onViewDetails }) {
       variant="outlined"
       sx={{
         p: 2,
-        bgcolor: "#fff",
-        borderColor: "#eceef2",
+        bgcolor: isDarkMode ? "#1e293b" : "#fff",
+        borderColor: isDarkMode ? "#253044" : "#eceef2",
         borderRadius: 3,
         boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
       }}
@@ -47,7 +43,7 @@ function VolunteerHistoryCard({ historyItem, onContact, onViewDetails }) {
             borderRadius: 3,
             display: { xs: "none", sm: "grid" },
             placeItems: "center",
-            bgcolor: "#f3f9fa",
+            bgcolor: isDarkMode ? "#1a3a3a" : "#f3f9fa",
             color: "#9bc7d3",
             flexShrink: 0,
           }}
@@ -58,10 +54,10 @@ function VolunteerHistoryCard({ historyItem, onContact, onViewDetails }) {
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Stack direction="row" sx={{ alignItems: "flex-start", justifyContent: "space-between" }}>
             <Box sx={{ minWidth: 0 }}>
-              <Typography sx={{ color: "#20283a", fontSize: 16, fontWeight: 900 }}>
+              <Typography sx={{ color: isDarkMode ? "#f8fafc" : "#20283a", fontSize: 16, fontWeight: 900 }}>
                 {historyItem.title}
               </Typography>
-              <Typography sx={{ color: "#98a1b0", fontSize: 13 }}>
+              <Typography sx={{ color: isDarkMode ? "#a8b3c7" : "#98a1b0", fontSize: 13 }}>
                 {historyItem.date}
               </Typography>
             </Box>
@@ -69,8 +65,7 @@ function VolunteerHistoryCard({ historyItem, onContact, onViewDetails }) {
             <IconButton
               aria-label={`Ver detalhes de ${historyItem.title}`}
               onClick={() => onViewDetails?.(historyItem)}
-              sx={{ color: "#98a1b0", display: { xs: "none", sm: "inline-flex" },}}
-              
+              sx={{ color: isDarkMode ? "#a8b3c7" : "#98a1b0" }}
             >
               <ChevronRightIcon />
             </IconButton>
@@ -84,16 +79,16 @@ function VolunteerHistoryCard({ historyItem, onContact, onViewDetails }) {
                 borderRadius: "50%",
                 display: "grid",
                 placeItems: "center",
-                bgcolor: "#f4f6f8",
-                color: "#98a1b0",
+                bgcolor: isDarkMode ? "#253044" : "#f4f6f8",
+                color: isDarkMode ? "#a8b3c7" : "#98a1b0",
               }}
             >
               <PersonOutlineOutlinedIcon sx={{ fontSize: 16 }} />
             </Box>
-            <Typography sx={{ color: "#3e4654", fontSize: 13 }}>
+            <Typography sx={{ color: isDarkMode ? "#f8fafc" : "#3e4654", fontSize: 13 }}>
               {historyItem.elderName}
             </Typography>
-            <Typography sx={{ color: "#98a1b0", fontSize: 13 }}>
+            <Typography sx={{ color: isDarkMode ? "#a8b3c7" : "#98a1b0", fontSize: 13 }}>
               • {historyItem.neighborhood}
             </Typography>
           </Stack>
@@ -124,11 +119,11 @@ function VolunteerHistoryCard({ historyItem, onContact, onViewDetails }) {
                 onClick={() => onContact?.(historyItem)}
                 sx={{
                   borderRadius: 2,
-                  bgcolor: "#eef8f7",
+                  bgcolor: isDarkMode ? "#1a3a3a" : "#eef8f7",
                   color: "#96C0BE",
                   fontWeight: 800,
                   textTransform: "none",
-                  "&:hover": { bgcolor: "#e3f2f1" },
+                  "&:hover": { bgcolor: isDarkMode ? "#253044" : "#e3f2f1" },
                 }}
               >
                 Contato

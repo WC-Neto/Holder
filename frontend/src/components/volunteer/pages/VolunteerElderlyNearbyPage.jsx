@@ -3,7 +3,6 @@ import {
   Alert,
   Box,
   Snackbar,
-  Stack,
   Typography,
 } from "@mui/material";
 import EmptyState from "../EmptyState";
@@ -13,10 +12,12 @@ import NearbyElderlyBanner from "../NearbyElderlyBanner";
 import NearbyElderlyCard from "../NearbyElderlyCard";
 import NearbyElderlyDetailsModal from "../NearbyElderlyDetailsModal";
 import { getNearbyElderly } from "../../../services/nearbyElderly";
+import { useThemeMode } from "../../../contexts/ThemeContext";
 
 const MOCK_VOLUNTEER_ID = 1;
 
-function VolunteerElderlyNearbyPage({ isDarkMode = false }) {
+function VolunteerElderlyNearbyPage() {
+  const { isDarkMode } = useThemeMode();
   const [nearbyElderly, setNearbyElderly] = useState([]);
   const [favoriteElderlyIds, setFavoriteElderlyIds] = useState([]);
   const [selectedElderlyId, setSelectedElderlyId] = useState(null);
@@ -29,15 +30,12 @@ function VolunteerElderlyNearbyPage({ isDarkMode = false }) {
   const loadNearbyElderly = async () => {
     setIsLoadingNearbyElderly(true);
     setNearbyElderlyError("");
-
     try {
       const elderlyList = await getNearbyElderly({ volunteerId: MOCK_VOLUNTEER_ID });
       setNearbyElderly(elderlyList);
     } catch (error) {
       setNearbyElderly([]);
-      setNearbyElderlyError(
-        error?.message ?? "Não foi possível carregar os idosos próximos.",
-      );
+      setNearbyElderlyError(error?.message ?? "Não foi possível carregar os idosos próximos.");
     } finally {
       setIsLoadingNearbyElderly(false);
     }
@@ -49,33 +47,24 @@ function VolunteerElderlyNearbyPage({ isDarkMode = false }) {
 
   useEffect(() => {
     let isMounted = true;
-
     setIsLoadingNearbyElderly(true);
     setNearbyElderlyError("");
 
     getNearbyElderly({ volunteerId: MOCK_VOLUNTEER_ID })
       .then((elderlyList) => {
-        if (isMounted) {
-          setNearbyElderly(elderlyList);
-        }
+        if (isMounted) setNearbyElderly(elderlyList);
       })
       .catch((error) => {
         if (isMounted) {
           setNearbyElderly([]);
-          setNearbyElderlyError(
-            error?.message ?? "Não foi possível carregar os idosos próximos.",
-          );
+          setNearbyElderlyError(error?.message ?? "Não foi possível carregar os idosos próximos.");
         }
       })
       .finally(() => {
-        if (isMounted) {
-          setIsLoadingNearbyElderly(false);
-        }
+        if (isMounted) setIsLoadingNearbyElderly(false);
       });
 
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, []);
 
   const handleContactElderly = (elderly) => {
@@ -100,7 +89,6 @@ function VolunteerElderlyNearbyPage({ isDarkMode = false }) {
         setFeedbackMessage(`Interesse removido em ${elderly.name}.`);
         return currentIds.filter((id) => id !== elderly.id);
       }
-
       setFeedbackMessage(`Interesse demonstrado em ${elderly.name}.`);
       return [...currentIds, elderly.id];
     });
@@ -111,11 +99,11 @@ function VolunteerElderlyNearbyPage({ isDarkMode = false }) {
       <Box sx={{ px: { xs: 2, md: 4 }, pt: { xs: 3, md: 3.5 }, pb: 2.5 }}>
         <Typography
           component="h1"
-          sx={{ color: "#20283a", fontSize: 26, fontWeight: 900 }}
+          sx={{ color: isDarkMode ? "#f8fafc" : "#20283a", fontSize: 26, fontWeight: 900 }}
         >
           Idosos Próximos
         </Typography>
-        <Typography sx={{ color: "#98a1b0", fontSize: 16, mt: 0.4 }}>
+        <Typography sx={{ color: isDarkMode ? "#a8b3c7" : "#98a1b0", fontSize: 16, mt: 0.4 }}>
           Encontre idosos que precisam de ajuda
         </Typography>
       </Box>
@@ -179,11 +167,7 @@ function VolunteerElderlyNearbyPage({ isDarkMode = false }) {
         onClose={() => setFeedbackMessage("")}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert
-          severity="success"
-          variant="filled"
-          onClose={() => setFeedbackMessage("")}
-        >
+        <Alert severity="success" variant="filled" onClose={() => setFeedbackMessage("")}>
           {feedbackMessage}
         </Alert>
       </Snackbar>

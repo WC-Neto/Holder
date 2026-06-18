@@ -1,7 +1,10 @@
 import React from "react";
 import { Box, Card, Divider, Stack, Typography } from "@mui/material";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 function VolunteerHistorySummary({ total = 0, completed = 0 }) {
+  const { isDarkMode } = useThemeMode();
+
   const items = [
     { label: "Total de ajudas", value: total },
     { label: "Concluídas", value: completed },
@@ -12,8 +15,8 @@ function VolunteerHistorySummary({ total = 0, completed = 0 }) {
       variant="outlined"
       sx={{
         p: 2,
-        bgcolor: "#fff",
-        borderColor: "#eceef2",
+        bgcolor: isDarkMode ? "#1e293b" : "#fff",
+        borderColor: isDarkMode ? "#253044" : "#eceef2",
         borderRadius: 3,
         boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
       }}
@@ -25,11 +28,17 @@ function VolunteerHistorySummary({ total = 0, completed = 0 }) {
               <Typography sx={{ color: "#96C0BE", fontSize: 28, fontWeight: 900 }}>
                 {item.value}
               </Typography>
-              <Typography sx={{ color: "#98a1b0", fontSize: 13 }}>
+              <Typography sx={{ color: isDarkMode ? "#a8b3c7" : "#98a1b0", fontSize: 13 }}>
                 {item.label}
               </Typography>
             </Box>
-            {index === 0 && <Divider flexItem orientation="vertical" />}
+            {index === 0 && (
+              <Divider
+                flexItem
+                orientation="vertical"
+                sx={{ borderColor: isDarkMode ? "#253044" : undefined }}
+              />
+            )}
           </React.Fragment>
         ))}
       </Stack>

@@ -33,6 +33,7 @@ import {
 } from "../../../services/availableOrders";
 import { fetchVolunteerStats, normalizeVolunteerStats } from "../../../services/volunteerStats";
 import { getAvailableOrders as requestAvailableOrders } from "../../../services/volunteerService";
+import { useThemeMode } from "../../../contexts/ThemeContext";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 const INITIAL_VISIBLE_ORDERS = 3;
@@ -58,9 +59,8 @@ const pageCopy = {
 function VolunteerHomePage({
   nearbyEldersCount = 3,
   onNavigateToElders,
-  isDarkMode = false,
-  onToggleTheme,
 }) {
+  const { isDarkMode, toggleTheme } = useThemeMode();
   const [availableOrders, setAvailableOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
@@ -341,7 +341,7 @@ function VolunteerHomePage({
         totalNeeded={filteredOrders.length}
         title={pageCopy.title}
         isDarkMode={isDarkMode}
-        onToggleTheme={onToggleTheme}
+        onToggleTheme={toggleTheme}
       />
 
       <SearchInput

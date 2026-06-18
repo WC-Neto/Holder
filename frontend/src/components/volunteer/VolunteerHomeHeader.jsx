@@ -2,12 +2,12 @@ import React from "react";
 import { Box, IconButton, Typography } from "@mui/material";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
-function VolunteerHomeHeader({
-  totalNeeded = 3,
-  isDarkMode = false,
-  onToggleTheme,
-}) {
+
+
+function VolunteerHomeHeader({ totalNeeded = 3 }) {
+  const { isDarkMode, toggleTheme } = useThemeMode();
   return (
     <Box
       sx={{
@@ -42,7 +42,7 @@ function VolunteerHomeHeader({
       <IconButton
         aria-label="Alternar tema"
         aria-pressed={isDarkMode}
-        onClick={onToggleTheme}
+        onClick={toggleTheme}
         sx={{
           width: 44,
           height: 44,

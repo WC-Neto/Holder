@@ -22,10 +22,12 @@ import {
   getVolunteerHistory,
   getVolunteerHistorySummary,
 } from "../../../services/volunteerHistory";
+import { useThemeMode } from "../../../contexts/ThemeContext";
 
 const MOCK_VOLUNTEER_ID = 1;
 
-function VolunteerHistoryPage({ isDarkMode = false }) {
+function VolunteerHistoryPage() {
+  const { isDarkMode } = useThemeMode();
   const [historyItems, setHistoryItems] = useState([]);
   const [activeHistoryFilter, setActiveHistoryFilter] = useState("all");
   const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
@@ -45,7 +47,6 @@ function VolunteerHistoryPage({ isDarkMode = false }) {
   const loadVolunteerHistory = async () => {
     setIsLoadingHistory(true);
     setHistoryError("");
-
     try {
       const nextHistoryItems = await getVolunteerHistory(historyQueryParams);
       setHistoryItems(nextHistoryItems);
@@ -63,15 +64,12 @@ function VolunteerHistoryPage({ isDarkMode = false }) {
 
   useEffect(() => {
     let isMounted = true;
-
     setIsLoadingHistory(true);
     setHistoryError("");
 
     getVolunteerHistory(historyQueryParams)
       .then((nextHistoryItems) => {
-        if (isMounted) {
-          setHistoryItems(nextHistoryItems);
-        }
+        if (isMounted) setHistoryItems(nextHistoryItems);
       })
       .catch((error) => {
         if (isMounted) {
@@ -80,14 +78,10 @@ function VolunteerHistoryPage({ isDarkMode = false }) {
         }
       })
       .finally(() => {
-        if (isMounted) {
-          setIsLoadingHistory(false);
-        }
+        if (isMounted) setIsLoadingHistory(false);
       });
 
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [historyQueryParams]);
 
   const filteredHistory = useMemo(
@@ -122,11 +116,11 @@ function VolunteerHistoryPage({ isDarkMode = false }) {
       <Box sx={{ mb: 3 }}>
         <Typography
           component="h1"
-          sx={{ color: "#20283a", fontSize: 26, fontWeight: 900 }}
+          sx={{ color: isDarkMode ? "#f8fafc" : "#20283a", fontSize: 26, fontWeight: 900 }}
         >
           Meu Histórico
         </Typography>
-        <Typography sx={{ color: "#98a1b0", fontSize: 16, mt: 0.4 }}>
+        <Typography sx={{ color: isDarkMode ? "#a8b3c7" : "#98a1b0", fontSize: 16, mt: 0.4 }}>
           Veja todas as pessoas que você ajudou
         </Typography>
       </Box>
@@ -187,36 +181,34 @@ function VolunteerHistoryPage({ isDarkMode = false }) {
         onClose={() => setSelectedHistoryItem(null)}
         fullWidth
         maxWidth="xs"
+        PaperProps={{
+          sx: { bgcolor: isDarkMode ? "#1e293b" : "#fff" },
+        }}
       >
         {selectedHistoryItem && (
           <>
-            <DialogTitle sx={{ color: "#20283a", fontWeight: 900 }}>
+            <DialogTitle sx={{ color: isDarkMode ? "#f8fafc" : "#20283a", fontWeight: 900 }}>
               Detalhes da ajuda
             </DialogTitle>
             <DialogContent>
               <Stack spacing={1.2}>
-                <Typography sx={{ color: "#20283a", fontWeight: 900 }}>
+                <Typography sx={{ color: isDarkMode ? "#f8fafc" : "#20283a", fontWeight: 900 }}>
                   {selectedHistoryItem.title}
                 </Typography>
-                <Typography sx={{ color: "#667085", fontSize: 14 }}>
+                <Typography sx={{ color: isDarkMode ? "#a8b3c7" : "#667085", fontSize: 14 }}>
                   {selectedHistoryItem.elderName} • {selectedHistoryItem.neighborhood}
                 </Typography>
-                <Typography sx={{ color: "#667085", fontSize: 14 }}>
+                <Typography sx={{ color: isDarkMode ? "#a8b3c7" : "#667085", fontSize: 14 }}>
                   {selectedHistoryItem.details}
                 </Typography>
-                <Divider />
+                <Divider sx={{ borderColor: isDarkMode ? "#253044" : undefined }} />
                 <Box>
                   <Typography
-                    sx={{
-                      color: "#98a1b0",
-                      fontSize: 12,
-                      fontWeight: 900,
-                      mb: 0.6,
-                    }}
+                    sx={{ color: isDarkMode ? "#64748b" : "#98a1b0", fontSize: 12, fontWeight: 900, mb: 0.6 }}
                   >
                     Relatório da finalização
                   </Typography>
-                  <Typography sx={{ color: "#667085", fontSize: 14, lineHeight: 1.55 }}>
+                  <Typography sx={{ color: isDarkMode ? "#a8b3c7" : "#667085", fontSize: 14, lineHeight: 1.55 }}>
                     {selectedHistoryItem.completionReport ||
                       "Relatório disponível quando a ajuda for finalizada."}
                   </Typography>
@@ -233,11 +225,7 @@ function VolunteerHistoryPage({ isDarkMode = false }) {
         onClose={() => setFeedbackMessage("")}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert
-          severity="success"
-          variant="filled"
-          onClose={() => setFeedbackMessage("")}
-        >
+        <Alert severity="success" variant="filled" onClose={() => setFeedbackMessage("")}>
           {feedbackMessage}
         </Alert>
       </Snackbar>

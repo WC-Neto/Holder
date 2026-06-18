@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Stack } from "@mui/material";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 export const historyStatusOptions = [
   { value: "all", label: "Todos" },
@@ -8,6 +9,8 @@ export const historyStatusOptions = [
 ];
 
 function VolunteerHistoryStatusTabs({ activeStatus = "all", onStatusChange }) {
+  const { isDarkMode } = useThemeMode();
+
   return (
     <Stack
       direction="row"
@@ -28,13 +31,14 @@ function VolunteerHistoryStatusTabs({ activeStatus = "all", onStatusChange }) {
               minHeight: 38,
               px: 2.2,
               borderRadius: 999,
-              bgcolor: isActive ? "#96C0BE" : "#f6f7f8",
-              color: isActive ? "#fff" : "#3e4654",
+              bgcolor: isActive ? "#96C0BE" : isDarkMode ? "#1e293b" : "#f6f7f8",
+              color: isActive ? "#fff" : isDarkMode ? "#a8b3c7" : "#3e4654",
               fontWeight: 800,
               textTransform: "none",
               boxShadow: "none",
+              border: isDarkMode && !isActive ? "1px solid #253044" : "none",
               "&:hover": {
-                bgcolor: isActive ? "#87afad" : "#eef0f3",
+                bgcolor: isActive ? "#87afad" : isDarkMode ? "#253044" : "#eef0f3",
                 boxShadow: "none",
               },
             }}

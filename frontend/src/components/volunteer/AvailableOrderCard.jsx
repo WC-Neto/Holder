@@ -6,6 +6,7 @@ import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import PlumbingOutlinedIcon from "@mui/icons-material/PlumbingOutlined";
 import OrderMetaInfo from "./OrderMetaInfo";
 import UrgencyBadge from "./UrgencyBadge";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 export const orderShape = {
   id: "number|string",
@@ -36,18 +37,18 @@ function AvailableOrderCard({
   onFinishOrder,
   onUnavailableOrder,
 }) {
+  const { isDarkMode } = useThemeMode();
   const CategoryIcon = categoryIcons[order.category] ?? BoltOutlinedIcon;
+
   const handlePrimaryActionClick = () => {
     if (isAccepted) {
       onFinishOrder?.(order);
       return;
     }
-
     if (isDisabled) {
       onUnavailableOrder?.(order);
       return;
     }
-
     onAcceptOrder?.(order);
   };
 
@@ -57,20 +58,13 @@ function AvailableOrderCard({
       sx={{
         height: "100%",
         p: { xs: 2, sm: 2.4 },
-        bgcolor: "#fff",
-        borderColor: "#eceef2",
+        bgcolor: isDarkMode ? "#1e293b" : "#fff",
+        borderColor: isDarkMode ? "#253044" : "#eceef2",
         borderRadius: 3,
         boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "flex-start",
-          gap: 2,
-          height: "100%",
-        }}
-      >
+      <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2, height: "100%" }}>
         <Box
           sx={{
             display: { xs: "none", sm: "grid" },  
@@ -78,7 +72,7 @@ function AvailableOrderCard({
             height: 42,
             borderRadius: 3,
             placeItems: "center",
-            bgcolor: "#eef7f8",
+            bgcolor: isDarkMode ? "#1a3a3a" : "#eef7f8",
             color: "#96C0BE",
             flexShrink: 0,
           }}
@@ -107,7 +101,7 @@ function AvailableOrderCard({
             <Typography
               component="h2"
               sx={{
-                color: "#20283a",
+                color: isDarkMode ? "#f8fafc" : "#20283a",
                 fontSize: 18,
                 fontWeight: 800,
                 lineHeight: 1.25,
@@ -115,15 +109,12 @@ function AvailableOrderCard({
             >
               {order.title}
             </Typography>
-            <UrgencyBadge
-              urgencyTone={order.urgencyTone}
-              label={order.urgencyLevel}
-            />
+            <UrgencyBadge urgencyTone={order.urgencyTone} label={order.urgencyLevel} />
           </Box>
 
           <Typography
             sx={{
-              color: "#98a1b0",
+              color: isDarkMode ? "#a8b3c7" : "#98a1b0",
               fontSize: 14,
               lineHeight: 1.45,
               mb: 1.8,
@@ -140,11 +131,7 @@ function AvailableOrderCard({
             />
           </Box>
 
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={1.4}
-            sx={{ mt: "auto" }}
-          >
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.4} sx={{ mt: "auto" }}>
             <Button
               variant="outlined"
               onClick={() => onViewDetails?.(order)}
@@ -152,14 +139,14 @@ function AvailableOrderCard({
                 minHeight: 46,
                 px: 3,
                 borderRadius: 2,
-                borderColor: "#edf0f4",
-                color: "#3e4654",
+                borderColor: isDarkMode ? "#334155" : "#edf0f4",
+                color: isDarkMode ? "#a8b3c7" : "#3e4654",
                 fontWeight: 800,
                 textTransform: "none",
                 boxShadow: "none",
                 "&:hover": {
-                  borderColor: "#dfe4eb",
-                  bgcolor: "#f8f9fb",
+                  borderColor: isDarkMode ? "#475569" : "#dfe4eb",
+                  bgcolor: isDarkMode ? "#253044" : "#f8f9fb",
                 },
               }}
             >
@@ -179,26 +166,15 @@ function AvailableOrderCard({
                 fontWeight: 800,
                 textTransform: "none",
                 boxShadow: "none",
-                "&:hover": {
-                  boxShadow: "none",
-                  bgcolor: "#dfa0aa",
-                },
-                "&.Mui-disabled": {
-                  color: "#fff",
-                  bgcolor: "#96C0BE",
-                  background: "#96C0BE",
-                },
+                "&:hover": { boxShadow: "none", bgcolor: "#dfa0aa" },
+                "&.Mui-disabled": { color: "#fff", bgcolor: "#96C0BE", background: "#96C0BE" },
               }}
             >
               {isAccepted
-                ? isFinishing
-                  ? "Finalizando..."
-                  : "Finalizar ajuda"
-                : isAccepting
-                  ? "Aceitando..."
-                  : isDisabled
-                    ? "Indisponível"
-                    : "Ajudar agora"}
+                ? isFinishing ? "Finalizando..." : "Finalizar ajuda"
+                : isAccepting ? "Aceitando..."
+                : isDisabled ? "Indisponível"
+                : "Ajudar agora"}
             </Button>
           </Stack>
         </Box>
