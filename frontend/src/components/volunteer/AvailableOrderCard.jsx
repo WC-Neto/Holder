@@ -73,10 +73,10 @@ function AvailableOrderCard({
       >
         <Box
           sx={{
+            display: { xs: "none", sm: "grid" },  
             width: 42,
             height: 42,
             borderRadius: 3,
-            display: "grid",
             placeItems: "center",
             bgcolor: "#eef7f8",
             color: "#96C0BE",

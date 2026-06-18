@@ -49,7 +49,7 @@ function VolunteerProfileCard({ profile, onEditProfile }) {
         <Typography sx={{ fontSize: 24, fontWeight: 900 }}>{profile.name}</Typography>
         <Typography sx={{ fontSize: 14, opacity: 0.9 }}>{profile.email}</Typography>
 
-        <Stack direction="row" sx={{ flexWrap: "wrap", justifyContent: "center", gap: 1, mt: 3 }}>
+        <Stack direction="row" flexWrap={{ xs: "wrap", sm: "nowrap" }} sx={{ mt: 3, alignItems: "center",  gap: 1.5 }} >
           <Chip
             icon={<StarBorderOutlinedIcon />}
             label={profile.statusLabel ?? "Voluntário Ativo"}
@@ -57,6 +57,7 @@ function VolunteerProfileCard({ profile, onEditProfile }) {
               bgcolor: "rgba(255,255,255,0.18)",
               color: "#fff",
               fontWeight: 800,
+              height: 36,
               "& .MuiChip-icon": { color: "#f0b4a3" },
             }}
           />
@@ -64,7 +65,8 @@ function VolunteerProfileCard({ profile, onEditProfile }) {
             startIcon={<EditOutlinedIcon />}
             onClick={onEditProfile}
             sx={{
-              minHeight: 32,
+              height: 36,
+              minHeight: 36,
               borderRadius: 999,
               px: 1.8,
               bgcolor: "rgba(255,255,255,0.18)",
@@ -72,6 +74,8 @@ function VolunteerProfileCard({ profile, onEditProfile }) {
               fontWeight: 800,
               textTransform: "none",
               "&:hover": { bgcolor: "rgba(255,255,255,0.26)" },
+              display: "flex",
+              alignItems: "center",
             }}
           >
             Editar Perfil

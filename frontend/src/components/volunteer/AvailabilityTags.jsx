@@ -14,7 +14,7 @@ function AvailabilityTags({ availability = [] }) {
   const visibleAvailability = availability.length > 0 ? availability : ["Manhã", "Tarde", "Noite"];
 
   return (
-    <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
+    <Stack direction="row" flexWrap="wrap" gap={1}>
       {visibleAvailability.map((period) => {
         const PeriodIcon = availabilityIcons[period] ?? LightModeOutlinedIcon;
 

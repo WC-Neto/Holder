@@ -45,7 +45,7 @@ function VolunteerHistoryCard({ historyItem, onContact, onViewDetails }) {
             width: 42,
             height: 42,
             borderRadius: 3,
-            display: "grid",
+            display: { xs: "none", sm: "grid" },
             placeItems: "center",
             bgcolor: "#f3f9fa",
             color: "#9bc7d3",
@@ -69,7 +69,8 @@ function VolunteerHistoryCard({ historyItem, onContact, onViewDetails }) {
             <IconButton
               aria-label={`Ver detalhes de ${historyItem.title}`}
               onClick={() => onViewDetails?.(historyItem)}
-              sx={{ color: "#98a1b0" }}
+              sx={{ color: "#98a1b0", display: { xs: "none", sm: "inline-flex" },}}
+              
             >
               <ChevronRightIcon />
             </IconButton>
@@ -119,7 +120,7 @@ function VolunteerHistoryCard({ historyItem, onContact, onViewDetails }) {
             {historyItem.status === "in_progress" && (
               <Button
                 size="small"
-                startIcon={<ChatBubbleOutlineIcon />}
+                startIcon={<ChatBubbleOutlineIcon  sx={{ display: { xs: "none", sm: "inline-flex" } }} />}
                 onClick={() => onContact?.(historyItem)}
                 sx={{
                   borderRadius: 2,

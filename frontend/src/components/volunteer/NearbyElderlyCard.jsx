@@ -1,6 +1,5 @@
 import React from "react";
 import { Avatar, Box, Card, IconButton, Stack, Typography } from "@mui/material";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
@@ -61,10 +60,16 @@ function NearbyElderlyCard({
         "&:focus": {
           outline: "none",
         },
+        position: "relative",
       }}
     >
       <Stack
+<<<<<<< Updated upstream
         direction={{ xs: "column", sm: "row" }}
+=======
+        direction="row"
+        alignItems={{ xs: "flex-start", sm: "center" }}
+>>>>>>> Stashed changes
         spacing={2}
         sx={{ alignItems: { xs: "flex-start", sm: "center" } }}
       >
@@ -98,43 +103,26 @@ function NearbyElderlyCard({
             justifyContent: { xs: "flex-end", sm: "flex-start" },
           }}
         >
-          <IconButton
-            aria-label={`Entrar em contato com ${name}`}
-            onClick={(event) => {
-              event.stopPropagation();
-              onContact?.(elderly);
-            }}
-            sx={{
-              width: 42,
-              height: 42,
-              bgcolor: "#edf8f7",
-              color: "#75b6b3",
-              "&:hover": { bgcolor: "#dff1f0" },
-            }}
-          >
-            <ChatBubbleOutlineIcon />
-          </IconButton>
-
-          <IconButton
-            aria-label={
-              isInterested
-                ? `Remover interesse em ${name}`
-                : `Demonstrar interesse em ${name}`
-            }
-            onClick={(event) => {
-              event.stopPropagation();
-              onToggleInterest?.(elderly);
-            }}
-            sx={{
-              width: 42,
-              height: 42,
-              bgcolor: "#fbf0f2",
-              color: "#d99da8",
-              "&:hover": { bgcolor: "#f7e3e7" },
-            }}
-          >
-            {isInterested ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-          </IconButton>
+        <IconButton
+        aria-label={
+          isInterested
+            ? `Remover interesse em ${name}`
+            : `Demonstrar interesse em ${name}`
+        }
+        onClick={(event) => {
+          event.stopPropagation();
+          onToggleInterest?.(elderly);
+        }}
+        sx={{
+          width: 42,
+          height: 42,
+          bgcolor: "#fbf0f2",
+          color: "#d99da8",
+          "&:hover": { bgcolor: "#f7e3e7" },
+        }}
+      >
+        {isInterested ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+      </IconButton>
         </Stack>
       </Stack>
     </Card>

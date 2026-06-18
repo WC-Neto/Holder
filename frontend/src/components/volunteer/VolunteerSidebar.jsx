@@ -55,8 +55,8 @@ function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
           gap: 1,
         }}
       >
-        <Box component="img" src={logo} alt="Holder" sx={{ width: 40, height: 40 }} />
-        <Box sx={{ color: "#8ab9b6", fontSize: 18, fontWeight: 800 }}>Holder</Box>
+        <Box component="img" src={logo} alt="Holder" sx={{ width: 'auto', height: 40 }} />
+        <Box sx={{ color: "#8ab9b6", fontSize: 18, fontWeight: 800}}>Holder</Box>
       </Box>
 
       <SidebarUserInfo 
