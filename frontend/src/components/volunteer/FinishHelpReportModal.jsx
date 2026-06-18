@@ -63,9 +63,21 @@ function FinishHelpReportModal({
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2.5 }}>
         <Button
+          variant="contained"
           onClick={onClose}
           disabled={isFinishing}
-          sx={{ textTransform: "none" }}
+          sx={{
+            bgcolor: "#f4f4f6",
+            color: "#9ba3b3",
+            fontWeight: 700,
+            textTransform: "none",
+            borderRadius: 2,
+            boxShadow: "none",
+            "&:hover": {
+              bgcolor: "#e7e7ea",
+              boxShadow: "none"
+            }
+          }}
         >
           Cancelar
         </Button>

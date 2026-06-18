@@ -219,17 +219,18 @@ function BaseOrderModal({
       </DialogContent>
       <DialogActions sx={{ p: 1.5 }}>
         <Button
-          variant="outlined"
+          variant="contained"
           onClick={onClose}
           sx={{
-            borderColor: "#d7dbe3",
-            color: "#253044",
+            bgcolor: "#f4f4f6",
+            color: "#9ba3b3",
             fontWeight: 700,
             textTransform: "none",
             borderRadius: 2,
+            boxShadow: "none",
             "&:hover": {
-              borderColor: "#c1c6d0",
-              bgcolor: "#f4f6f8"
+              bgcolor: "#e7e7ea",
+              boxShadow: "none"
             }
           }}
         >
