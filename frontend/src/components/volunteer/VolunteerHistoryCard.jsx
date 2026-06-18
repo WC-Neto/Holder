@@ -39,7 +39,7 @@ function VolunteerHistoryCard({ historyItem, onContact, onViewDetails }) {
         boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
       }}
     >
-      <Stack direction="row" alignItems="flex-start" spacing={1.5}>
+      <Stack direction="row" spacing={1.5} sx={{ alignItems: "flex-start" }}>
         <Box
           sx={{
             width: 42,
@@ -56,7 +56,7 @@ function VolunteerHistoryCard({ historyItem, onContact, onViewDetails }) {
         </Box>
 
         <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Stack direction="row" alignItems="flex-start" justifyContent="space-between">
+          <Stack direction="row" sx={{ alignItems: "flex-start", justifyContent: "space-between" }}>
             <Box sx={{ minWidth: 0 }}>
               <Typography sx={{ color: "#20283a", fontSize: 16, fontWeight: 900 }}>
                 {historyItem.title}
@@ -75,7 +75,7 @@ function VolunteerHistoryCard({ historyItem, onContact, onViewDetails }) {
             </IconButton>
           </Stack>
 
-          <Stack direction="row" alignItems="center" spacing={0.8} sx={{ mt: 1.3 }}>
+          <Stack direction="row" spacing={0.8} sx={{ mt: 1.3, alignItems: "center" }}>
             <Box
               sx={{
                 width: 22,
@@ -99,10 +99,8 @@ function VolunteerHistoryCard({ historyItem, onContact, onViewDetails }) {
 
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="space-between"
             spacing={1}
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, alignItems: "center", justifyContent: "space-between" }}
           >
             <Box
               sx={{

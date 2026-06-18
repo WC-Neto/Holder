@@ -220,7 +220,7 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
           <Typography sx={{ color: "#20283a", fontSize: 14, fontWeight: 900, mb: 1 }}>
             Foto
           </Typography>
-          <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems="center">
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ alignItems: "center" }}>
             <Box
               ref={previewRef}
               onPointerDown={handleAvatarDragStart}
@@ -300,7 +300,7 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
           <Typography sx={{ color: "#20283a", fontSize: 14, fontWeight: 900, mb: 0.8 }}>
             Disponibilidade
           </Typography>
-          <Stack direction="row" flexWrap="wrap" gap={1}>
+          <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
             {availabilityOptions.map((period) => (
               <FormControlLabel
                 key={period}
@@ -326,7 +326,7 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
           )}
         </Box>
 
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} justifyContent="flex-end">
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ justifyContent: "flex-end" }}>
           <Button
             type="button"
             onClick={onCancel}

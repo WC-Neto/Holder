@@ -65,8 +65,8 @@ function NearbyElderlyCard({
     >
       <Stack
         direction={{ xs: "column", sm: "row" }}
-        alignItems={{ xs: "flex-start", sm: "center" }}
         spacing={2}
+        sx={{ alignItems: { xs: "flex-start", sm: "center" } }}
       >
         <Avatar
           src={photoUrl}
@@ -82,7 +82,7 @@ function NearbyElderlyCard({
           <Typography sx={{ color: "#20283a", fontSize: 16, fontWeight: 900 }}>
             {name}
           </Typography>
-          <Stack direction="row" alignItems="center" spacing={0.5}>
+          <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
             <PlaceOutlinedIcon sx={{ color: "#d99da8", fontSize: 16 }} />
             <Typography sx={{ color: "#98a1b0", fontSize: 13 }}>
               {distance}

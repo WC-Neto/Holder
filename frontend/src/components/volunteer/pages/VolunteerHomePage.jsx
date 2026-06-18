@@ -20,10 +20,10 @@ import LoadMoreButton from "../LoadMoreButton";
 import LoadingState from "../LoadingState";
 import OrderDetailsModal from "../OrderDetailsModal";
 import SearchInput from "../SearchInput";
-import VolunteerCommunityCard from "../VolunteerCommunityCard";
+import CommunityCard from "../../shared/CommunityCard";
 import VolunteerHomeHeader from "../VolunteerHomeHeader";
 import VolunteerOrderFilters from "../VolunteerOrderFilters";
-import VolunteerStatsCard from "../VolunteerStatsCard";
+import StatsCard from "../../shared/StatsCard";
 import {
   acceptOrder,
   buildAvailableOrdersSearchParams,
@@ -31,8 +31,9 @@ import {
   finishOrder,
   searchAvailableOrders,
 } from "../../../services/availableOrders";
-import { fetchVolunteerStats } from "../../../services/volunteerStats";
+import { fetchVolunteerStats, normalizeVolunteerStats } from "../../../services/volunteerStats";
 import { getAvailableOrders as requestAvailableOrders } from "../../../services/volunteerService";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 const INITIAL_VISIBLE_ORDERS = 3;
 const LOAD_MORE_STEP = 3;
@@ -355,7 +356,7 @@ function VolunteerHomePage({
       />
 
       <Grid container spacing={3}>
-        <Grid item xs={12} lg={8.7}>
+        <Grid xs={12} lg={8.7}>
           {isLoadingOrders ? (
             <LoadingState
               title="Carregando pedidos disponíveis"
@@ -408,13 +409,31 @@ function VolunteerHomePage({
           )}
         </Grid>
 
-        <Grid item sx={{ minWidth: 0 }}>
+        <Grid sx={{ minWidth: 0 }}>
           <Stack spacing={3} sx={{ position: { lg: "sticky" }, top: 24 }}>
-            <VolunteerCommunityCard
-              nearbyEldersCount={dashboardSummary.nearbyEldersNeedingHelp}
-              onViewElders={handleViewElders}
+            <CommunityCard
+              title="Comunidade Ativa"
+              subtitle={
+                <>
+                  <Box component="span" sx={{ color: "#88b8b5", fontWeight: 800 }}>
+                    {dashboardSummary.nearbyEldersNeedingHelp} idosos
+                  </Box>{" "}
+                  precisam de ajuda na sua região!
+                </>
+              }
+              buttonText="Ver Idosos Próximos"
+              onButtonClick={handleViewElders}
+              icon={<FavoriteBorderIcon sx={{ fontSize: 58, color: "#d99da8" }} />}
+              iconBgColor="#f7e9eb"
             />
-            <VolunteerStatsCard stats={volunteerStats} />
+            <StatsCard
+              title="Suas Estatísticas"
+              stats={[
+                { label: "Pessoas ajudadas", value: normalizeVolunteerStats(volunteerStats).peopleHelped, color: "#253044" },
+                { label: "Pedidos concluídos", value: normalizeVolunteerStats(volunteerStats).completedOrders, color: "#96C0BE" },
+                { label: "Avaliação média", value: normalizeVolunteerStats(volunteerStats).averageRating.toFixed(1), color: "#f0b4a3" },
+              ]}
+            />
           </Stack>
         </Grid>
       </Grid>

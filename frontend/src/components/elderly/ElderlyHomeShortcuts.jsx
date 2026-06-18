@@ -36,7 +36,7 @@ const ElderlyHomeShortcuts = ({ onNavigate }) => {
   return (
     <Grid container spacing={2}>
       {shortcuts.map((shortcut, index) => (
-        <Grid item xs={12} md={4} key={index}>
+        <Grid xs={12} md={4} key={index}>
           <DashboardShortcutCard
             title={shortcut.title}
             description={shortcut.description}

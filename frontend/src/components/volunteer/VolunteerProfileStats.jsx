@@ -9,7 +9,7 @@ function VolunteerProfileStats({ stats = {} }) {
   ];
 
   return (
-    <Stack direction="row" alignItems="center" sx={{ px: 2.5, py: 2.2 }}>
+    <Stack direction="row" sx={{ alignItems: "center", px: 2.5, py: 2.2 }}>
       {rows.map((row, index) => (
         <React.Fragment key={row.label}>
           <Box sx={{ flex: 1, textAlign: "center" }}>

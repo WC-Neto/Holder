@@ -45,7 +45,7 @@ function NearbyElderlyDetailsModal({ open, elderly, onClose, onContact }) {
 
           <DialogContent>
             <Stack spacing={2.4}>
-              <Stack direction="row" alignItems="center" spacing={2}>
+              <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
                 <Avatar
                   src={elderly.photoUrl}
                   alt={elderly.name}
@@ -59,7 +59,7 @@ function NearbyElderlyDetailsModal({ open, elderly, onClose, onContact }) {
                   <Typography sx={{ color: "#20283a", fontSize: 20, fontWeight: 900 }}>
                     {elderly.name}
                   </Typography>
-                  <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mt: 0.4 }}>
+                  <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", mt: 0.4 }}>
                     <PlaceOutlinedIcon sx={{ color: "#d99da8", fontSize: 17 }} />
                     <Typography sx={{ color: "#98a1b0", fontSize: 14 }}>
                       {elderly.neighborhood}
