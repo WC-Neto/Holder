@@ -2,12 +2,8 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
 } from "@mui/material";
+import LogoutConfirmModal from "../shared/LogoutConfirmModal";
 import VolunteerSidebar from "./VolunteerSidebar";
 import VolunteerHomePage from "./pages/VolunteerHomePage";
 import VolunteerHistoryPage from "./pages/VolunteerHistoryPage";
@@ -135,41 +131,11 @@ function VolunteerLayout({ onLogout, isDarkMode, onToggleTheme }) {
         {renderContent()}
       </Box>
 
-      <Dialog
+      <LogoutConfirmModal
         open={isLogoutConfirmOpen}
         onClose={handleCancelLogout}
-        aria-labelledby="logout-confirm-title"
-      >
-        <DialogTitle id="logout-confirm-title" sx={{ color: "#20283a", fontWeight: 900 }}>
-          Sair da conta?
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ color: "#667085" }}>
-            Sua sessão local será encerrada e você voltará para a tela de login.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={handleCancelLogout} sx={{ textTransform: "none" }}>
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleConfirmLogout}
-            variant="contained"
-            sx={{
-              bgcolor: "#ff4d4f",
-              boxShadow: "none",
-              fontWeight: 800,
-              textTransform: "none",
-              "&:hover": {
-                bgcolor: "#e04446",
-                boxShadow: "none",
-              },
-            }}
-          >
-            Sair
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onConfirm={handleConfirmLogout}
+      />
     </Box>
   );
 }

@@ -1,37 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Stack,
-  Typography,
-} from "@mui/material";
-import OrderMetaInfo from "./OrderMetaInfo";
-import UrgencyBadge from "./UrgencyBadge";
-
-function DetailRow({ label, children }) {
-  return (
-    <Box>
-      <Typography
-        sx={{
-          color: "#98a1b0",
-          fontSize: 12,
-          fontWeight: 800,
-          mb: 0.6,
-        }}
-      >
-        {label}
-      </Typography>
-      <Typography sx={{ color: "#20283a", fontSize: 15, lineHeight: 1.5 }}>
-        {children}
-      </Typography>
-    </Box>
-  );
-}
+import BaseOrderModal from "../shared/BaseOrderModal";
 
 function OrderDetailsModal({
   open,
@@ -42,127 +10,55 @@ function OrderDetailsModal({
   onAcceptOrder,
   onFinishOrder,
 }) {
-  const elderSummary = order?.elderSummary;
+  if (!order) return null;
+
+  const elderSummary = order.elderSummary;
   const actionLabel = isAccepted
     ? "Finalizar ajuda"
     : isAcceptBlocked
       ? "Atividade em andamento"
       : "Ajudar agora";
 
+  const personProfile = elderSummary ? {
+    role: "elder",
+    name: elderSummary.name,
+    age: elderSummary.age,
+    mobility: elderSummary.mobility,
+    notes: elderSummary.notes,
+  } : {
+    role: "elder",
+    name: "",
+    fallbackMessage: "Dados do idoso serão exibidos quando permitido.",
+  };
+
+  const handlePrimaryAction = () => {
+    if (isAccepted) {
+      onFinishOrder?.(order);
+    } else {
+      onAcceptOrder?.(order);
+    }
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      {order && (
-        <>
-          <DialogTitle sx={{ color: "#20283a", fontWeight: 900 }}>
-            Detalhes do pedido
-          </DialogTitle>
-
-          <DialogContent>
-            <Stack spacing={2.2}>
-              <DetailRow label="Título completo">{order.title}</DetailRow>
-
-              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                <DetailRow label="Categoria">{order.categoryLabel}</DetailRow>
-
-                <Box>
-                  <Typography
-                    sx={{
-                      color: "#98a1b0",
-                      fontSize: 12,
-                      fontWeight: 800,
-                      mb: 0.6,
-                    }}
-                  >
-                    Urgência
-                  </Typography>
-                  <UrgencyBadge
-                    urgencyTone={order.urgencyTone}
-                    label={order.urgencyLevel}
-                  />
-                </Box>
-              </Stack>
-
-              <DetailRow label="Descrição">{order.description}</DetailRow>
-
-              <Box>
-                <Typography
-                  sx={{
-                    color: "#98a1b0",
-                    fontSize: 12,
-                    fontWeight: 800,
-                    mb: 1,
-                  }}
-                >
-                  Localização aproximada e Tempo de publicação
-                </Typography>
-                <OrderMetaInfo
-                  distance={order.distance}
-                  neighborhood={order.neighborhood}
-                  timeAgo={order.timeAgo}
-                />
-              </Box>
-
-              <Divider />
-
-              <Box>
-                <Typography
-                  sx={{
-                    color: "#98a1b0",
-                    fontSize: 12,
-                    fontWeight: 800,
-                    mb: 1,
-                  }}
-                >
-                  Informações do idoso
-                </Typography>
-
-                {elderSummary ? (
-                  <Stack spacing={0.7}>
-                    <Typography sx={{ color: "#20283a", fontWeight: 800 }}>
-                      {elderSummary.name}
-                    </Typography>
-                    <Typography sx={{ color: "#667085", fontSize: 14 }}>
-                      {elderSummary.age} anos • {elderSummary.mobility}
-                    </Typography>
-                    <Typography sx={{ color: "#667085", fontSize: 14 }}>
-                      {elderSummary.notes}
-                    </Typography>
-                  </Stack>
-                ) : (
-                  <Typography sx={{ color: "#667085", fontSize: 14 }}>
-                    Dados do idoso serão exibidos quando permitido.
-                  </Typography>
-                )}
-              </Box>
-            </Stack>
-          </DialogContent>
-
-          <DialogActions sx={{ px: 3, pb: 2.5 }}>
-            <Button onClick={onClose} sx={{ textTransform: "none" }}>
-              Fechar
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() =>
-                isAccepted ? onFinishOrder?.(order) : onAcceptOrder?.(order)
-              }
-              sx={{
-                bgcolor: isAcceptBlocked ? "#96C0BE" : "#e4a0aa",
-                textTransform: "none",
-                fontWeight: 800,
-                boxShadow: "none",
-                "&.Mui-disabled": {
-                  color: "#fff",
-                  bgcolor: "#96C0BE",
-                },
-              }}
-            >
-              {actionLabel}
-            </Button>
-          </DialogActions>
-        </>
-      )}
-    </Dialog>
+    <BaseOrderModal
+      open={open}
+      onClose={onClose}
+      title={order.title}
+      categoryLabel={order.categoryLabel}
+      urgencyLevel={order.urgencyLevel}
+      urgencyTone={order.urgencyTone}
+      description={order.description}
+      locationData={{
+        distance: order.distance,
+        neighborhood: order.neighborhood,
+        timeAgo: order.timeAgo,
+      }}
+      personProfile={personProfile}
+      primaryActionLabel={actionLabel}
+      primaryActionDisabled={isAcceptBlocked && !isAccepted}
+      primaryActionColorTheme={isAcceptBlocked && !isAccepted ? "disabled" : "default"}
+      onPrimaryAction={handlePrimaryAction}
+    />
   );
 }
 

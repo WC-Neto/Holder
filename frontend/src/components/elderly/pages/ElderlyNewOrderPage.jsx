@@ -19,7 +19,7 @@ const ElderlyNewOrderPage = () => {
           p: { xs: 2, md: 4 },
           borderRadius: 3,
           borderColor: '#e7e7ea',
-          boxShadow: '0 2px 8px rgba(31, 41, 55, 0.08)'
+          boxShadow: '0 2px 8px #e7e7ea'
         }}>
         <NewOrderForm />
       </Paper>

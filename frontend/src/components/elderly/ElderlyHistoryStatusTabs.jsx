@@ -1,13 +1,14 @@
 import React from "react";
 import { Button, Stack } from "@mui/material";
 
-export const historyStatusOptions = [
+export const elderlyHistoryStatusOptions = [
   { value: "all", label: "Todos" },
-  { value: "in_progress", label: "Em Andamento" },
+  { value: "open", label: "Abertos" },
+  { value: "in_progress", label: "Em Progresso" },
   { value: "completed", label: "Concluídos" },
 ];
 
-function VolunteerHistoryStatusTabs({ activeStatus = "all", onStatusChange }) {
+function ElderlyHistoryStatusTabs({ activeStatus = "all", onStatusChange }) {
   return (
     <Stack
       direction="row"
@@ -16,7 +17,7 @@ function VolunteerHistoryStatusTabs({ activeStatus = "all", onStatusChange }) {
         columnGap: 1.5,
         rowGap: 1.5,
       }}>
-      {historyStatusOptions.map((statusOption) => {
+      {elderlyHistoryStatusOptions.map((statusOption) => {
         const isActive = activeStatus === statusOption.value;
 
         return (
@@ -47,4 +48,4 @@ function VolunteerHistoryStatusTabs({ activeStatus = "all", onStatusChange }) {
   );
 }
 
-export default VolunteerHistoryStatusTabs;
+export default ElderlyHistoryStatusTabs;

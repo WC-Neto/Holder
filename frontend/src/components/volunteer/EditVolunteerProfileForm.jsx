@@ -64,7 +64,7 @@ export function validateProfileForm(formData) {
   return errors;
 }
 
-function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave }) {
+function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave, availabilityLabel = "Disponibilidade" }) {
   const [formData, setFormData] = useState({
     avatarUrl: "",
     avatarPosition: { x: 50, y: 50 },
@@ -298,7 +298,7 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
 
         <Box>
           <Typography sx={{ color: "#20283a", fontSize: 14, fontWeight: 900, mb: 0.8 }}>
-            Disponibilidade
+            {availabilityLabel}
           </Typography>
           <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
             {availabilityOptions.map((period) => (
@@ -329,9 +329,21 @@ function EditVolunteerProfileForm({ profile, isSaving = false, onCancel, onSave 
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ justifyContent: "flex-end" }}>
           <Button
             type="button"
+            variant="contained"
             onClick={onCancel}
             disabled={isSaving}
-            sx={{ textTransform: "none" }}
+            sx={{
+              bgcolor: "#f4f4f6",
+              color: "#9ba3b3",
+              fontWeight: 700,
+              textTransform: "none",
+              borderRadius: 2,
+              boxShadow: "none",
+              "&:hover": {
+                bgcolor: "#e7e7ea",
+                boxShadow: "none"
+              }
+            }}
           >
             Cancelar
           </Button>
