@@ -49,7 +49,7 @@ const UrgencyOption = ({ label, value, selected, onClick, colors }) => {
           onChange={() => onClick(value)}
           value={value}
           name="urgency-radio"
-          inputProps={{ "aria-label": label }}
+          slotProps={{ input: { 'aria-label': label } }}
           sx={{
             p: 0,
             mr: 2,
