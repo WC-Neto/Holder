@@ -46,18 +46,18 @@ function VolunteerCard({
         borderColor: isSelected ? "#96C0BE" : "#eceef2",
         borderRadius: 3,
         boxShadow: isSelected
-          ? "0 0 0 3px rgba(150, 192, 190, 0.18)"
-          : "0 1px 2px rgba(37, 48, 68, 0.03)",
+          ? "0 0 0 3px #dbe9e8"
+          : "0 1px 2px #eceef2",
         cursor: "pointer",
         transition: "border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease",
         "&:hover": {
           borderColor: "#dbe9e8",
-          boxShadow: "0 8px 24px rgba(37, 48, 68, 0.08)",
+          boxShadow: "0 8px 24px #e7e7ea",
           transform: "translateY(-1px)",
         },
         "&:focus-within": {
           borderColor: "#96C0BE",
-          boxShadow: "0 0 0 3px rgba(150, 192, 190, 0.22)",
+          boxShadow: "0 0 0 3px #dbe9e8",
         },
         "&:focus": {
           outline: "none",

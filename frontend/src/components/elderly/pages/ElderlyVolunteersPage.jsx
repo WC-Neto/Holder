@@ -108,7 +108,7 @@ function ElderlyVolunteersPage({ isDarkMode = false }) {
               borderWidth: 1,
               borderStyle: "solid",
               borderRadius: 3,
-              boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
+              boxShadow: "0 1px 2px #eceef2",
               textAlign: "center",
             }}
           >
@@ -154,7 +154,7 @@ function ElderlyVolunteersPage({ isDarkMode = false }) {
               borderWidth: 1,
               borderStyle: "solid",
               borderRadius: 3,
-              boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
+              boxShadow: "0 1px 2px #eceef2",
               textAlign: "center",
             }}
           >

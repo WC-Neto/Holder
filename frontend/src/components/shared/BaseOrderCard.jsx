@@ -251,7 +251,7 @@ const BaseOrderCard = ({
         bgcolor: "#fff",
         borderColor: "#e7e7ea",
         borderRadius: 3,
-        boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
+        boxShadow: "0 1px 2px #eceef2",
         display: "flex",
         flexDirection: "column",
       }}

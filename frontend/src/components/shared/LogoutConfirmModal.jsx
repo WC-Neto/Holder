@@ -24,7 +24,22 @@ function LogoutConfirmModal({ open, onClose, onConfirm }) {
         </DialogContentText>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose} sx={{ textTransform: "none" }}>
+        <Button
+          variant="contained"
+          onClick={onClose}
+          sx={{
+            bgcolor: "#f4f4f6",
+            color: "#9ba3b3",
+            fontWeight: 700,
+            textTransform: "none",
+            borderRadius: 2,
+            boxShadow: "none",
+            "&:hover": {
+              bgcolor: "#e7e7ea",
+              boxShadow: "none"
+            }
+          }}
+        >
           Cancelar
         </Button>
         <Button

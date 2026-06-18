@@ -48,7 +48,7 @@ function SettingsList({ onNavigate, onLogout, versionLabel = "Versão 1.0.0" }) 
           bgcolor: "#fff",
           borderColor: "#eceef2",
           borderRadius: 3,
-          boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
+          boxShadow: "0 1px 2px #eceef2",
           overflow: "hidden",
         }}
       >
@@ -82,7 +82,7 @@ function SettingsList({ onNavigate, onLogout, versionLabel = "Versão 1.0.0" }) 
           bgcolor: "#fff",
           borderColor: "#eceef2",
           borderRadius: 3,
-          boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
+          boxShadow: "0 1px 2px #eceef2",
           overflow: "hidden",
           mt: 3,
         }}

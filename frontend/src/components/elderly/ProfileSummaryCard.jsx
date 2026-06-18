@@ -14,7 +14,7 @@ function ProfileSummaryCard({ profile, onEditProfile }) {
         bgcolor: "#fff",
         borderColor: "#eceef2",
         borderRadius: 3,
-        boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
+        boxShadow: "0 1px 2px #eceef2",
         overflow: "hidden",
         height: '100%',
       }}
@@ -40,9 +40,9 @@ function ProfileSummaryCard({ profile, onEditProfile }) {
           sx={{
             width: 100,
             height: 100,
-            border: "4px solid rgba(255,255,255,0.92)",
+            border: "4px solid #ffffff",
             mb: 2,
-            boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+            boxShadow: "0 4px 10px #20283a",
           }}
         />
         <Typography sx={{ fontSize: 24, fontWeight: 900, mb: 0.5 }}>
@@ -60,13 +60,13 @@ function ProfileSummaryCard({ profile, onEditProfile }) {
             height: 38,
             borderRadius: 999,
             px: 2.5,
-            borderColor: "rgba(255,255,255,0.4)",
+            borderColor: "#ffffff",
             color: "#fff",
             fontWeight: 800,
             textTransform: "none",
             "&:hover": { 
-              bgcolor: "rgba(255,255,255,0.1)",
-              borderColor: "rgba(255,255,255,0.8)",
+              bgcolor: "#8ab9b6",
+              borderColor: "#ffffff",
             },
           }}
         >

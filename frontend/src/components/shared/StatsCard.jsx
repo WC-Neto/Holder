@@ -10,7 +10,7 @@ function StatsCard({ title, stats }) {
         bgcolor: "#fff",
         borderColor: "#eceef2",
         borderRadius: 3,
-        boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
+        boxShadow: "0 1px 2px #eceef2",
       }}
     >
       <Typography sx={{ color: "#20283a", fontSize: 18, fontWeight: 800, mb: 2.4 }}>

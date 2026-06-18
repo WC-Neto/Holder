@@ -82,9 +82,21 @@ function EditAvailabilityForm({
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ justifyContent: "flex-end" }}>
           <Button
             type="button"
+            variant="contained"
             onClick={onCancel}
             disabled={isSaving}
-            sx={{ textTransform: "none" }}
+            sx={{
+              bgcolor: "#f4f4f6",
+              color: "#9ba3b3",
+              fontWeight: 700,
+              textTransform: "none",
+              borderRadius: 2,
+              boxShadow: "none",
+              "&:hover": {
+                bgcolor: "#e7e7ea",
+                boxShadow: "none"
+              }
+            }}
           >
             Cancelar
           </Button>
