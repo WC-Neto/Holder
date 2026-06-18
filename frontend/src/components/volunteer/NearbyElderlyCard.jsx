@@ -64,12 +64,7 @@ function NearbyElderlyCard({
       }}
     >
       <Stack
-<<<<<<< Updated upstream
         direction={{ xs: "column", sm: "row" }}
-=======
-        direction="row"
-        alignItems={{ xs: "flex-start", sm: "center" }}
->>>>>>> Stashed changes
         spacing={2}
         sx={{ alignItems: { xs: "flex-start", sm: "center" } }}
       >

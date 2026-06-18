@@ -49,7 +49,7 @@ function VolunteerProfileCard({ profile, onEditProfile }) {
         <Typography sx={{ fontSize: 24, fontWeight: 900 }}>{profile.name}</Typography>
         <Typography sx={{ fontSize: 14, opacity: 0.9 }}>{profile.email}</Typography>
 
-        <Stack direction="row" flexWrap={{ xs: "wrap", sm: "nowrap" }} sx={{ mt: 3, alignItems: "center",  gap: 1.5 }} >
+        <Stack direction="row" sx={{ flexWrap: { xs: "wrap", sm: "nowrap" }, mt: 3, alignItems: "center", gap: 1.5 }} >
           <Chip
             icon={<StarBorderOutlinedIcon />}
             label={profile.statusLabel ?? "Voluntário Ativo"}

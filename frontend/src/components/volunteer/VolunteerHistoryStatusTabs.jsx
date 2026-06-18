@@ -11,8 +11,8 @@ function VolunteerHistoryStatusTabs({ activeStatus = "all", onStatusChange }) {
   return (
     <Stack
       direction="row"
-      flexWrap="wrap"
       sx={{
+        flexWrap: "wrap",
         columnGap: 1.5,
         rowGap: 1.5,
       }}>
