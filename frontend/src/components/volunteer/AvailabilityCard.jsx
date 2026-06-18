@@ -20,9 +20,9 @@ function AvailabilityCard({ period, selected = false, onToggle }) {
       onClick={() => onToggle?.(period)}
       aria-pressed={selected}
       direction="row"
-      alignItems="center"
       spacing={1.2}
       sx={{
+        alignItems: "center",
         width: "100%",
         border: "1px solid",
         borderColor: selected ? "#96C0BE" : "#eceef2",

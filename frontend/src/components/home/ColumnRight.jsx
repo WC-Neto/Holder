@@ -29,24 +29,20 @@ function ColumnRight({ onLogin }) {
 
     console.log("Dados preparados para login:", loginData);
 
-    if (selectedProfile === "voluntario" && onLogin) {
-      onLogin();
+    if (onLogin) {
+      onLogin(selectedProfile);
     }
   };
 
   const handleGoogleLogin = () => {
-    if (selectedProfile === "voluntario" && onLogin) {
-      onLogin();
-    } else {
-      window.alert("Sign in with Google");
+    if (onLogin) {
+      onLogin(selectedProfile);
     }
   };
 
   const handleFacebookLogin = () => {
-    if (selectedProfile === "voluntario" && onLogin) {
-      onLogin();
-    } else {
-      window.alert("Sign in with Facebook");
+    if (onLogin) {
+      onLogin(selectedProfile);
     }
   };
 

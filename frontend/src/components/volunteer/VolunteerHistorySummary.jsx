@@ -18,7 +18,7 @@ function VolunteerHistorySummary({ total = 0, completed = 0 }) {
         boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
       }}
     >
-      <Stack direction="row" alignItems="center">
+      <Stack direction="row" sx={{ alignItems: "center" }}>
         {items.map((item, index) => (
           <React.Fragment key={item.label}>
             <Box sx={{ flex: 1, textAlign: "center" }}>

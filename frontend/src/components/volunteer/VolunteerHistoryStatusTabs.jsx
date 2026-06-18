@@ -9,7 +9,7 @@ export const historyStatusOptions = [
 
 function VolunteerHistoryStatusTabs({ activeStatus = "all", onStatusChange }) {
   return (
-    <Stack direction="row" flexWrap="wrap" gap={1}>
+    <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
       {historyStatusOptions.map((statusOption) => {
         const isActive = activeStatus === statusOption.value;
 

@@ -1,12 +1,14 @@
 import React from "react";
 import { Box, Button, Card, Typography } from "@mui/material";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 
-function VolunteerCommunityCard({
-  activeElders,
-  nearbyEldersCount = activeElders ?? 0,
-  onViewElders,
+function CommunityCard({
+  title,
+  subtitle,
+  buttonText,
+  buttonColor = "#96C0BE",
+  icon,
+  iconBgColor = "#f7e9eb",
+  onButtonClick,
 }) {
   return (
     <Card
@@ -24,51 +26,46 @@ function VolunteerCommunityCard({
         sx={{
           minHeight: 128,
           borderRadius: 2,
-          bgcolor: "#f7e9eb",
-          color: "#d99da8",
+          bgcolor: iconBgColor,
           display: "grid",
           placeItems: "center",
           mb: 2,
         }}
       >
-        <FavoriteBorderIcon sx={{ fontSize: 58 }} />
+        {icon}
       </Box>
 
       <Typography sx={{ color: "#20283a", fontSize: 20, fontWeight: 800, mb: 1 }}>
-        Comunidade Ativa
+        {title}
       </Typography>
 
       <Typography sx={{ color: "#98a1b0", fontSize: 14, mb: 2.4 }}>
-        <Box component="span" sx={{ color: "#88b8b5", fontWeight: 800 }}>
-          {nearbyEldersCount} idosos
-        </Box>{" "}
-        precisam de ajuda na sua região!
+        {subtitle}
       </Typography>
 
       <Button
         variant="contained"
         fullWidth
-        startIcon={<PeopleAltOutlinedIcon />}
-        onClick={onViewElders}
+        onClick={onButtonClick}
         sx={{
           minHeight: 48,
           borderRadius: 2,
-          bgcolor: "#96C0BE",
-          background: "linear-gradient(90deg, #a8c5ad 0%, #96C0BE 100%)",
+          bgcolor: buttonColor,
           color: "#fff",
           fontWeight: 800,
           textTransform: "none",
           boxShadow: "none",
           "&:hover": {
-            bgcolor: "#87afad",
+            bgcolor: buttonColor,
+            filter: "brightness(0.9)",
             boxShadow: "none",
           },
         }}
       >
-        Ver Idosos Próximos
+        {buttonText}
       </Button>
     </Card>
   );
 }
 
-export default VolunteerCommunityCard;
+export default CommunityCard;

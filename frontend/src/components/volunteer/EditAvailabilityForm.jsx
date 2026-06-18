@@ -79,7 +79,7 @@ function EditAvailabilityForm({
           </Alert>
         )}
 
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} justifyContent="flex-end">
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ justifyContent: "flex-end" }}>
           <Button
             type="button"
             onClick={onCancel}

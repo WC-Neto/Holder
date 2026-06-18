@@ -16,7 +16,7 @@ function LoadingState({
         boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
       }}
     >
-      <Stack alignItems="center" spacing={1.5} sx={{ textAlign: "center" }}>
+      <Stack spacing={1.5} sx={{ textAlign: "center", alignItems: "center" }}>
         <CircularProgress size={30} sx={{ color: "#96C0BE" }} />
         <Typography sx={{ color: "#20283a", fontSize: 18, fontWeight: 900 }}>
           {title}

@@ -15,24 +15,17 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
-import LogoutButton from "./LogoutButton";
-import SidebarMenuItem from "./SidebarMenuItem";
-import SidebarUserInfo from "./SidebarUserInfo";
+import LogoutButton from "../shared/LogoutButton";
+import SidebarMenuItem from "../shared/SidebarMenuItem";
+import SidebarUserInfo from "../shared/SidebarUserInfo";
 import logo from "../../assets/logo.png";
 
 const menuItems = [
-  { id: "inicio", label: "Início", icon: "home" },
-  { id: "historico", label: "Histórico", icon: "history" },
-  { id: "idosos", label: "Idosos", icon: "people" },
-  { id: "perfil", label: "Perfil", icon: "person" },
+  { id: "inicio", label: "Início", icon: <HomeOutlinedIcon /> },
+  { id: "historico", label: "Histórico", icon: <HistoryOutlinedIcon /> },
+  { id: "idosos", label: "Idosos", icon: <PeopleAltOutlinedIcon /> },
+  { id: "perfil", label: "Perfil", icon: <PersonOutlineOutlinedIcon /> },
 ];
-
-const bottomNavigationIcons = {
-  inicio: <HomeOutlinedIcon />,
-  historico: <HistoryOutlinedIcon />,
-  idosos: <PeopleAltOutlinedIcon />,
-  perfil: <PersonOutlineOutlinedIcon />,
-};
 
 function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
   const theme = useTheme();
@@ -66,13 +59,18 @@ function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
         <Box sx={{ color: "#8ab9b6", fontSize: 18, fontWeight: 800 }}>Holder</Box>
       </Box>
 
-      <SidebarUserInfo />
+      <SidebarUserInfo 
+        userName="Ana Santos"
+        userRole="Voluntário"
+        userImage="https://i.pravatar.cc/80?img=47"
+      />
 
       <Box sx={{ flex: 1, py: 2, px: 1.5, overflowY: "auto" }}>
         {menuItems.map((item) => (
           <SidebarMenuItem
             key={item.id}
-            item={item}
+            title={item.label}
+            icon={item.icon}
             isActive={currentPage === item.id}
             onClick={() => {
               onPageChange(item.id);
@@ -159,7 +157,7 @@ function VolunteerSidebar({ currentPage, onPageChange, onLogout }) {
                 key={item.id}
                 value={item.id}
                 label={item.label}
-                icon={bottomNavigationIcons[item.id]}
+                icon={item.icon}
                 sx={{
                   minWidth: 0,
                   color: "#667085",

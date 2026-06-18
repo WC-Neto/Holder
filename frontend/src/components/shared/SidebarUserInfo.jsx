@@ -1,13 +1,7 @@
 import React from "react";
 import { Avatar, Box, Typography } from "@mui/material";
 
-function SidebarUserInfo() {
-  const user = {
-    name: "Ana Santos",
-    type: "Voluntário",
-    avatar: "https://i.pravatar.cc/80?img=47",
-  };
-
+function SidebarUserInfo({ userName, userRole, userImage }) {
   return (
     <Box
       sx={{
@@ -19,7 +13,7 @@ function SidebarUserInfo() {
       }}
     >
       <Avatar
-        src={user.avatar}
+        src={userImage}
         sx={{
           width: 44,
           height: 44,
@@ -27,7 +21,7 @@ function SidebarUserInfo() {
           border: "2px solid #96C0BE",
         }}
       >
-        {user.name.charAt(0)}
+        {userName ? userName.charAt(0) : ''}
       </Avatar>
 
       <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -41,10 +35,10 @@ function SidebarUserInfo() {
             textOverflow: "ellipsis",
           }}
         >
-          {user.name}
+          {userName}
         </Typography>
         <Typography sx={{ color: "#98a1b0", fontSize: 13 }}>
-          {user.type}
+          {userRole}
         </Typography>
       </Box>
     </Box>

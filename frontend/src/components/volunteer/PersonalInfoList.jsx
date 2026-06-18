@@ -22,7 +22,7 @@ function PersonalInfoList({ personalInfo = {} }) {
         }
 
         return (
-          <Stack key={row.key} direction="row" alignItems="center" spacing={1.2}>
+          <Stack key={row.key} direction="row" spacing={1.2} sx={{ alignItems: "center" }}>
             <RowIcon sx={{ color: "#98a1b0", fontSize: 20 }} />
             <Typography sx={{ color: "#3e4654", fontSize: 14 }}>{value}</Typography>
           </Stack>

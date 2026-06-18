@@ -17,7 +17,7 @@ function EmptyState({
         boxShadow: "0 1px 2px rgba(37, 48, 68, 0.03)",
       }}
     >
-      <Stack alignItems="center" spacing={1.3} sx={{ textAlign: "center" }}>
+      <Stack spacing={1.3} sx={{ textAlign: "center", alignItems: "center" }}>
         <Box
           sx={{
             width: 48,

@@ -1,20 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
-import HistoryIcon from "@mui/icons-material/History";
-import PeopleIcon from "@mui/icons-material/People";
-import PersonIcon from "@mui/icons-material/Person";
 
-const iconMap = {
-  home: HomeIcon,
-  history: HistoryIcon,
-  people: PeopleIcon,
-  person: PersonIcon,
-};
-
-function SidebarMenuItem({ item, isActive, onClick }) {
-  const Icon = iconMap[item.icon];
-
+function SidebarMenuItem({ title, icon, isActive, onClick }) {
   return (
     <Box
       onClick={onClick}
@@ -36,7 +23,9 @@ function SidebarMenuItem({ item, isActive, onClick }) {
         },
       }}
     >
-      {Icon && <Icon sx={{ fontSize: 20, flexShrink: 0 }} />}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24 }}>
+        {icon}
+      </Box>
       <Typography
         sx={{
           fontSize: 14,
@@ -44,7 +33,7 @@ function SidebarMenuItem({ item, isActive, onClick }) {
           color: "inherit",
         }}
       >
-        {item.label}
+        {title}
       </Typography>
     </Box>
   );

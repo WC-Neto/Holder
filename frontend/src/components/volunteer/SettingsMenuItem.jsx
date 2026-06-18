@@ -18,11 +18,11 @@ function SettingsMenuItem({
       component="button"
       type="button"
       direction="row"
-      alignItems="center"
       spacing={1.5}
       onClick={onClick}
       aria-label={`Abrir ${title}`}
       sx={{
+        alignItems: "center",
         width: "100%",
         px: 2,
         py: 1.8,

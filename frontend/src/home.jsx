@@ -13,7 +13,7 @@ function Home({ onLogin }) {
       }}
     >
       <ColumnLeft />
-      <ColumnRight onLogin={onLogin} />
+      <ColumnRight onLogin={(role) => onLogin && onLogin(role)} />
     </Box>
   );
 }
