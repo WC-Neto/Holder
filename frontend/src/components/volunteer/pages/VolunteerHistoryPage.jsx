@@ -16,6 +16,7 @@ import LoadingState from "../LoadingState";
 import VolunteerHistoryCard from "../VolunteerHistoryCard";
 import VolunteerHistoryStatusTabs from "../VolunteerHistoryStatusTabs";
 import VolunteerHistorySummary from "../VolunteerHistorySummary";
+import BaseOrderModal from "../../shared/BaseOrderModal";
 import {
   buildVolunteerHistoryQueryParams,
   filterVolunteerHistory,
@@ -182,50 +183,27 @@ function VolunteerHistoryPage({ isDarkMode = false }) {
         )}
       </Stack>
 
-      <Dialog
-        open={Boolean(selectedHistoryItem)}
-        onClose={() => setSelectedHistoryItem(null)}
-        fullWidth
-        maxWidth="xs"
-      >
-        {selectedHistoryItem && (
-          <>
-            <DialogTitle sx={{ color: "#20283a", fontWeight: 900 }}>
-              Detalhes da ajuda
-            </DialogTitle>
-            <DialogContent>
-              <Stack spacing={1.2}>
-                <Typography sx={{ color: "#20283a", fontWeight: 900 }}>
-                  {selectedHistoryItem.title}
-                </Typography>
-                <Typography sx={{ color: "#667085", fontSize: 14 }}>
-                  {selectedHistoryItem.elderName} • {selectedHistoryItem.neighborhood}
-                </Typography>
-                <Typography sx={{ color: "#667085", fontSize: 14 }}>
-                  {selectedHistoryItem.details}
-                </Typography>
-                <Divider />
-                <Box>
-                  <Typography
-                    sx={{
-                      color: "#98a1b0",
-                      fontSize: 12,
-                      fontWeight: 900,
-                      mb: 0.6,
-                    }}
-                  >
-                    Relatório da finalização
-                  </Typography>
-                  <Typography sx={{ color: "#667085", fontSize: 14, lineHeight: 1.55 }}>
-                    {selectedHistoryItem.completionReport ||
-                      "Relatório disponível quando a ajuda for finalizada."}
-                  </Typography>
-                </Box>
-              </Stack>
-            </DialogContent>
-          </>
-        )}
-      </Dialog>
+      {selectedHistoryItem && (
+        <BaseOrderModal
+          open={Boolean(selectedHistoryItem)}
+          onClose={() => setSelectedHistoryItem(null)}
+          title={selectedHistoryItem.title}
+          description={selectedHistoryItem.details}
+          personProfile={{
+            role: "elder",
+            name: selectedHistoryItem.elderName,
+            notes: selectedHistoryItem.neighborhood,
+          }}
+          dateOrTimeAgo={selectedHistoryItem.date}
+          statusLabel={selectedHistoryItem.statusLabel}
+          statusTheme={
+            selectedHistoryItem.status === "in_progress" ? "in_progress" : "completed"
+          }
+          completionReport={
+            selectedHistoryItem.completionReport || "Relatório disponível quando a ajuda for finalizada."
+          }
+        />
+      )}
 
       <Snackbar
         open={Boolean(feedbackMessage)}
