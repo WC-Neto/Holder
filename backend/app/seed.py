@@ -27,7 +27,8 @@ try:
             cep="79600-000", logradouro="Avenida Capitão Olinto Mancini", numero="100",
             bairro="Centro", cidade="Três Lagoas", estado="MS", idoso_id=benedito.id
         ))
-
+        db.add(models.NecessidadeEspecialIdoso(necessidade="baixa_visao", idoso_id=benedito.id))
+        db.add(models.NecessidadeEspecialIdoso(necessidade="dificuldade_comunicacao", idoso_id=benedito.id))
 
     if not db.query(models.Idoso).filter(models.Idoso.email == "neusa.silva@email.com").first():
         neusa = models.Idoso(
@@ -47,6 +48,7 @@ try:
             bairro="Centro", cidade="Três Lagoas", estado="MS", idoso_id=neusa.id
         ))
         db.add(models.NecessidadeEspecialIdoso(necessidade="mobilidade_reduzida", idoso_id=neusa.id))
+        db.add(models.NecessidadeEspecialIdoso(necessidade="surdez", idoso_id=neusa.id))
 
     # --- 3. CRIAÇÃO DO VOLUNTÁRIO ---
     if not db.query(models.Voluntario).filter(models.Voluntario.email == "fernando@email.com").first():
@@ -64,7 +66,9 @@ try:
             cep="79600-000", logradouro="Rua João Carrato", numero="500",
             bairro="Centro", cidade="Três Lagoas", estado="MS", voluntario_id=fernando.id
         ))
-
+        db.add(models.Disponibilidade(dia_semana="segunda", periodo="matutino", voluntario_id=fernando.id))
+        db.add(models.Disponibilidade(dia_semana="quarta", periodo="vespertino", voluntario_id=fernando.id))
+        db.add(models.Disponibilidade(dia_semana="sabado", periodo="matutino", voluntario_id=fernando.id))
 
     if not db.query(models.Voluntario).filter(models.Voluntario.email == "rafaela@email.com").first():
         rafaela = models.Voluntario(
@@ -81,6 +85,9 @@ try:
             cep="79600-000", logradouro="Rua Generoso Siqueira", numero="300",
             bairro="Centro", cidade="Três Lagoas", estado="MS", voluntario_id=rafaela.id
         ))
+        db.add(models.Disponibilidade(dia_semana="terca", periodo="vespertino", voluntario_id=rafaela.id))
+        db.add(models.Disponibilidade(dia_semana="quinta", periodo="noturno", voluntario_id=rafaela.id))
+        db.add(models.Disponibilidade(dia_semana="domingo", periodo="matutino", voluntario_id=rafaela.id))
 
     db.commit()
     print("--- Base de dados sincronizada com sucesso! ---")

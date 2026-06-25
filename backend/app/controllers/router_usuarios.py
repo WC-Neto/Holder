@@ -191,12 +191,12 @@ async def criar_voluntario(
             raise HTTPException(status_code=400, detail=str(e))
         db.add(models.Endereco(**end, voluntario_id=novo_voluntario.id))
 
-        for disp in json.loads(disponibilidades_json):
-            db.add(models.Disponibilidade(
-                dia_semana=disp["dia_semana"],
-                periodo=disp["periodo"],
-                voluntario_id=novo_voluntario.id
-            ))
+    for disp in json.loads(disponibilidades_json):
+        db.add(models.Disponibilidade(
+            dia_semana=disp["dia_semana"],
+            periodo=disp["periodo"],
+            voluntario_id=novo_voluntario.id
+        ))
 
     db.commit()
     db.refresh(novo_voluntario)
@@ -251,7 +251,7 @@ async def atualizar_idoso(
 async def atualizar_voluntario(
     id: int,
     foto: UploadFile = File(None),
-    disponibilidade: str = Form(None), 
+    disponibilidades_json: str = Form(None),
     enderecos_json: str = Form(None),
     db: Session = Depends(get_db)
 ):
@@ -259,17 +259,33 @@ async def atualizar_voluntario(
     if not voluntario:
         raise HTTPException(status_code=404, detail="Voluntário não encontrado")
 
- 
-    if disponibilidade:
-        voluntario.disponibilidade = disponibilidade
-    if foto:
-        voluntario.foto_perfil = foto.filename
+    if disponibilidades_json:
+        try:
+            disponibilidades = json.loads(disponibilidades_json)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=400, detail="disponibilidades_json inválido")
+        db.query(models.Disponibilidade).filter(
+            models.Disponibilidade.voluntario_id == id
+        ).delete()
+        for disp in disponibilidades:
+            db.add(models.Disponibilidade(
+                dia_semana=disp["dia_semana"],
+                periodo=disp["periodo"],
+                voluntario_id=id,
+            ))
 
-   
+    if foto and foto.filename:
+        voluntario.foto_perfil = await salvar_foto(foto)
+
     if enderecos_json:
         dados_end = json.loads(enderecos_json)
         endereco = db.query(models.Endereco).filter(models.Endereco.voluntario_id == id).first()
         if endereco:
+            if "cep" in dados_end:
+                try:
+                    dados_end["cep"] = validar_cep(dados_end["cep"])
+                except ValueError as e:
+                    raise HTTPException(status_code=400, detail=str(e))
             for key, value in dados_end.items():
                 setattr(endereco, key, value)
 
